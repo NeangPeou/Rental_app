@@ -12,6 +12,7 @@ router = APIRouter()
 # 🔹 Admin Register
 @router.post("/admin/register")
 def register_admin(data: RegisterAdmin, db: Session = Depends(get_db)):
+    # Check for existing Admin role
     role = db.query(Role).filter(Role.name == "Admin").first()
     if not role:
         role = Role(name="Admin")
@@ -19,13 +20,31 @@ def register_admin(data: RegisterAdmin, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(role)
 
+    # Check if username exists
     if db.query(User).filter(User.username == data.username).first():
         raise HTTPException(status_code=400, detail="Username already exists")
 
-    user = User(username=data.username, password=bcrypt.hash(data.password), role_id=role.id)
+    # Create new user
+    user = User(
+        username=data.username,
+        password=bcrypt.hash(data.password),
+        role_id=role.id
+    )
     db.add(user)
     db.commit()
-    return {"message": "Admin registered successfully"}
+    db.refresh(user)  # Now user.id is available
+
+    # Generate session token
+    token = str(uuid.uuid4())
+    session = UserSession(user_id=user.id, token=token, expired_at=datetime.utcnow() + timedelta(hours=2))
+    db.add(session)
+    db.add(SystemLog(action="Admin Registration", user_id=user.id))
+    db.commit()
+
+    return {
+        "message": "Admin registered successfully",
+        "token": token
+    }
 
 # 🔹 Admin Login
 @router.post("/admin/login")

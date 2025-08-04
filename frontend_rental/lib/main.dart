@@ -19,7 +19,6 @@ class RentalApp extends StatelessWidget {
         "password": passCtrl.text,
       }),
     );
-    print(res.body);
   }
 
   Future<void> login() async {
@@ -32,7 +31,6 @@ class RentalApp extends StatelessWidget {
         "password": passCtrl.text,
       }),
     );
-    print(res.body);
   }
 
   @override
@@ -42,9 +40,19 @@ class RentalApp extends StatelessWidget {
         appBar: AppBar(title: Text("Rental Register/Login")),
         body: Column(
           children: [
-            TextField(controller: codeCtrl, decoration: InputDecoration(labelText: "Code")),
-            TextField(controller: userCtrl, decoration: InputDecoration(labelText: "Username")),
-            TextField(controller: passCtrl, decoration: InputDecoration(labelText: "Password"), obscureText: true),
+            TextField(
+              controller: codeCtrl,
+              decoration: InputDecoration(labelText: "Code"),
+            ),
+            TextField(
+              controller: userCtrl,
+              decoration: InputDecoration(labelText: "Username"),
+            ),
+            TextField(
+              controller: passCtrl,
+              decoration: InputDecoration(labelText: "Password"),
+              obscureText: true,
+            ),
             Row(
               children: [
                 ElevatedButton(onPressed: register, child: Text("Register")),
