@@ -8,11 +8,7 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  Future<ErrorModel> login(
-    BuildContext context,
-    String username,
-    String password,
-  ) async {
+  Future<ErrorModel> login(BuildContext context, String username, String password) async {
     try {
       Helper.showLoadingDialog(context);
       Response res = await post(
