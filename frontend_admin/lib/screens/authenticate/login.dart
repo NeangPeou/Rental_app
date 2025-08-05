@@ -36,8 +36,7 @@ class _LoginState extends State<Login> {
             height: double.infinity,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/city.png'),
-                fit: BoxFit.cover,
+                image: AssetImage('assets/images/city.png'), fit: BoxFit.cover,
               ),
             ),
           ),
