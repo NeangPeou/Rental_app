@@ -9,8 +9,10 @@ class RentalApp extends StatelessWidget {
   final userCtrl = TextEditingController();
   final passCtrl = TextEditingController();
 
+  RentalApp({super.key});
+
   Future<void> register() async {
-    final res = await http.post(
+    await http.post(
       Uri.parse("http://127.0.0.1:8000/auth/rental/register"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
@@ -22,7 +24,7 @@ class RentalApp extends StatelessWidget {
   }
 
   Future<void> login() async {
-    final res = await http.post(
+    await http.post(
       Uri.parse("http://127.0.0.1:8000/auth/rental/login"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({

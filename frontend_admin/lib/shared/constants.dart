@@ -1,0 +1,26 @@
+import 'package:flutter/material.dart';
+
+const Color firstMainThemeColor = Colors.teal;
+
+InputDecoration textInputDecoration = InputDecoration(
+  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+);
+
+ThemeData lightTheme() {
+  return ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    scaffoldBackgroundColor: Colors.white,
+    textTheme: const TextTheme(bodyLarge: TextStyle(color: Colors.black)),
+  );
+}
+
+ThemeData darkTheme() {
+  return ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    scaffoldBackgroundColor: const Color(0xFF282828),
+    textTheme: const TextTheme(bodyLarge: TextStyle(color: Colors.white)),
+  );
+}
