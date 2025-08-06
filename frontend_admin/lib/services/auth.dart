@@ -12,13 +12,13 @@ class AuthService {
     try {
       Helper.showLoadingDialog(context);
       Response res = await post(
-        Uri.parse('${dotenv.env['API_URL']}/auth/admin/login'),
+        Uri.parse('${dotenv.env['API_URL']}/api/register'),
         body: jsonEncode({'username': username, 'password': password}),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
-      String token = jsonDecode(res.body)['token'];
+      String token = jsonDecode(res.body)['access_token'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('x-auth-token', token);
       ErrorModel errorModel = ErrorModel(isError: false, code: 'Information');

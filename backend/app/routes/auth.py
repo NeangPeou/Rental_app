@@ -9,6 +9,10 @@ from datetime import datetime, timedelta
 
 router = APIRouter()
 
+@router.get("/admin/test")
+def test():
+    return {"message": "test api"}
+
 # 🔹 Admin Register
 @router.post("/admin/register")
 def register_admin(data: RegisterAdmin, db: Session = Depends(get_db)):

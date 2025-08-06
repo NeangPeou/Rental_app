@@ -1,0 +1,14 @@
+from sqlalchemy import TIMESTAMP, Column, Integer, String, ForeignKey, Text, func
+from db.session import Base
+
+class User(Base):
+    __tablename__ = "t_users"
+    id = Column(Integer, primary_key=True, index=True)
+    role_id = Column(Integer, ForeignKey("t_roles.id"))
+    userID = Column(String, unique=True, index=True)
+    userName = Column(String, index=True)
+    email = Column(String, unique=True, index=True)
+    phoneNumber = Column(String, index=True)
+    password = Column(Text)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
