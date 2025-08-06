@@ -6,7 +6,7 @@ from controller import authcontroller
 from db.session import get_db
 from db.models import (user)
 from core.security import ALGORITHM, SECRET_KEY
-from schemas.user import RegisterUser, TokenResponse
+from schemas.user import LoginRequest, RegisterUser, TokenResponse
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
@@ -19,8 +19,8 @@ def register(user_data: RegisterUser, db: Session = Depends(get_db)):
     return user
 
 @router.post("/login", response_model=TokenResponse)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = authcontroller.login_controller(form_data, db)
+def login(request: LoginRequest, db: Session = Depends(get_db)):
+    user = authcontroller.login_controller(request, db)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
