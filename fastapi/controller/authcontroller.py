@@ -10,8 +10,6 @@ def login_controller(request: LoginRequest, db: Session):
     users = db.query(user.User).filter(user.User.userName == request.username).first()
     if not users or not verify_password(request.password, users.password):
         raise HTTPException(status_code=401, detail="Invalid username or password")
-    if not users.is_active:
-        raise HTTPException(status_code=403, detail="Inactive user")
 
     access_token = create_access_token({"sub": users.userName})
     refresh_token = create_refresh_token({"sub": users.userName})

@@ -12,7 +12,7 @@ class AuthService {
     try {
       Helper.showLoadingDialog(context);
       Response res = await post(
-        Uri.parse('${dotenv.env['API_URL']}/api/register'),
+        Uri.parse('${dotenv.env['API_URL']}/api/login'),
         body: jsonEncode({'username': username, 'password': password}),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
