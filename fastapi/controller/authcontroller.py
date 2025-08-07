@@ -1,6 +1,7 @@
 
 from datetime import datetime, timedelta
 from fastapi import HTTPException
+from sqlalchemy import func
 from db.models import (user, role, system_log, user_session)
 from core.security import create_access_token, create_refresh_token, get_password_hash, verify_password
 from sqlalchemy.orm import Session
@@ -11,8 +12,8 @@ def login_controller(request: LoginRequest, db: Session):
     if not users or not verify_password(request.password, users.password):
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
-    access_token = create_access_token({"sub": users.userName})
-    refresh_token = create_refresh_token({"sub": users.userName})
+    access_token = create_access_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
+    refresh_token = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
 
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
@@ -35,8 +36,8 @@ def register_controller(request: LoginRequest, db: Session):
     db.commit()
     db.refresh(users)
 
-    access_token = create_access_token({"sub": users.userName})
-    refresh_token = create_refresh_token({"sub": users.userName})
+    access_token = create_access_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
+    refresh_token = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
 
     session = user_session.UserSession(user_id=users.id, access_token=access_token, refresh_token=refresh_token, token_expired=datetime.utcnow() + timedelta(hours=2))
     db.add(session)
