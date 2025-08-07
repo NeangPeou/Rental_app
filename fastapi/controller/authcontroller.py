@@ -2,18 +2,62 @@
 from datetime import datetime, timedelta
 from fastapi import HTTPException
 from sqlalchemy import func
+from fastapi import Depends, HTTPException, status
 from db.models import (user, role, system_log, user_session)
-from core.security import create_access_token, create_refresh_token, get_password_hash, verify_password
+from core.security import create_access_token, create_refresh_token, get_password_hash, verify_password, SECRET_KEY, ALGORITHM
 from sqlalchemy.orm import Session
+from db.session import get_db
+from helper.hepler import log_action
 from schemas.user import LoginRequest
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+                                                                                                                                                                                          
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        user_obj = db.query(user.User).filter(user.User.userName == username).first()
+        if user_obj is None:
+            raise credentials_exception
+        return user_obj
+    except JWTError:
+        raise credentials_exception
+    
 def login_controller(request: LoginRequest, db: Session):
     users = db.query(user.User).filter(user.User.userName == request.username).first()
     if not users or not verify_password(request.password, users.password):
+        log_action(
+            db=db,
+            user_id=None,
+            action = "LOGIN_ATTEMPT",
+            log_type = "ERROR",
+            message=f"Failed login attempt for username: {request.username}",
+        )
         raise HTTPException(status_code=401, detail="Invalid username or password")
+    log_action(
+        db=db,
+        user_id=users.id,
+        action="LOGIN",
+        log_type="INFO",
+        message=f"User {request.username} logged in successfully",
+    )
 
     access_token = create_access_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
     refresh_token = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
+
+    session = user_session.UserSession(user_id=users.id, access_token=access_token, refresh_token=refresh_token, token_expired=datetime.utcnow() + timedelta(hours=2))
+    db.add(session)
+    db.add(system_log.SystemLog(action="Admin Login", user_id=users.id))
+    db.commit()
 
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
@@ -38,10 +82,39 @@ def register_controller(request: LoginRequest, db: Session):
 
     access_token = create_access_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
     refresh_token = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
+    log_action(
+        db=db,
+        user_id=users.id,
+        action="REGISTER",
+        log_type="INFO",
+        message=f"User {users.userName} registered successfully",
+    )
 
-    session = user_session.UserSession(user_id=users.id, access_token=access_token, refresh_token=refresh_token, token_expired=datetime.utcnow() + timedelta(hours=2))
-    db.add(session)
-    db.add(system_log.SystemLog(action="Admin Registration", user_id=users.id))
-    db.commit()
+    access_token = create_access_token({"sub": users.userName})
+    refresh_token = create_refresh_token({"sub": users.userName})
+
+    # session = user_session.UserSession(user_id=users.id, access_token=access_token, refresh_token=refresh_token, token_expired=datetime.utcnow() + timedelta(hours=2))
+    # db.add(session)
+    # db.add(system_log.SystemLog(action="Admin Registration", user_id=users.id))
+    # db.commit()
 
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+
+def logout_controller(current_user: user.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        db.query(user_session.UserSession).filter(user_session.UserSession.user_id == current_user.id).delete()
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to logout: {str(e)}")
+
+    log_action(
+        db=db,
+        user_id=current_user.id,
+        action="LOGOUT",
+        log_type="INFO",
+        message=f"User {current_user.userName} logged out successfully",
+    )
+
+    return {"message": "Successfully logged out"}
+
