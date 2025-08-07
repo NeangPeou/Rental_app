@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -66,6 +68,36 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
   }
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('x-auth-token') ?? '';
+    
+    // Call backend logout endpoint
+    try {
+      final response = await http.post(
+        Uri.parse('${dotenv.env['API_URL']}/api/logout'), // Replace with your API URL
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (response.statusCode != 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Logout failed. Please try again.')),
+        );
+        return;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error during logout. Please try again.')),
+      );
+      return;
+    }
+
+    // Clear token and navigate to login
+    await prefs.setString('x-auth-token', '');
+    if (context.mounted) {
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -176,13 +208,14 @@ class _DashboardState extends State<Dashboard> {
           const SizedBox(height: 24),
           Center(
             child: TextButton(
-              onPressed: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                await prefs.setString('x-auth-token', '');
-                if (context.mounted) {
-                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-                }
-              },
+              // onPressed: () async {
+              //   SharedPreferences prefs = await SharedPreferences.getInstance();
+              //   await prefs.setString('x-auth-token', '');
+              //   if (context.mounted) {
+              //     Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+              //   }
+              // },
+              onPressed: _logout,
               child: const Text("Logout", style: TextStyle(color: Colors.red)),
             ),
           ),
