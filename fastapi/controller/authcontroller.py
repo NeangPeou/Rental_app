@@ -1,7 +1,6 @@
 
 from datetime import datetime, timedelta
 from fastapi import HTTPException
-from sqlalchemy import func
 from fastapi import Depends, HTTPException, status
 from db.models import (user, role, system_log, user_session)
 from core.security import create_access_token, create_refresh_token, get_password_hash, verify_password, SECRET_KEY, ALGORITHM
@@ -92,11 +91,6 @@ def register_controller(request: LoginRequest, db: Session):
 
     access_token = create_access_token({"sub": users.userName})
     refresh_token = create_refresh_token({"sub": users.userName})
-
-    # session = user_session.UserSession(user_id=users.id, access_token=access_token, refresh_token=refresh_token, token_expired=datetime.utcnow() + timedelta(hours=2))
-    # db.add(session)
-    # db.add(system_log.SystemLog(action="Admin Registration", user_id=users.id))
-    # db.commit()
 
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
