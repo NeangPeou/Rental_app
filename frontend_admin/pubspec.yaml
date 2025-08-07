@@ -39,6 +39,7 @@ dependencies:
   shared_preferences: ^2.5.3
   flutter_dotenv: ^5.2.1
   flutter_spinkit: ^5.2.1
+  get_storage: ^2.0.3
 
 dev_dependencies:
   flutter_test:

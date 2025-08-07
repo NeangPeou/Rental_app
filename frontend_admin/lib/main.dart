@@ -5,9 +5,11 @@ import 'package:frontend_admin/screens/home/home.dart';
 import 'package:frontend_admin/screens/wrapper.dart';
 import 'package:frontend_admin/shared/constants.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 void main() async {
   await dotenv.load(fileName: '.env');
+  await GetStorage.init();
   runApp(MyApp());
 }
 
