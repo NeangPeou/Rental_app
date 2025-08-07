@@ -36,4 +36,43 @@ class AuthService {
       return errorModel;
     }
   }
+
+  Future<ErrorModel> getUserData(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('x-auth-token');
+
+    try {
+      Response res = await post(
+          Uri.parse('${dotenv.env['API_URL']}/api/tokensValid'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer $token',
+          }
+      );
+      if (res.statusCode == 200) {
+        // Map<String, dynamic> data = jsonDecode(res.body);
+        return ErrorModel(isError: false, code: 'Information', message: 'Token valid');
+      } else {
+        return ErrorModel(
+          isError: true,
+          code: 'Information',
+          message: 'Token expired or invalid',
+        );
+      }
+    } catch (e) {
+      ErrorModel errorModel = ErrorModel(
+        isError: true,
+        code: 'Information',
+        message: e.toString(),
+      );
+      // ignore: use_build_context_synchronously
+      Helper.closeLoadingDialog(context);
+      return errorModel;
+    }
+  }
+
+  Future<void> signOut() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('x-auth-token', '');
+  }
 }
