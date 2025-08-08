@@ -1,21 +1,40 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_admin/models/error.dart';
 import 'package:frontend_admin/utils/helper.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'dart:io';
 
 class AuthService {
   Future<ErrorModel> login(BuildContext context, String username, String password) async {
     try {
       Helper.showLoadingDialog(context);
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      String deviceName = '';
+      String userAgent = '';
+      if (Platform.isAndroid){
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        deviceName = androidInfo.model;
+        userAgent = 'Android/${androidInfo.version.release}';
+      }else if(Platform.isIOS){
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        deviceName = iosInfo.model;
+        userAgent = 'iOS/${iosInfo.systemVersion}';
+      }
       Response res = await post(
         Uri.parse('${dotenv.env['API_URL']}/api/login'),
-        body: jsonEncode({'username': username, 'password': password}),
+        body: jsonEncode({
+          'username': username, 
+          'password': password,
+          'deviceName': deviceName,
+          'userAgent': userAgent,
+        }),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'X-Client-IP': await _getClientIP(),
         },
       );
       String token = jsonDecode(res.body)['access_token'];
@@ -35,6 +54,9 @@ class AuthService {
       Helper.closeLoadingDialog(context);
       return errorModel;
     }
+  }
+  Future<String> _getClientIP() async {
+      return 'Unknown';
   }
 
   Future<ErrorModel> getUserData(BuildContext context) async {

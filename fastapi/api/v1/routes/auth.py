@@ -19,8 +19,8 @@ def register(user_data: RegisterUser, db: Session = Depends(get_db)):
     return user
 
 @router.post("/login", response_model=TokenResponse)
-def login(request: LoginRequest, db: Session = Depends(get_db)):
-    user = authcontroller.login_controller(request, db)
+def login(request: LoginRequest, db: Session = Depends(get_db), request_obj: Request = None):
+    user = authcontroller.login_controller(request, db, request_obj)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user

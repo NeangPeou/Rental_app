@@ -1,6 +1,7 @@
 
 from datetime import datetime, timedelta
-from fastapi import HTTPException
+import socket
+from fastapi import HTTPException, Request
 from fastapi import Depends, HTTPException, status
 from db.models import (user, role, system_log, user_session)
 from core.security import create_access_token, create_refresh_token, get_password_hash, verify_password, SECRET_KEY, ALGORITHM
@@ -31,7 +32,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     except JWTError:
         raise credentials_exception
     
-def login_controller(request: LoginRequest, db: Session):
+def login_controller(request: LoginRequest, db: Session, request_obj: Request = None):
     users = db.query(user.User).filter(user.User.userName == request.username).first()
     if not users or not verify_password(request.password, users.password):
         log_action(
@@ -39,7 +40,7 @@ def login_controller(request: LoginRequest, db: Session):
             user_id=None,
             action = "LOGIN_ATTEMPT",
             log_type = "ERROR",
-            message=f"Failed login attempt for username: {request.username}",
+            message=f"Failed login attempt for username: {request.username} from {request.deviceName or 'unknown device'}",
         )
         raise HTTPException(status_code=401, detail="Invalid username or password")
     log_action(
@@ -47,17 +48,32 @@ def login_controller(request: LoginRequest, db: Session):
         user_id=users.id,
         action="LOGIN",
         log_type="INFO",
-        message=f"User {request.username} logged in successfully",
+        message=f"User {request.username} logged in successfully from {request.deviceName or 'unknown device'}",
     )
 
     access_token = create_access_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
     refresh_token = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
 
-    session = user_session.UserSession(user_id=users.id, access_token=access_token, refresh_token=refresh_token, token_expired=datetime.utcnow() + timedelta(hours=2))
+    ip_address = request_obj.client.host if request_obj else None
+    session = user_session.UserSession(
+        user_id = users.id,
+        deviceName = request.deviceName,
+        access_token = access_token,
+        refresh_token = refresh_token,
+        token_expired = datetime.utcnow() + timedelta(hours=2),
+        refresh_expired = datetime.utcnow() + timedelta(days=7),
+        ip_address = ip_address,
+        user_agent = request.userAgent,
+    )
     db.add(session)
-    db.add(system_log.SystemLog(action="Admin Login", user_id=users.id))
+    db.add(system_log.SystemLog(
+        action="LOGIN",
+        user_id=users.id,
+        message=f"User {users.userName} logged in from {request.deviceName or 'unknown device'}",
+        logType="INFO",
+        hostName=socket.gethostname()
+    ))
     db.commit()
-
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
 def register_controller(request: LoginRequest, db: Session):
