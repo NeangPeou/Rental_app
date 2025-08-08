@@ -64,8 +64,8 @@ def token_is_valid(request: Request, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 @router.post("/logout")
-def logout(current_user: user.User = Depends(authcontroller.get_current_user), db: Session = Depends(get_db)):
-    return authcontroller.logout_controller(current_user, db)
+def logout(request: Request ,db: Session = Depends(get_db)):
+    return authcontroller.logout_controller(request, db)
 
 @router.get("/me")
 def get_current_user(current_user: user.User = Depends(authcontroller.get_current_user)):

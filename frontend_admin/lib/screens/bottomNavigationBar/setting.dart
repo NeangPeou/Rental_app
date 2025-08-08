@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_admin/controller/setting_controller.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/setting_pages/appearance.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/setting_pages/my_account.dart';
-import 'package:frontend_admin/services/auth.dart';
 import 'package:frontend_admin/shared/constants.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Setting extends StatefulWidget {
   const Setting({super.key});
@@ -14,7 +16,6 @@ class Setting extends StatefulWidget {
 }
 
 class _SettingState extends State<Setting> {
-  final AuthService _authService = AuthService();
   SettingController settingController = Get.put(SettingController());
 
   @override
@@ -51,26 +52,31 @@ class _SettingState extends State<Setting> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ElevatedButton.icon(
-              icon: Icon(Icons.logout,color: Colors.white,),
-              label: Text("Log Out", style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white),),
+              icon: Icon(Icons.logout, color: Colors.white),
+              label: Text(
+                "Log Out",
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white),
+              ),
               onPressed: () {
                 Get.defaultDialog(
                   contentPadding: EdgeInsets.all(20),
                   titlePadding: EdgeInsets.only(top: 20),
                   title: "Log Out",
                   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                  content: Text("Are you sure you to want to log out?"),
+                  content: Text("Are you sure you want to log out?"),
                   cancel: ElevatedButton(
-                    onPressed: () {
-                      _authService.signOut();
-                      Get.offAllNamed('/login');
+                    onPressed: () async {
+                      await _logout(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.redAccent,
                     ),
                     child: Center(
-                      child: Text("Log Out", style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white))
-                    )
+                      child: Text(
+                        "Log Out",
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white),
+                      ),
+                    ),
                   ),
                   confirm: ElevatedButton(
                     onPressed: () {
@@ -80,9 +86,12 @@ class _SettingState extends State<Setting> {
                       backgroundColor: Colors.grey.withAlpha(5),
                     ),
                     child: Center(
-                      child: Text("Cancel",style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white))
-                    )
-                  )
+                      child: Text(
+                        "Cancel",
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -93,6 +102,33 @@ class _SettingState extends State<Setting> {
         ],
       ),
     );
+  }
+  // logout function
+  Future<void> _logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('x-auth-token') ?? '';
+    try {
+      final response = await http.post(
+        Uri.parse('${dotenv.env['API_URL']}/api/logout'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (response.statusCode != 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Logout failed. Please try again.')),
+        );
+        return;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error during logout. Please try again.')),
+      );
+      return;
+    }
+    // Clear token and navigate to login
+    await prefs.setString('x-auth-token', '');
+    if (context.mounted) {
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    }
   }
 
   Widget _buildSectionTitle(String title) {

@@ -3,15 +3,15 @@ from datetime import datetime, timedelta
 import socket
 from fastapi import HTTPException, Request
 from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from db.models import (user, role, system_log, user_session)
 from core.security import create_access_token, create_refresh_token, get_password_hash, verify_password, SECRET_KEY, ALGORITHM
 from sqlalchemy.orm import Session
 from db.session import get_db
 from helper.hepler import log_action
 from schemas.user import LoginRequest
-from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-                                                                                                                                                                                          
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
@@ -41,15 +41,9 @@ def login_controller(request: LoginRequest, db: Session, request_obj: Request = 
             action = "LOGIN_ATTEMPT",
             log_type = "ERROR",
             message=f"Failed login attempt for username: {request.username} from {request.deviceName or 'unknown device'}",
+            host_name=request.deviceName or 'unknown'
         )
         raise HTTPException(status_code=401, detail="Invalid username or password")
-    log_action(
-        db=db,
-        user_id=users.id,
-        action="LOGIN",
-        log_type="INFO",
-        message=f"User {request.username} logged in successfully from {request.deviceName or 'unknown device'}",
-    )
 
     access_token = create_access_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
     refresh_token = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
@@ -71,7 +65,7 @@ def login_controller(request: LoginRequest, db: Session, request_obj: Request = 
         user_id=users.id,
         message=f"User {users.userName} logged in from {request.deviceName or 'unknown device'}",
         logType="INFO",
-        hostName=socket.gethostname()
+        hostName=request.deviceName or 'unknown'
     ))
     db.commit()
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
@@ -110,21 +104,33 @@ def register_controller(request: LoginRequest, db: Session):
 
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
-def logout_controller(current_user: user.User = Depends(get_current_user), db: Session = Depends(get_db)):
+def logout_controller(request: Request, db: Session):
+    auth_header = request.headers.get("Authorization")
+    user_obj = None
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ")[1]
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            username = payload.get("name")
+            if username:
+                user_obj = db.query(user.User).filter(user.User.userName == username).first()
+        except Exception:
+            pass
     try:
-        db.query(user_session.UserSession).filter(user_session.UserSession.user_id == current_user.id).delete()
+        if user_obj:
+            db.query(user_session.UserSession).filter(
+                user_session.UserSession.user_id == user_obj.id
+            ).delete()
+            log_action(
+                db=db,
+                user_id=user_obj.id,
+                action="LOGOUT",
+                log_type="INFO",
+                message=f"User {user_obj.userName} logged out successfully",
+            )
         db.commit()
+        return {"message": "Successfully logged out"}
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to logout: {str(e)}")
-
-    log_action(
-        db=db,
-        user_id=current_user.id,
-        action="LOGOUT",
-        log_type="INFO",
-        message=f"User {current_user.userName} logged out successfully",
-    )
-
-    return {"message": "Successfully logged out"}
 
