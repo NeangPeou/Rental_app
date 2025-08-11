@@ -9,7 +9,7 @@ from core.security import create_access_token, create_refresh_token, get_passwor
 from sqlalchemy.orm import Session
 from db.session import get_db
 from helper.hepler import log_action
-from schemas.user import LoginRequest
+from schemas.user import LoginRequest, RegisterUser
 from jose import JWTError, jwt
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
@@ -70,8 +70,8 @@ def login_controller(request: LoginRequest, db: Session, request_obj: Request = 
     db.commit()
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
-def register_controller(request: LoginRequest, db: Session):
-    existing_user = db.query(user.User).filter(user.User.userName == request.username).first()
+def register_controller(user_data: RegisterUser, db: Session, request_obj: Request = None):
+    existing_user = db.query(user.User).filter(user.User.userName == user_data.username).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
 
@@ -83,20 +83,23 @@ def register_controller(request: LoginRequest, db: Session):
         db.commit()
         db.refresh(roles)
 
-    hashed_password = get_password_hash(request.password)
-    users = user.User(userName=request.username, password=hashed_password, role_id=roles.id)
+    hashed_password = get_password_hash(user_data.password)
+    users = user.User(userName=user_data.username, password=hashed_password, role_id=roles.id)
     db.add(users)
     db.commit()
     db.refresh(users)
 
-    access_token = create_access_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
-    refresh_token = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
+    # Extract hostName from request_obj or use a fallback
+    ip_address = request_obj.client.host if request_obj else 'unknown'
+    host_name = user_data.deviceName if hasattr(user_data, 'deviceName') else ip_address or 'unknown'
+
     log_action(
         db=db,
         user_id=users.id,
         action="REGISTER",
         log_type="INFO",
         message=f"User {users.userName} registered successfully",
+        host_name=host_name
     )
 
     access_token = create_access_token({"sub": users.userName})
@@ -113,10 +116,12 @@ def logout_controller(request: Request, db: Session):
         if not user_obj:
             return {"message": "Successfully logged out"}  # no user found
 
-        session_data = db.query(user_session.UserSession).filter_by(user_id=user_obj.id).first()
+        session_data = db.query(user_session.UserSession).filter_by(access_token=token).first()
+        if not session_data:
+            return {"message": "Successfully logged out"}  # no session found
         host_name = session_data.deviceName or request.client.host or "unknown"
 
-        db.query(user_session.UserSession).filter_by(user_id=user_obj.id).delete()
+        db.query(user_session.UserSession).filter_by(access_token=token).delete()
         log_action(
             db=db,
             user_id=user_obj.id,
