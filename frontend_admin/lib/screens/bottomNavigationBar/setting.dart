@@ -5,6 +5,7 @@ import 'package:frontend_admin/screens/bottomNavigationBar/setting_pages/appeara
 import 'package:frontend_admin/screens/bottomNavigationBar/setting_pages/my_account.dart';
 import 'package:frontend_admin/shared/constants.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +18,7 @@ class Setting extends StatefulWidget {
 
 class _SettingState extends State<Setting> {
   SettingController settingController = Get.put(SettingController());
+  final box = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -25,32 +27,136 @@ class _SettingState extends State<Setting> {
         children: [
           SizedBox(height: 10),
           _buildSectionTitle("Account Settings"),
-          _buildSettingsTile(Icons.person, "My Account", onTap: () {
-            Get.to(() => const MyAccount(), arguments: "My Account");
-          }),
-          _buildSettingsTile(Icons.security, "Privacy & Safety", onTap: () {}),
-          _buildSettingsTile(Icons.notifications, "Notifications", onTap: () {}),
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(10)
+            ),
+            child: Column(
+              children: [
+                _buildSettingsTile(Icons.person, "My Account", onTap: () {
+                  Get.to(() => const MyAccount(), arguments: "My Account");
+                }),
+                Divider(height: 0),
+                _buildSettingsTile(Icons.security, "Privacy & Safety", onTap: () {}),
+                Divider(height: 0),
+                _buildSettingsTile(Icons.notifications, "Notifications", onTap: () {}),
+              ],
+            )
+          ),
 
           _buildSectionTitle("App Settings"),
-          _buildSettingsTile(Icons.palette, "Appearance", onTap: () {
-            Get.to(() => const Appearance(), arguments: "Appearance");
-          }),
-          Obx(() {
-            return _buildSwitchTile(
-              Icons.dark_mode,
-              "Dark Mode",
-              settingController.isDarkMode.value, (value) => settingController.toggleTheme(value),
-            );
-          }),
-          _buildSettingsTile(Icons.language, "Language", onTap: () {}),
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(10)
+            ),
+            child: Column(
+              children: [
+                _buildSettingsTile(Icons.palette, "Appearance", onTap: () {
+                  Get.to(() => const Appearance(), arguments: "Appearance");
+                }),
+                Divider(height: 0),
+                Obx(() {
+                  return _buildSwitchTile(
+                    Icons.dark_mode,
+                    "Dark Mode",
+                    settingController.isDarkMode.value ?? false,
+                        (value) => settingController.toggleTheme(value),
+                  );
+                }),
+                Divider(height: 0),
+                _buildSettingsTile(Icons.language, "Language", onTap: () {}),
+              ],
+            ),
+          ),
 
           _buildSectionTitle("Support"),
-          _buildSettingsTile(Icons.help_outline, "Help", onTap: () {}),
-          _buildSettingsTile(Icons.feedback, "Feedback", onTap: () {}),
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(10)
+            ),
+            child: Column(
+              children: [
+                _buildSettingsTile(Icons.help_outline, "Help", onTap: () {}),
+                Divider(height: 0),
+                _buildSettingsTile(Icons.feedback, "Feedback", onTap: () {}),
+              ],
+            ),
+          ),
+
+          SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: ElevatedButton.icon(
+              icon: Icon(Icons.delete_rounded, color: Colors.red),
+              label: Text(
+                "Clear Storage",
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+              onPressed: () {
+                Get.defaultDialog(
+                  contentPadding: EdgeInsets.all(20),
+                  titlePadding: EdgeInsets.only(top: 20),
+                  title: "Clear Storage",
+                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  content: Text("Are you sure you want to clear storage?"),
+                  cancel: ElevatedButton(
+                    onPressed: () async {
+                      Get.back();
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).focusColor,
+                        elevation: 0.0,
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Cancel",
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  confirm: ElevatedButton(
+                    onPressed: () {
+                      box.erase();
+                      Get.back();
+                      Get.snackbar('Success', 'Storage cleared', snackPosition: SnackPosition.BOTTOM);
+                      if (Get.isRegistered<SettingController>()) {
+                        Get.delete<SettingController>();
+                      }
+                      // Put a new instance
+                      Get.put(SettingController());
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        elevation: 0.0
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Clear",
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).cardColor,
+                elevation: 0.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ),
 
           SizedBox(height: 10),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: ElevatedButton.icon(
               icon: Icon(Icons.logout, color: Colors.white),
               label: Text(
@@ -70,6 +176,7 @@ class _SettingState extends State<Setting> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.redAccent,
+                      elevation: 0.0
                     ),
                     child: Center(
                       child: Text(
@@ -83,12 +190,13 @@ class _SettingState extends State<Setting> {
                       Get.back();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.withAlpha(5),
+                      backgroundColor: Theme.of(context).focusColor,
+                      elevation: 0.0
                     ),
                     child: Center(
                       child: Text(
                         "Cancel",
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white),
+                        style: Theme.of(context).textTheme.labelMedium,
                       ),
                     ),
                   ),
@@ -96,6 +204,10 @@ class _SettingState extends State<Setting> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
+                elevation: 0.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
           ),
@@ -133,13 +245,10 @@ class _SettingState extends State<Setting> {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
-      child: Text(title.toUpperCase(),
-          style: TextStyle(
-            color: Colors.grey,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          )
+      padding: const EdgeInsets.only(top: 20, left: 16, bottom: 5),
+      child: Text(
+          title.toUpperCase(),
+          style: Theme.of(context).textTheme.titleSmall
       ),
     );
   }
@@ -162,6 +271,5 @@ class _SettingState extends State<Setting> {
       activeColor: firstMainThemeColor,
     );
   }
-
 
 }
