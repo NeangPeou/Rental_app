@@ -16,7 +16,6 @@ class _AppearanceState extends State<Appearance> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     title = Get.arguments ?? "";
   }
