@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 from controller import authcontroller
 from db.session import get_db
-from db.models import (user)
+from db.models import (user, user_session)
 from core.security import ALGORITHM, SECRET_KEY
 from schemas.user import LoginRequest, RegisterUser, TokenResponse
 
@@ -12,8 +12,8 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 
 @router.post("/register", response_model=TokenResponse)
-def register(user_data: RegisterUser, db: Session = Depends(get_db)):
-    user = authcontroller.register_controller(user_data, db)
+def register(user_data: RegisterUser, db: Session = Depends(get_db), request_obj: Request = None):
+    user = authcontroller.register_controller(user_data, db, request_obj)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
@@ -53,6 +53,11 @@ def token_is_valid(request: Request, db: Session = Depends(get_db)):
         # Check password (hashed) against the password in token (usually NOT safe to store raw password in token)
         if password_from_token != userData.password:
             raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        # check if the access token exists in the user session 
+        session = db.query(user_session.UserSession).filter_by(access_token=token, user_id=userData.id).first()
+        if not session:
+            raise HTTPException(status_code=401, detail="Session invalid or revoked")
 
         return {
             "valid": True,

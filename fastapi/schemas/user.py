@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 class RegisterUser(BaseModel):
     username: str
     password: str
+    deviceName: str | None = None
 
 class LoginRequest(BaseModel):
     username: str
