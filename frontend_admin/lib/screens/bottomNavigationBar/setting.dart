@@ -124,7 +124,7 @@ class _SettingState extends State<Setting> {
                     onPressed: () {
                       box.erase();
                       Get.back();
-                      Get.snackbar('Success', 'Storage cleared', snackPosition: SnackPosition.BOTTOM);
+                      Get.snackbar('Success', 'Storage cleared', snackPosition: SnackPosition.TOP);
                       if (Get.isRegistered<SettingController>()) {
                         Get.delete<SettingController>();
                       }
