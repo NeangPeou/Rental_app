@@ -6,8 +6,6 @@ class SystemLog(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("t_users.id"))
     action = Column(String)
-    oldData = Column(Text)
-    newData = Column(Text)
     logType = Column(String)
     message = Column(Text)
     hostName = Column(String)
