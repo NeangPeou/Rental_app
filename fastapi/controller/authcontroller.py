@@ -105,31 +105,30 @@ def register_controller(request: LoginRequest, db: Session):
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
 def logout_controller(request: Request, db: Session):
-    auth_header = request.headers.get("Authorization")
-    user_obj = None
-    if auth_header and auth_header.startswith("Bearer "):
-        token = auth_header.split(" ")[1]
-        try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            username = payload.get("name")
-            if username:
-                user_obj = db.query(user.User).filter(user.User.userName == username).first()
-        except Exception:
-            pass
     try:
-        if user_obj:
-            db.query(user_session.UserSession).filter(
-                user_session.UserSession.user_id == user_obj.id
-            ).delete()
-            log_action(
-                db=db,
-                user_id=user_obj.id,
-                action="LOGOUT",
-                log_type="INFO",
-                message=f"User {user_obj.userName} logged out successfully",
-            )
+        token = request.headers.get("Authorization", "").replace("Bearer ", "")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_obj = db.query(user.User).filter_by(userName=payload.get("name")).first()
+
+        if not user_obj:
+            return {"message": "Successfully logged out"}  # no user found
+
+        session_data = db.query(user_session.UserSession).filter_by(user_id=user_obj.id).first()
+        host_name = session_data.deviceName or request.client.host or "unknown"
+
+        db.query(user_session.UserSession).filter_by(user_id=user_obj.id).delete()
+        log_action(
+            db=db,
+            user_id=user_obj.id,
+            action="LOGOUT",
+            log_type="INFO",
+            message=f"User {user_obj.userName} logged out successfully from {host_name}",
+            host_name=host_name
+        )
+
         db.commit()
         return {"message": "Successfully logged out"}
+
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to logout: {str(e)}")
