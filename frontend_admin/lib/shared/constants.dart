@@ -11,7 +11,7 @@ ThemeData lightTheme() {
   return ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
-    scaffoldBackgroundColor: Colors.white.withAlpha(200),
+    scaffoldBackgroundColor: Color(0xFFF0F4F8),
     cardColor: Colors.white,
     textTheme: const TextTheme(bodyLarge: TextStyle(color: Colors.black)),
     appBarTheme: AppBarTheme(
@@ -33,8 +33,8 @@ ThemeData darkTheme() {
   return ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: Colors.black,
-    cardColor: Colors.white10,
+    scaffoldBackgroundColor: Colors.grey[900],
+    cardColor: Colors.grey[850],
     textTheme: const TextTheme(bodyLarge: TextStyle(color: Colors.white)),
     appBarTheme: AppBarTheme(
       backgroundColor: firstMainThemeColor,
