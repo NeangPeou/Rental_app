@@ -25,7 +25,7 @@ class _AppearanceState extends State<Appearance> {
     return Scaffold(
       appBar: Helper.sampleAppBar(title, context, null),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         children: [
           Container(
             height: Get.height * .2,
@@ -64,6 +64,10 @@ class _AppearanceState extends State<Appearance> {
                     onPressed: () {
                       Get.snackbar("title", "message");
                     },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).focusColor,
+                        elevation: 0.0
+                    ),
                     child: Text("Reset to default", style: Theme.of(context).textTheme.labelLarge),
                   ),
                 ),
@@ -111,6 +115,10 @@ class _AppearanceState extends State<Appearance> {
                     onPressed: () {
                       Get.snackbar("title", "message");
                     },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).focusColor,
+                        elevation: 0.0
+                    ),
                     child: Text("Reset to default", style: Theme.of(context).textTheme.labelLarge),
                   ),
                 ),

@@ -67,110 +67,112 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text("Admin Rental", style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.amber)),
-          ),
-          const SizedBox(height: 20),
+    return Scaffold(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Text("Admin Rental", style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.amber)),
+            ),
+            const SizedBox(height: 20),
 
-          // Summary cards
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: _buildSummaryCard("Total Revenue", "\$8,250", "+15.2% this month", Colors.green),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildSummaryCard("Cars", "120", "85 rented"),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildSummaryCard("Customers", "1,340", "120 new this month"),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: Theme.of(context).cardColor,
-                  ),
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Revenue Chart", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green)),
-                      const Expanded(
-                        child: Center(
-                          child: Text("\$ Chart"),
-                        ),
-                      ),
-                    ],
-                  ),
+            // Summary cards
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: _buildSummaryCard("Total Revenue", "\$8,250", "+15.2% this month", Colors.green),
                 ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 24),
-          const Text("Recent Orders", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-
-          ...orders.map((order) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: AssetImage(order['image']),
-                    radius: 22,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildSummaryCard("Cars", "120", "85 rented"),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildSummaryCard("Customers", "1,340", "120 new this month"),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: Theme.of(context).cardColor,
+                    ),
+                    padding: const EdgeInsets.all(12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(order['car'], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                        Text(order['user'], style: const TextStyle(color: Colors.black54)),
+                        Text("Revenue Chart", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green)),
+                        const Expanded(
+                          child: Center(
+                            child: Text("\$ Chart"),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(order['date'], style: const TextStyle(fontSize: 13)),
-                      Container(
-                        margin: const EdgeInsets.only(top: 4),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: order['statusColor'].withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          order['status'],
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: order['statusColor'],
-                            fontWeight: FontWeight.w500,
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+            const Text("Recent Orders", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+
+            ...orders.map((order) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: AssetImage(order['image']),
+                      radius: 22,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(order['car'], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                          Text(order['user'], style: const TextStyle(color: Colors.black54)),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(order['date'], style: const TextStyle(fontSize: 13)),
+                        Container(
+                          margin: const EdgeInsets.only(top: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: order['statusColor'].withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            order['status'],
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: order['statusColor'],
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            );
-          }),
-        ],
+                      ],
+                    )
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }

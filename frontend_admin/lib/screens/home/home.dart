@@ -23,8 +23,8 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final List<Widget> pages = <Widget>[
       Dashboard(),
-      Center(child: Text('Orders Page')),      // placeholder
-      Center(child: Text('Cars Page')),        // placeholder
+      Scaffold(body: Center(child: Text('Orders Page')),),      // placeholder
+      Scaffold(body: Center(child: Text('Cars Page')),),        // placeholder
       Setting(),
     ];
 
