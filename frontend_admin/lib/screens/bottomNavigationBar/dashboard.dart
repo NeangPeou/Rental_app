@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
@@ -9,58 +10,53 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   final List<Map<String, dynamic>> orders = [
     {
-      "car": "Toyota Camry",
-      "user": "Jonn Doe",
-      "date": "Apr 12 – Apr 15",
+      "car": "Luxury Villa",
+      "user": "John Doe",
+      "date": "Aug 01 – Aug 05",
       "status": "Completed",
       "statusColor": Colors.green,
-      "image": "assets/images/facebook.png"
+      "image": "assets/images/house.png"
     },
     {
-      "car": "Honda Civic",
+      "car": "Beach Condo",
       "user": "Jane Smith",
-      "date": "Apr 10 – Apr 12",
-      "status": "Completed",
-      "statusColor": Colors.green,
-      "image": "assets/images/city.png"
-    },
-    {
-      "car": "Ford Explorer",
-      "user": "Michael Brown",
-      "date": "Apr 05 – Apr 10",
+      "date": "Aug 02 – Aug 06",
       "status": "Ongoing",
       "statusColor": Colors.blue,
-      "image": "assets/images/google.png"
+      "image": "assets/images/condo.png"
     },
     {
-      "car": "BMW 3 Series",
-      "user": "Emily Wilson",
-      "date": "Apr 01 – Apr 04",
+      "car": "City Apartment",
+      "user": "Michael Brown",
+      "date": "Aug 03 – Aug 07",
       "status": "Completed",
       "statusColor": Colors.green,
-      "image": "assets/images/apple.png"
+      "image": "assets/images/apartment.png"
     },
   ];
 
-  Widget _buildSummaryCard(String title, String value, [String? subtitle, Color? valueColor]) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Theme.of(context).cardColor,
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title,
-              style: const TextStyle(fontSize: 14, color: Colors.black54)),
-          const SizedBox(height: 6),
-          Text(value,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: valueColor ?? Colors.black)),
-          if (subtitle != null)
-            Text(subtitle,
-                style: const TextStyle(fontSize: 13, color: Colors.green)),
-        ],
+  Widget _buildStatCard(String title, String value, IconData icon) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 28, color: Colors.blue),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(title, style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ),
       ),
     );
   }
@@ -68,67 +64,52 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Text("Admin Rental", style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.amber)),
-            ),
-            const SizedBox(height: 20),
+            Text("Dashboard",
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
 
-            // Summary cards
+            // Stats Row
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: _buildSummaryCard("Total Revenue", "\$8,250", "+15.2% this month", Colors.green),
-                ),
+                _buildStatCard("Properties", "15", Icons.home),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: _buildSummaryCard("Cars", "120", "85 rented"),
-                ),
+                _buildStatCard("Bookings", "03", Icons.calendar_month),
               ],
             ),
             const SizedBox(height: 12),
             Row(
               children: [
-                Expanded(
-                  child: _buildSummaryCard("Customers", "1,340", "120 new this month"),
-                ),
+                _buildStatCard("Requests", "02", Icons.message),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: Container(
-                    height: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: Theme.of(context).cardColor,
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Revenue Chart", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green)),
-                        const Expanded(
-                          child: Center(
-                            child: Text("\$ Chart"),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                _buildStatCard("Users", "10", Icons.person),
               ],
             ),
 
             const SizedBox(height: 24),
-            const Text("Recent Orders", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("Recent Orders",
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
 
             ...orders.map((order) {
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Row(
                   children: [
                     CircleAvatar(
@@ -140,18 +121,25 @@ class _DashboardState extends State<Dashboard> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(order['car'], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                          Text(order['user'], style: const TextStyle(color: Colors.black54)),
+                          Text(order['car'],
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(fontWeight: FontWeight.w600)),
+                          Text(order['user'],
+                              style: Theme.of(context).textTheme.bodySmall),
                         ],
                       ),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(order['date'], style: const TextStyle(fontSize: 13)),
+                        Text(order['date'],
+                            style: Theme.of(context).textTheme.bodySmall),
                         Container(
                           margin: const EdgeInsets.only(top: 4),
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: order['statusColor'].withOpacity(0.15),
                             borderRadius: BorderRadius.circular(8),
