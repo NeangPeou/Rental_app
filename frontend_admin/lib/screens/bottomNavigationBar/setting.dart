@@ -100,6 +100,7 @@ class _SettingState extends State<Setting> {
               ),
               onPressed: () {
                 Get.defaultDialog(
+                  radius: 10,
                   contentPadding: EdgeInsets.all(20),
                   titlePadding: EdgeInsets.only(top: 20),
                   title: "Clear Storage",
@@ -116,7 +117,7 @@ class _SettingState extends State<Setting> {
                     child: Center(
                       child: Text(
                         "Cancel",
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white),
+                        style: Theme.of(context).textTheme.labelMedium,
                       ),
                     ),
                   ),
@@ -125,11 +126,8 @@ class _SettingState extends State<Setting> {
                       box.erase();
                       Get.back();
                       Get.snackbar('Success', 'Storage cleared', snackPosition: SnackPosition.TOP);
-                      if (Get.isRegistered<SettingController>()) {
-                        Get.delete<SettingController>();
-                      }
-                      // Put a new instance
-                      Get.put(SettingController());
+
+                      settingController.clearStorage();
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.redAccent,
@@ -165,6 +163,7 @@ class _SettingState extends State<Setting> {
               ),
               onPressed: () {
                 Get.defaultDialog(
+                  radius: 10,
                   contentPadding: EdgeInsets.all(20),
                   titlePadding: EdgeInsets.only(top: 20),
                   title: "Log Out",
