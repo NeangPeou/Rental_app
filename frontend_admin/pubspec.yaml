@@ -41,6 +41,15 @@ dependencies:
   flutter_spinkit: ^5.2.1
   get_storage: ^2.0.3
   device_info_plus: ^11.5.0
+  flutter_colorpicker: ^1.1.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path_android: "assets/app_icon/sw_logo.png"
+  image_path_ios: "assets/app_icon/sw_logo.png"
+  adaptive_icon_background: "#12244f"
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +76,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/app_icon/
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
