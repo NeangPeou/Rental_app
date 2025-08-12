@@ -5,7 +5,6 @@ import 'package:frontend_admin/screens/authenticate/login.dart';
 import 'package:frontend_admin/screens/home/home.dart';
 import 'package:frontend_admin/screens/wrapper.dart';
 import 'package:frontend_admin/shared/constants.dart';
-import 'package:frontend_admin/storage/storage_keys.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -23,17 +22,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      themeMode: _settingController.box.hasData(StorageKeys.isDarkMode) ? (_settingController.isDarkMode.value == true ? ThemeMode.dark : ThemeMode.light) : ThemeMode.system,
-      theme: lightTheme(),
-      darkTheme: darkTheme(),
-      getPages: [
-        GetPage(name: '/', page: () => const Wrapper()),
-        GetPage(name: '/login', page: () => const Login()),
-        GetPage(name: '/home', page: () => const Home()),
-      ],
-    );
+    return Obx(() {
+      final isDark = _settingController.isDarkMode.value ?? false;
+      final selectedColor = _settingController.selectedColor.value;
+
+      return GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        initialRoute: '/',
+        themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+        theme: lightTheme(selectedColor),
+        darkTheme: darkTheme(selectedColor),
+        getPages: [
+          GetPage(name: '/', page: () => const Wrapper()),
+          GetPage(name: '/login', page: () => const Login()),
+          GetPage(name: '/home', page: () => const Home()),
+        ],
+      );
+    });
   }
 }
