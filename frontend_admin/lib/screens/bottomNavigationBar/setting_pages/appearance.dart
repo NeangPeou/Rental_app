@@ -67,10 +67,10 @@ class _AppearanceState extends State<Appearance> {
                           Expanded(
                             child: CupertinoSlider(
                               min: 50,
-                              max: 200,
+                              max: 150,
                               divisions: 50,
                               value: settingController.contrast.value * 100,
-                              activeColor: CupertinoColors.systemBlue,
+                              activeColor: settingController.selectedColor.value,
                               thumbColor: Colors.white,
                               onChanged: (val) {
                                 settingController.setContrast(val / 100);
@@ -86,6 +86,7 @@ class _AppearanceState extends State<Appearance> {
                   width: Get.width,
                   child: ElevatedButton(
                     onPressed: () {
+                      settingController.setContrast(1.0);
                       Get.snackbar("title", "message");
                     },
                     style: ElevatedButton.styleFrom(
@@ -131,10 +132,10 @@ class _AppearanceState extends State<Appearance> {
                           Expanded(
                             child: CupertinoSlider(
                               min: 50,
-                              max: 200,
+                              max: 150,
                               divisions: 50,
                               value: settingController.saturation.value * 100,
-                              activeColor: CupertinoColors.systemBlue,
+                              activeColor: settingController.selectedColor.value,
                               thumbColor: Colors.white,
                               onChanged: (val) {
                                 settingController.setSaturation(val / 100);
@@ -150,11 +151,9 @@ class _AppearanceState extends State<Appearance> {
                   width: Get.width,
                   child: ElevatedButton(
                     onPressed: () {
+                      settingController.setSaturation(1.0);
                       Get.snackbar("title", "message");
                     },
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0.0,
-                    ),
                     child: Text(
                       "Reset to default",
                       style: Theme.of(context).textTheme.labelLarge,
