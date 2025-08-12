@@ -45,61 +45,69 @@ class _HomeState extends State<Home> {
       appBar: Helper.sampleAppBar(_titles[_controller.index], context, null),
       body: _pages[_controller.index],
       extendBody: true,
-      bottomNavigationBar: ClipRRect(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-                width: 1,
+      bottomNavigationBar: SafeArea(
+        bottom: false,
+        child: ClipRRect(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.08),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.2),
+                  width: 1,
+                ),
               ),
-            ),
-            child: AnimatedNotchBottomBar(
-              notchBottomBarController: _controller,
-              color: Colors.teal,
-              showLabel: true,
-              notchColor: Colors.amber.withOpacity(0.7),
-              removeMargins: false,
-              bottomBarWidth: MediaQuery.of(context).size.width,
-              durationInMilliSeconds: 300,
-              kIconSize: 24.0,
-              kBottomRadius: 16.0,
-              itemLabelStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).padding.bottom,
+                ),
+                child: AnimatedNotchBottomBar(
+                  notchBottomBarController: _controller,
+                  color: Colors.teal,
+                  showLabel: true,
+                  notchColor: Colors.amber.withOpacity(0.7),
+                  removeMargins: false,
+                  bottomBarWidth: MediaQuery.of(context).size.width,
+                  durationInMilliSeconds: 300,
+                  kIconSize: 24.0,
+                  kBottomRadius: 16.0,
+                  itemLabelStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  bottomBarItems: [
+                    BottomBarItem(
+                      inActiveItem: buildIcon(Icons.home, false),
+                      activeItem: buildIcon(Icons.home, true),
+                      itemLabel: 'Home',
+                    ),
+                    BottomBarItem(
+                      inActiveItem: buildIcon(Icons.list_alt, false),
+                      activeItem: buildIcon(Icons.list_alt, true),
+                      itemLabel: 'Orders',
+                    ),
+                    BottomBarItem(
+                      inActiveItem: buildIcon(Icons.directions_car, false),
+                      activeItem: buildIcon(Icons.directions_car, true),
+                      itemLabel: 'Cars',
+                    ),
+                    BottomBarItem(
+                      inActiveItem: buildIcon(Icons.settings, false),
+                      activeItem: buildIcon(Icons.settings, true),
+                      itemLabel: 'Setting',
+                    ),
+                  ],
+                  onTap: (index) {
+                    setState(() {
+                      _controller.index = index;
+                    });
+                  },
+                ),
               ),
-              bottomBarItems: [
-                BottomBarItem(
-                  inActiveItem: buildIcon(Icons.home, false),
-                  activeItem: buildIcon(Icons.home, true),
-                  itemLabel: 'Home',
-                ),
-                BottomBarItem(
-                  inActiveItem: buildIcon(Icons.list_alt, false),
-                  activeItem: buildIcon(Icons.list_alt, true),
-                  itemLabel: 'Orders',
-                ),
-                BottomBarItem(
-                  inActiveItem: buildIcon(Icons.directions_car, false),
-                  activeItem: buildIcon(Icons.directions_car, true),
-                  itemLabel: 'Cars',
-                ),
-                BottomBarItem(
-                  inActiveItem: buildIcon(Icons.settings, false),
-                  activeItem: buildIcon(Icons.settings, true),
-                  itemLabel: 'Setting',
-                ),
-              ],
-              onTap: (index) {
-                setState(() {
-                  _controller.index = index;
-                });
-              },
             ),
           ),
         ),
