@@ -87,7 +87,6 @@ class _AppearanceState extends State<Appearance> {
                   child: ElevatedButton(
                     onPressed: () {
                       settingController.setContrast(1.0);
-                      Get.snackbar("title", "message");
                     },
                     style: ElevatedButton.styleFrom(
                       elevation: 0.0,
@@ -131,7 +130,7 @@ class _AppearanceState extends State<Appearance> {
                         children: [
                           Expanded(
                             child: CupertinoSlider(
-                              min: 50,
+                              min: 0,
                               max: 150,
                               divisions: 50,
                               value: settingController.saturation.value * 100,
@@ -152,7 +151,6 @@ class _AppearanceState extends State<Appearance> {
                   child: ElevatedButton(
                     onPressed: () {
                       settingController.setSaturation(1.0);
-                      Get.snackbar("title", "message");
                     },
                     child: Text(
                       "Reset to default",

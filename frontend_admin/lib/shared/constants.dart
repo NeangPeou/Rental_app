@@ -14,117 +14,104 @@ InputDecoration textInputDecoration = InputDecoration(
 );
 
 ThemeData lightTheme([Color? primaryColor]) {
+  final contrast = settingController.contrast.value;
+  final saturation = settingController.saturation.value;
   final baseTextTheme = ThemeData.light().textTheme;
-  final contrastedTextTheme = applyContrastToTextTheme(
-    baseTextTheme,
-    Colors.black,
-    settingController.contrast.value,
-  );
+  final contrastedTextTheme = applyContrastToTextTheme(baseTextTheme, Colors.black, contrast, saturation);
 
   return ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
-    scaffoldBackgroundColor: adjustColorContrast(Color(0xFFF0F4F8), settingController.contrast.value),
-    cardColor: settingController.box.hasData(StorageKeys.selectedColor) ? adjustColorContrast(settingController.selectedColor.value.withAlpha(70), settingController.contrast.value) : adjustColorContrast(Colors.white, settingController.contrast.value),
+    scaffoldBackgroundColor: adjustColor(Color(0xFFF0F4F8), contrast, saturation),
+    cardColor: adjustColor(settingController.box.hasData(StorageKeys.selectedColor) ? settingController.selectedColor.value.withAlpha(70) : Colors.white, contrast, saturation),
     textTheme: contrastedTextTheme,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: settingController.box.hasData(StorageKeys.selectedColor) ? adjustColorContrast(settingController.selectedColor.value, settingController.contrast.value) : adjustColorContrast(Colors.teal, settingController.contrast.value),
-        foregroundColor: adjustColorContrast(Colors.black, settingController.contrast.value),
-        textStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
-          inherit: true,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        backgroundColor: adjustColor(settingController.box.hasData(StorageKeys.selectedColor) ? settingController.selectedColor.value : Colors.teal, contrast, saturation),
+        foregroundColor: adjustColor(Colors.black, contrast, saturation),
+        textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, inherit: true),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         elevation: 0.0,
       ),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: adjustColorContrast(firstMainThemeColor, settingController.contrast.value),
-      foregroundColor: adjustColorContrast(Colors.black, settingController.contrast.value),
+      backgroundColor: adjustColor(firstMainThemeColor, contrast, saturation),
+      foregroundColor: adjustColor(Colors.black, contrast, saturation),
       elevation: 0,
-      centerTitle: true
+      centerTitle: true,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: adjustColorContrast(firstMainThemeColor, settingController.contrast.value),
-      selectedItemColor: adjustColorContrast(Colors.amber, settingController.contrast.value),
-      unselectedItemColor: adjustColorContrast(Colors.white, settingController.contrast.value),
+      backgroundColor: adjustColor(firstMainThemeColor, contrast, saturation),
+      selectedItemColor: adjustColor(Colors.amber, contrast, saturation),
+      unselectedItemColor: adjustColor(Colors.white, contrast, saturation),
       elevation: 0.0,
     ),
   );
 }
 
 ThemeData darkTheme([Color? primaryColor]) {
+  final contrast = settingController.contrast.value;
+  final saturation = settingController.saturation.value;
   final baseTextTheme = ThemeData.dark().textTheme;
-  final contrastedTextTheme = applyContrastToTextTheme(
-    baseTextTheme,
-    Colors.white,
-    settingController.contrast.value,
-  );
+  final contrastedTextTheme = applyContrastToTextTheme(baseTextTheme, Colors.white, contrast, saturation);
 
   return ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: adjustColorContrast(Colors.grey[900]!, settingController.contrast.value),
-    cardColor: settingController.box.hasData(StorageKeys.selectedColor) ? adjustColorContrast(settingController.selectedColor.value.withAlpha(70), settingController.contrast.value) : adjustColorContrast(Colors.grey[850]!, settingController.contrast.value),
+    scaffoldBackgroundColor: adjustColor(Color(0xFF2C2F33), contrast, saturation),
+    cardColor: adjustColor(settingController.box.hasData(StorageKeys.selectedColor) ? settingController.selectedColor.value.withAlpha(70) : Colors.grey[850]!, contrast, saturation),
     textTheme: contrastedTextTheme,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: settingController.box.hasData(StorageKeys.selectedColor) ? adjustColorContrast(settingController.selectedColor.value, settingController.contrast.value) : adjustColorContrast(Colors.teal, settingController.contrast.value),
-        foregroundColor: adjustColorContrast(Colors.white, settingController.contrast.value),
-        textStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
-          inherit: true,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        backgroundColor: adjustColor(settingController.box.hasData(StorageKeys.selectedColor) ? settingController.selectedColor.value : Colors.teal, contrast, saturation),
+        foregroundColor: adjustColor(Colors.white, contrast, saturation),
+        textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, inherit: true),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         elevation: 0.0,
       ),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: adjustColorContrast(firstMainThemeColor, settingController.contrast.value),
-      foregroundColor: adjustColorContrast(Colors.white, settingController.contrast.value),
+      backgroundColor: adjustColor(firstMainThemeColor, contrast, saturation),
+      foregroundColor: adjustColor(Colors.white, contrast, saturation),
       elevation: 0,
-      centerTitle: true
+      centerTitle: true,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: adjustColorContrast(firstMainThemeColor, settingController.contrast.value),
-      selectedItemColor: adjustColorContrast(Colors.amber, settingController.contrast.value),
-      unselectedItemColor: adjustColorContrast(Colors.white, settingController.contrast.value),
-      elevation: 0.0
+      backgroundColor: adjustColor(firstMainThemeColor, contrast, saturation),
+      selectedItemColor: adjustColor(Colors.amber, contrast, saturation),
+      unselectedItemColor: adjustColor(Colors.white, contrast, saturation),
+      elevation: 0.0,
     ),
   );
 }
 
-Color adjustColorContrast(Color color, double contrast) {
+Color adjustColor(Color color, double contrast, double saturation) {
   contrast = contrast.clamp(0.5, 2.0);
 
-  int adjust(int value) {
+  int adjustComponent(int value) {
     final factor = (value - 128) * contrast + 128;
     return factor.clamp(0, 255).toInt();
   }
 
-  return Color.fromARGB(
+  final contrastedColor = Color.fromARGB(
     color.alpha,
-    adjust(color.red),
-    adjust(color.green),
-    adjust(color.blue),
+    adjustComponent(color.red),
+    adjustComponent(color.green),
+    adjustComponent(color.blue),
   );
+
+  final hsl = HSLColor.fromColor(contrastedColor);
+  final saturated = hsl.withSaturation((hsl.saturation * saturation).clamp(0.0, 1.0));
+  return saturated.toColor();
 }
 
-TextTheme applyContrastToTextTheme(TextTheme base, Color baseColor, double contrast) {
-  Color adjustedColor = adjustColorContrast(baseColor, contrast);
+TextTheme applyContrastToTextTheme(TextTheme base, Color baseColor, double contrast, double saturation) {
+  final adjustedColor = adjustColor(baseColor, contrast, saturation);
 
   TextStyle? applyColor(TextStyle? style) {
-    if (style == null) return null;
-    return style.copyWith(color: adjustedColor);
+    return style?.copyWith(color: adjustedColor);
   }
 
   return base.copyWith(
@@ -145,3 +132,4 @@ TextTheme applyContrastToTextTheme(TextTheme base, Color baseColor, double contr
     labelSmall: applyColor(base.labelSmall),
   );
 }
+

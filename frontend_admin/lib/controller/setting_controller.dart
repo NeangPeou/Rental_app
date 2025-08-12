@@ -20,6 +20,9 @@ class SettingController extends GetxController {
   void onInit() {
     super.onInit();
 
+    // is called whenever either changes
+    everAll([contrast, saturation], (_) => applyTheme());
+
     // Load saved dark mode or determine from system
     if (box.hasData(StorageKeys.isDarkMode)) {
       isDarkMode.value = box.read(StorageKeys.isDarkMode);
