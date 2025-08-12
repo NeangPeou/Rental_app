@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/dashboard.dart';
+import 'package:frontend_admin/screens/bottomNavigationBar/notification_page.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/setting.dart';
 import 'package:frontend_admin/utils/helper.dart';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
@@ -25,17 +26,17 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final NotchBottomBarController _controller = NotchBottomBarController(index: 0);
 
-  final List<Widget> _pages = const [
+  final List<Widget> _pages = [
     Dashboard(),
     Scaffold(body: Center(child: Text('Orders Page'))),
-    Scaffold(body: Center(child: Text('Cars Page'))),
+    NotificationPage(),
     Setting(),
   ];
 
   final List<String> _titles = [
     'Home',
     'Orders',
-    'Cars',
+    'Notifications',
     'Setting',
   ];
 
@@ -91,9 +92,9 @@ class _HomeState extends State<Home> {
                       itemLabel: 'Orders',
                     ),
                     BottomBarItem(
-                      inActiveItem: buildIcon(Icons.directions_car, false),
-                      activeItem: buildIcon(Icons.directions_car, true),
-                      itemLabel: 'Cars',
+                      inActiveItem: buildIcon(Icons.notifications_active, false),
+                      activeItem: buildIcon(Icons.notifications_active, true),
+                      itemLabel: 'Notifications',
                     ),
                     BottomBarItem(
                       inActiveItem: buildIcon(Icons.settings, false),
