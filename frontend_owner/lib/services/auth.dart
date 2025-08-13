@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend_admin/models/error.dart';
-import 'package:frontend_admin/utils/helper.dart';
+import 'package:sw_rental/models/error.dart';
+import 'package:sw_rental/utils/helper.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';

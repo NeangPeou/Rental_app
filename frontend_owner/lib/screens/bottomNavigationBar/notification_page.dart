@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_admin/controller/notification_controller.dart';
+import 'package:sw_rental/controller/notification_controller.dart';
 import 'package:get/get.dart';
 
 class NotificationPage extends StatelessWidget {

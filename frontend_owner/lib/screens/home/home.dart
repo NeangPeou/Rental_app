@@ -1,11 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:frontend_admin/screens/bottomNavigationBar/dashboard.dart';
-import 'package:frontend_admin/screens/bottomNavigationBar/notification_page.dart';
-import 'package:frontend_admin/screens/bottomNavigationBar/setting.dart';
-import 'package:frontend_admin/screens/bottomNavigationBar/userForm/user_form.dart';
-import 'package:frontend_admin/utils/helper.dart';
+import 'package:sw_rental/screens/bottomNavigationBar/dashboard.dart';
+import 'package:sw_rental/screens/bottomNavigationBar/notification_page.dart';
+import 'package:sw_rental/screens/bottomNavigationBar/setting.dart';
+import 'package:sw_rental/screens/bottomNavigationBar/userForm/user_form.dart';
+import 'package:sw_rental/utils/helper.dart';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:get/get.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_admin/shared/constants.dart';
+import 'package:sw_rental/shared/constants.dart';
 
 class MessageDialog {
   static void showMessage(String title, String message, BuildContext context) {

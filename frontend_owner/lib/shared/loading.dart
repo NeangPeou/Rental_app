@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:frontend_admin/shared/constants.dart';
+import 'package:sw_rental/shared/constants.dart';
 
 class Loading extends StatelessWidget {
   const Loading({super.key});

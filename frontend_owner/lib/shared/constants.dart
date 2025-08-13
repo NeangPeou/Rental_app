@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_admin/controller/setting_controller.dart';
+import 'package:sw_rental/controller/setting_controller.dart';
 import 'package:get/get.dart';
 
 import '../storage/storage_keys.dart';

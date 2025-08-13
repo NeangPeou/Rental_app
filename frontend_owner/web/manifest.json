@@ -1,6 +1,6 @@
 {
-    "name": "frontend_admin",
-    "short_name": "frontend_admin",
+    "name": "sw_rental",
+    "short_name": "sw_rental",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

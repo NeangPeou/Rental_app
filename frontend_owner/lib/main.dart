@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend_admin/controller/setting_controller.dart';
-import 'package:frontend_admin/screens/authenticate/login.dart';
-import 'package:frontend_admin/screens/home/home.dart';
-import 'package:frontend_admin/screens/wrapper.dart';
-import 'package:frontend_admin/shared/constants.dart';
+import 'package:sw_rental/controller/setting_controller.dart';
+import 'package:sw_rental/screens/authenticate/login.dart';
+import 'package:sw_rental/screens/home/home.dart';
+import 'package:sw_rental/screens/wrapper.dart';
+import 'package:sw_rental/shared/constants.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 

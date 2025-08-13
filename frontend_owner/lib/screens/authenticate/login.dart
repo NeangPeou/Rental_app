@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_admin/models/error.dart';
-import 'package:frontend_admin/services/auth.dart';
-import 'package:frontend_admin/shared/message_dialog.dart';
-import 'package:frontend_admin/utils/helper.dart';
+import 'package:sw_rental/models/error.dart';
+import 'package:sw_rental/services/auth.dart';
+import 'package:sw_rental/shared/message_dialog.dart';
+import 'package:sw_rental/utils/helper.dart';
 import 'package:get/get.dart';
 
 class Login extends StatefulWidget {

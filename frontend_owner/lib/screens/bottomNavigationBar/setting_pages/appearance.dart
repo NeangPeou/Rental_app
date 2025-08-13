@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:frontend_admin/controller/setting_controller.dart';
-import 'package:frontend_admin/utils/helper.dart';
+import 'package:sw_rental/controller/setting_controller.dart';
+import 'package:sw_rental/utils/helper.dart';
 import 'package:get/get.dart';
 
 class Appearance extends StatefulWidget {

@@ -1,4 +1,4 @@
-package com.example.frontend_admin
+package com.example.sw_rental
 
 import io.flutter.embedding.android.FlutterActivity
 

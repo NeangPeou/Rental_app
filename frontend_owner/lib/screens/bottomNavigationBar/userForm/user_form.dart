@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_admin/controller/user_contoller.dart';
-import 'package:frontend_admin/utils/helper.dart';
+import 'package:sw_rental/controller/user_contoller.dart';
+import 'package:sw_rental/utils/helper.dart';
 import 'package:get/get.dart';
 
 class UserForm extends StatefulWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_admin/models/error.dart';
-import 'package:frontend_admin/screens/authenticate/login.dart';
-import 'package:frontend_admin/screens/home/home.dart';
-import 'package:frontend_admin/services/auth.dart';
-import 'package:frontend_admin/shared/loading.dart';
+import 'package:sw_rental/models/error.dart';
+import 'package:sw_rental/screens/authenticate/login.dart';
+import 'package:sw_rental/screens/home/home.dart';
+import 'package:sw_rental/services/auth.dart';
+import 'package:sw_rental/shared/loading.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
