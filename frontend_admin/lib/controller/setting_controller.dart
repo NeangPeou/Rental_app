@@ -15,13 +15,14 @@ class SettingController extends GetxController {
   RxDouble contrast = 1.0.obs;
   Rx<Color> selectedColor = Rx<Color>(defaultThemeColor);
   late bool isSystemDark;
+  RxDouble fontSize = 1.0.obs;
 
   @override
   void onInit() {
     super.onInit();
 
     // is called whenever either changes
-    everAll([contrast, saturation], (_) => applyTheme());
+    everAll([contrast, saturation, fontSize], (_) => applyTheme());
 
     // Load saved dark mode or determine from system
     if (box.hasData(StorageKeys.isDarkMode)) {
@@ -45,6 +46,7 @@ class SettingController extends GetxController {
     // Load saturation and contrast
     saturation.value = box.read(StorageKeys.saturation) ?? 1.0;
     contrast.value = box.read(StorageKeys.contrast) ?? 1.0;
+    fontSize.value = box.read(StorageKeys.fontSize) ?? 1.0;
 
     // Listen to system brightness changes
     PlatformDispatcher.instance.onPlatformBrightnessChanged = () {
@@ -98,6 +100,14 @@ class SettingController extends GetxController {
     Get.changeThemeMode(dark ? ThemeMode.dark : ThemeMode.light);
   }
 
+  void setFontSize(double value) {
+    fontSize.value = value;
+    box.write(StorageKeys.fontSize, value);
+    applyTheme();
+  }
+
+  void resetFontSize() => setFontSize(1.0);
+
   // Clear all stored settings
   Future<void> clearStorage() async {
     await box.erase();
@@ -110,6 +120,7 @@ class SettingController extends GetxController {
     selectedColor.value = defaultThemeColor;
     saturation.value = 1.0;
     contrast.value = 1.0;
+    fontSize.value = 1.0;
 
     applyTheme();
   }
