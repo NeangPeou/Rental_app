@@ -7,7 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_admin/controller/setting_controller.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/setting_pages/appearance.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/setting_pages/my_account.dart';
-import 'package:frontend_admin/shared/constants.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;

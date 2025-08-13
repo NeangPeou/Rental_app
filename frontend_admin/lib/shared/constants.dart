@@ -23,7 +23,8 @@ ThemeData lightTheme([Color? primaryColor]) {
     useMaterial3: true,
     brightness: Brightness.light,
     scaffoldBackgroundColor: adjustColor(Color(0xFFF0F4F8), contrast, saturation),
-    cardColor: adjustColor(settingController.box.hasData(StorageKeys.selectedColor) ? settingController.selectedColor.value.withAlpha(70) : Colors.white, contrast, saturation),
+    cardColor: adjustColor(settingController.box.hasData(StorageKeys.selectedColor) ? settingController.selectedColor.value.withAlpha(100) : Colors.white, contrast, saturation),
+    secondaryHeaderColor: adjustColor(settingController.selectedColor.value != SettingController.defaultThemeColor ? settingController.selectedColor.value: firstMainThemeColor, contrast, saturation),
     textTheme: contrastedTextTheme,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -61,6 +62,7 @@ ThemeData darkTheme([Color? primaryColor]) {
     brightness: Brightness.dark,
     scaffoldBackgroundColor: adjustColor(Color(0xFF2C2F33), contrast, saturation),
     cardColor: adjustColor(settingController.box.hasData(StorageKeys.selectedColor) ? settingController.selectedColor.value.withAlpha(70) : Colors.grey[850]!, contrast, saturation),
+    secondaryHeaderColor: adjustColor(settingController.selectedColor.value != SettingController.defaultThemeColor ? settingController.selectedColor.value: firstMainThemeColor, contrast, saturation),
     textTheme: contrastedTextTheme,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(

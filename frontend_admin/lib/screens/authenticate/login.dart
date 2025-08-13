@@ -4,7 +4,6 @@ import 'package:frontend_admin/services/auth.dart';
 import 'package:frontend_admin/shared/constants.dart';
 import 'package:frontend_admin/shared/message_dialog.dart';
 import 'package:frontend_admin/utils/helper.dart';
-import 'package:get/get_core/get_core.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
