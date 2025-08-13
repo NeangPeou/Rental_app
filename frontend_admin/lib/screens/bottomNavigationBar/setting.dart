@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_admin/controller/setting_controller.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/setting_pages/appearance.dart';
@@ -19,6 +23,56 @@ class Setting extends StatefulWidget {
 class _SettingState extends State<Setting> {
   SettingController settingController = Get.put(SettingController());
   final box = GetStorage();
+  Map<String, dynamic> deviceInfo = {};
+
+  Future<void> getDeviceInfo() async {
+    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+
+    if (Platform.isAndroid) {
+      final androidInfo = await deviceInfoPlugin.androidInfo;
+      deviceInfo = {
+        'Model': androidInfo.model,
+        'Version': androidInfo.version.release,
+      };
+    } else if (Platform.isIOS) {
+      final iosInfo = await deviceInfoPlugin.iosInfo;
+      deviceInfo = {
+        'DeviceName': iosInfo.name,
+        'Model': iosInfo.model,
+        'Version': iosInfo.systemVersion,
+      };
+    } else if (Platform.isWindows) {
+      final windowsInfo = await deviceInfoPlugin.windowsInfo;
+      deviceInfo = {
+        'Model': windowsInfo.computerName,
+        'Version': windowsInfo.csdVersion,
+      };
+    } else if (Platform.isMacOS) {
+      final macInfo = await deviceInfoPlugin.macOsInfo;
+      deviceInfo = {
+        'Model': macInfo.model,
+        'Version': macInfo.osRelease,
+      };
+    } else if (Platform.isLinux) {
+      final linuxInfo = await deviceInfoPlugin.linuxInfo;
+      deviceInfo = {
+        'Name': linuxInfo.name,
+        'Version': linuxInfo.version,
+      };
+    } else {
+      deviceInfo = {
+        'Platform': 'Unknown',
+        'Error': 'Unsupported platform',
+      };
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getDeviceInfo();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,79 +143,21 @@ class _SettingState extends State<Setting> {
             ),
           ),
 
-          SizedBox(height: 10),
+          SizedBox(height: 20),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: ElevatedButton.icon(
-              icon: Icon(Icons.delete_rounded, color: Colors.red),
-              label: Text(
-                "Clear Storage",
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-              onPressed: () {
-                Get.defaultDialog(
-                  radius: 10,
-                  contentPadding: EdgeInsets.all(20),
-                  titlePadding: EdgeInsets.only(top: 20),
-                  title: "Clear Storage",
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                  content: Text("Are you sure you want to clear storage?"),
-                  cancel: ElevatedButton(
-                    onPressed: () async {
-                      Get.back();
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).focusColor,
-                        elevation: 0.0,
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Cancel",
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                    ),
-                  ),
-                  confirm: ElevatedButton(
-                    onPressed: () {
-                      box.erase();
-                      Get.back();
-                      Get.snackbar('Success', 'Storage cleared', snackPosition: SnackPosition.TOP);
-
-                      settingController.clearStorage();
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        elevation: 0.0
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Clear",
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).cardColor,
-                elevation: 0.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
+            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(10)
             ),
-          ),
-
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: ElevatedButton.icon(
-              icon: Icon(Icons.logout, color: Colors.white),
-              label: Text(
-                "Log Out",
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white),
+            child: ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Color(0x1AFF0000),
+                radius: 18,
+                child: Icon(Icons.logout_sharp, color: Colors.red, size: 20),
               ),
-              onPressed: () {
+              title: Text("Log Out", style: TextStyle(fontSize: 16, color: Colors.red)),
+              onTap: (){
                 Get.defaultDialog(
                   radius: 10,
                   contentPadding: EdgeInsets.all(20),
@@ -174,8 +170,8 @@ class _SettingState extends State<Setting> {
                       await _logout(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      elevation: 0.0
+                        backgroundColor: Colors.redAccent,
+                        elevation: 0.0
                     ),
                     child: Center(
                       child: Text(
@@ -189,8 +185,8 @@ class _SettingState extends State<Setting> {
                       Get.back();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).focusColor,
-                      elevation: 0.0
+                        backgroundColor: Theme.of(context).focusColor,
+                        elevation: 0.0
                     ),
                     child: Center(
                       child: Text(
@@ -201,13 +197,173 @@ class _SettingState extends State<Setting> {
                   ),
                 );
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                elevation: 0.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+
+          _buildSectionTitle("Developer Settings"),
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(10)
+            ),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.cached),
+                  trailing: Icon(Icons.chevron_right, color: Colors.grey),
+                  title: Text("Cache Action", style: TextStyle(fontSize: 16)),
+                  onTap: () {
+                    Get.bottomSheet(
+                      SafeArea(
+                        bottom: true,
+                        child: Container(
+                          padding: EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 15),
+                          decoration: BoxDecoration(
+                            color: Get.theme.scaffoldBackgroundColor,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                          ),
+                          child: Wrap(
+                            children: [
+                              Center(
+                                child: Container(
+                                  width: 40,
+                                  height: 4,
+                                  margin: const EdgeInsets.only(bottom: 15),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[400],
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                ),
+                              ),
+
+                              // Title
+                              Center(
+                                child: Text("Clear Caches", style: Get.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                              ),
+                              const SizedBox(height: 40),
+
+                              // Message
+                              const Center(
+                                child: Text("Are you sure you want to clear caches?"),
+                              ),
+                              const SizedBox(height: 40),
+
+                              // Buttons
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Get.back();
+                                      },
+                                      child: const Text("Cancel"),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Get.back();
+                                        Get.snackbar(
+                                            '', '',
+                                            titleText: Center(
+                                              child: Container(
+                                                padding: EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context).scaffoldBackgroundColor,
+                                                  borderRadius: BorderRadius.circular(50),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Icon(Icons.layers_clear_sharp, color: Theme.of(context).dividerColor, size: 18),
+                                                    SizedBox(width: 8),
+                                                    Text('Caches Cleared!', style: TextStyle(color: Theme.of(context).dividerColor)),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            maxWidth: Get.width * .5,
+                                            backgroundColor: Colors.transparent,
+                                            snackPosition: SnackPosition.TOP,
+                                            snackStyle: SnackStyle.FLOATING,
+                                            padding: EdgeInsets.zero,
+                                            duration: const Duration(milliseconds: 1500),
+                                            isDismissible: false,
+                                            animationDuration: const Duration(milliseconds: 200),
+                                            overlayBlur: 0.0,
+                                            barBlur: 0.0,
+                                            boxShadows: [],
+                                            overlayColor: Colors.transparent
+                                        );
+                                        settingController.clearStorage();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.redAccent,
+                                      ),
+                                      child: const Text("Clear", style: TextStyle(color: Colors.white)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                      ),
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                    );
+                  },
                 ),
-              ),
+                Divider(height: 0),
+                ListTile(
+                  leading: const Icon(Icons.devices_other_sharp),
+                  trailing: GestureDetector(
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: "${deviceInfo['Model'] ?? ''}(${deviceInfo['Version'] ?? ''})"));
+                      Get.snackbar(
+                        '', '',
+                        titleText: Center(
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.copy, color: Theme.of(context).dividerColor, size: 18),
+                                SizedBox(width: 8),
+                                Text('Copied to clipboard.'),
+                              ],
+                            ),
+                          ),
+                        ),
+                        maxWidth: Get.width * .5,
+                        backgroundColor: Colors.transparent,
+                        snackPosition: SnackPosition.TOP,
+                        snackStyle: SnackStyle.FLOATING,
+                        padding: EdgeInsets.zero,
+                        duration: const Duration(milliseconds: 1500),
+                        isDismissible: false,
+                        animationDuration: const Duration(milliseconds: 200),
+                        overlayBlur: 0.0,
+                        barBlur: 0.0,
+                        boxShadows: [],
+                        overlayColor: Colors.transparent
+                      );
+                    },
+                    child: Text("${deviceInfo['Model'] ?? ''}(${deviceInfo['Version'] ?? ''})"),
+                  ),
+                  title: Text("Device Info", style: TextStyle(fontSize: 16)),
+                ),
+              ],
             ),
           ),
         ],
