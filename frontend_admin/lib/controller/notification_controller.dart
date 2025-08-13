@@ -39,6 +39,42 @@ class NotificationController extends GetxController {
       'isUnread': false,
       'icon': Icons.message,
     },
+    {
+      'title': 'New message from John',
+      'time': '2 mins ago',
+      'isUnread': true,
+      'icon': Icons.message,
+    },
+    {
+      'title': 'New message from Pov',
+      'time': '1 hour ago',
+      'isUnread': false,
+      'icon': Icons.message,
+    },
+    {
+      'title': 'New message from Rathana',
+      'time': '1 hour ago',
+      'isUnread': true,
+      'icon': Icons.message,
+    },
+    {
+      'title': 'New message from Seng',
+      'time': '1 hour ago',
+      'isUnread': false,
+      'icon': Icons.message,
+    },
+    {
+      'title': 'New message from Chetra',
+      'time': '1 hour ago',
+      'isUnread': true,
+      'icon': Icons.message,
+    },
+      {
+      'title': 'New message from Sela',
+      'time': '1 hour ago',
+      'isUnread': false,
+      'icon': Icons.message,
+    },
   ].obs;
 
   void markAsRead(int index) {
