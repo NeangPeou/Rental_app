@@ -3,4 +3,5 @@ class StorageKeys {
   static const String saturation = 'saturation';
   static const String contrast = 'contrast';
   static const String selectedColor = 'selectedColor';
+  static const String fontSize = 'fontSize';
 }

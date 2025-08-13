@@ -156,7 +156,7 @@ class _SettingState extends State<Setting> {
                 radius: 18,
                 child: Icon(Icons.logout_sharp, color: Colors.red, size: 20),
               ),
-              title: Text("Log Out", style: TextStyle(fontSize: 16, color: Colors.red)),
+              title: Text("Log Out", style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.red)),
               onTap: (){
                 Get.defaultDialog(
                   radius: 10,
@@ -164,35 +164,23 @@ class _SettingState extends State<Setting> {
                   titlePadding: EdgeInsets.only(top: 20),
                   title: "Log Out",
                   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                  content: Text("Are you sure you want to log out?"),
+                  content: Text("Are you sure you want to log out?", style: Get.textTheme.bodyMedium),
                   cancel: ElevatedButton(
                     onPressed: () async {
                       await _logout(context);
                     },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        elevation: 0.0
-                    ),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
                     child: Center(
-                      child: Text(
-                        "Log Out",
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white),
-                      ),
+                      child: Text("Log Out", style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white)),
                     ),
                   ),
                   confirm: ElevatedButton(
                     onPressed: () {
                       Get.back();
                     },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).focusColor,
-                        elevation: 0.0
-                    ),
+                    style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).focusColor),
                     child: Center(
-                      child: Text(
-                        "Cancel",
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
+                      child: Text("Cancel", style: Theme.of(context).textTheme.labelMedium),
                     ),
                   ),
                 );
@@ -210,9 +198,9 @@ class _SettingState extends State<Setting> {
             child: Column(
               children: [
                 ListTile(
-                  leading: const Icon(Icons.cached),
+                  leading: Icon(Icons.cached),
                   trailing: Icon(Icons.chevron_right, color: Colors.grey),
-                  title: Text("Cache Action", style: TextStyle(fontSize: 16)),
+                  title: Text("Cache Action", style: Theme.of(context).textTheme.titleMedium),
                   onTap: () {
                     Get.bottomSheet(
                       SafeArea(
@@ -247,8 +235,8 @@ class _SettingState extends State<Setting> {
                               const SizedBox(height: 40),
 
                               // Message
-                              const Center(
-                                child: Text("Are you sure you want to clear caches?"),
+                              Center(
+                                child: Text("Are you sure you want to clear caches?", style: Get.textTheme.bodyMedium),
                               ),
                               const SizedBox(height: 40),
 
@@ -260,7 +248,7 @@ class _SettingState extends State<Setting> {
                                       onPressed: () {
                                         Get.back();
                                       },
-                                      child: const Text("Cancel"),
+                                      child: Text("Cancel", style: Get.textTheme.labelMedium),
                                     ),
                                   ),
                                   const SizedBox(width: 10),
@@ -287,7 +275,7 @@ class _SettingState extends State<Setting> {
                                                 ),
                                               ),
                                             ),
-                                            maxWidth: Get.width * .5,
+                                            maxWidth: Get.width * .9,
                                             backgroundColor: Colors.transparent,
                                             snackPosition: SnackPosition.TOP,
                                             snackStyle: SnackStyle.FLOATING,
@@ -305,7 +293,7 @@ class _SettingState extends State<Setting> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.redAccent,
                                       ),
-                                      child: const Text("Clear", style: TextStyle(color: Colors.white)),
+                                      child: Text("Clear", style: Get.textTheme.labelMedium?.copyWith(color: Colors.white)),
                                     ),
                                   ),
                                 ],
@@ -345,7 +333,7 @@ class _SettingState extends State<Setting> {
                             ),
                           ),
                         ),
-                        maxWidth: Get.width * .5,
+                        maxWidth: Get.width * .9,
                         backgroundColor: Colors.transparent,
                         snackPosition: SnackPosition.TOP,
                         snackStyle: SnackStyle.FLOATING,
@@ -361,7 +349,7 @@ class _SettingState extends State<Setting> {
                     },
                     child: Text("${deviceInfo['Model'] ?? ''}(${deviceInfo['Version'] ?? ''})"),
                   ),
-                  title: Text("Device Info", style: TextStyle(fontSize: 16)),
+                  title: Text("Device Info", style: Theme.of(context).textTheme.titleMedium),
                 ),
               ],
             ),
@@ -411,7 +399,7 @@ class _SettingState extends State<Setting> {
   Widget _buildSettingsTile(IconData icon, String title, {required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(title, style: TextStyle(fontSize: 16)),
+      title: Text(title, style: Theme.of(context).textTheme.titleMedium),
       trailing: Icon(Icons.chevron_right, color: Colors.grey),
       onTap: onTap,
     );
@@ -420,7 +408,7 @@ class _SettingState extends State<Setting> {
   Widget _buildSwitchTile(IconData icon, String title, bool value, ValueChanged<bool> onChanged) {
     return SwitchListTile(
       secondary: Icon(icon),
-      title: Text(title, style: TextStyle(fontSize: 16)),
+      title: Text(title, style: Theme.of(context).textTheme.titleMedium),
       value: value,
       onChanged: onChanged,
       activeColor: firstMainThemeColor,
