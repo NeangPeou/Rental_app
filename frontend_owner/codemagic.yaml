@@ -1,0 +1,19 @@
+workflows:
+  ios-release:
+    name: iOS Release Build
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install dependencies
+        script: flutter pub get
+      - name: Build iOS release
+        script: flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/iphoneos/Runner.app
+      - build/ios/iphoneos/Runner.ipa
+    publishing:
+      email:
+        recipients:
+          - nim.rathana11@gmail.com
