@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_admin/models/error.dart';
 import 'package:frontend_admin/services/auth.dart';
-import 'package:frontend_admin/shared/constants.dart';
 import 'package:frontend_admin/shared/message_dialog.dart';
 import 'package:frontend_admin/utils/helper.dart';
+import 'package:get/get.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -41,11 +41,8 @@ class _LoginState extends State<Login> {
             ),
           ),
 
-          Positioned(
-            top: 300,
-            left: 0,
-            right: 0,
-            bottom: 0,
+          Align(
+            alignment: Alignment.bottomCenter,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 25),
               decoration: BoxDecoration(
@@ -59,15 +56,8 @@ class _LoginState extends State<Login> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        const Center(
-                          child: Text(
-                            "Sign In Account",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w600,
-                              color: firstMainThemeColor,
-                            ),
-                          ),
+                        Center(
+                          child: Text("Sign In Account", style: Get.textTheme.titleMedium?.copyWith(color: Theme.of(context).secondaryHeaderColor, fontWeight: FontWeight.bold)),
                         ),
 
                         const SizedBox(height: 30),
@@ -76,9 +66,7 @@ class _LoginState extends State<Login> {
                           context: context,
                           controller: _userController,
                           labelText: 'Username',
-                          validator: (value) => value == null || value.isEmpty
-                              ? 'Enter username'
-                              : null,
+                          validator: (value) => value == null || value.isEmpty ? 'Enter username' : null,
                         ),
                         const SizedBox(height: 16),
 
@@ -86,16 +74,10 @@ class _LoginState extends State<Login> {
                           context: context,
                           controller: _passController,
                           labelText: 'Password',
-                          validator: (value) => value == null || value.isEmpty
-                              ? 'Enter password'
-                              : null,
+                          validator: (value) => value == null || value.isEmpty ? 'Enter password' : null,
                           obscureText: _obscurePassword,
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
+                            icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
                             onPressed: () {
                               setState(() {
                                 _obscurePassword = !_obscurePassword;
@@ -111,36 +93,36 @@ class _LoginState extends State<Login> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: _rememberMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _rememberMe = value!;
-                                    });
-                                  },
-                                ),
-                                const Text("Remember Password"),
-                              ],
-                            ),
-                            TextButton(
-                              onPressed: () {},
-                              style: ButtonStyle(
-                                overlayColor: WidgetStateProperty.all(
-                                  Colors.transparent,
-                                ),
-                                backgroundColor: WidgetStateProperty.all(
-                                  Colors.transparent,
-                                ),
+                            Flexible(
+                              fit: FlexFit.tight,
+                              child: Row(
+                                children: [
+                                  Checkbox(
+                                    value: _rememberMe,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _rememberMe = value!;
+                                      });
+                                    },
+                                  ),
+                                  const Text("Remember"),
+                                ],
                               ),
-                              child: const Text(
-                                "Forgot Password",
-                                style: TextStyle(color: Colors.blue),
+                            ),
+
+                            Flexible(
+                              child: TextButton(
+                                onPressed: () {},
+                                style: ButtonStyle(
+                                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                                  backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                                ),
+                                child: const Text("Forgot Password", style: TextStyle(color: Colors.blue)),
                               ),
                             ),
                           ],
                         ),
+
 
                         const SizedBox(height: 20),
 
@@ -148,40 +130,25 @@ class _LoginState extends State<Login> {
                           width: double.infinity,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              padding: EdgeInsets.zero,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
+
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                ErrorModel errorModel = await _auth.login(
-                                  context,
-                                  _userController.text.trim(),
-                                  _passController.text.trim(),
-                                );
+                                ErrorModel errorModel = await _auth.login(context, _userController.text.trim(), _passController.text.trim());
                                 if (errorModel.isError) {
-                                  MessageDialog.showMessage(
-                                    errorModel.code.toString(),
-                                    errorModel.message.toString(),
-                                    // ignore: use_build_context_synchronously
-                                    context,
-                                  );
-                                  // Helper.closeLoadingDialog(context);
+                                  // ignore: use_build_context_synchronously
+                                  MessageDialog.showMessage(errorModel.code.toString(), errorModel.message.toString(), context);
                                 } else {
-                                  Navigator.pushNamedAndRemoveUntil(
-                                    // ignore: use_build_context_synchronously
-                                    context,
-                                    '/home',
-                                    (route) => false,
-                                  );
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
                                 }
                               }
                             },
-                            child: const Text(
-                              "Sign In",
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            child: Text("Sign In", style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w600)),
                           ),
                         ),
 
@@ -218,14 +185,11 @@ class _LoginState extends State<Login> {
                         const SizedBox(height: 30),
 
                         // Sign up text
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        Wrap(
+                          alignment: WrapAlignment.center,
                           children: const [
                             Text("Don't have an account? "),
-                            Text(
-                              "Create Account",
-                              style: TextStyle(color: Colors.blue),
-                            ),
+                            Text("Create Account", style: TextStyle(color: Colors.blue)),
                           ],
                         ),
                       ],
