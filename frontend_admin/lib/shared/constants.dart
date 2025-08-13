@@ -36,13 +36,13 @@ ThemeData lightTheme([Color? primaryColor]) {
       ),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: adjustColor(firstMainThemeColor, contrast, saturation),
+      backgroundColor: adjustColor(settingController.selectedColor.value != SettingController.defaultThemeColor ? settingController.selectedColor.value: firstMainThemeColor, contrast, saturation),
       foregroundColor: adjustColor(Colors.black, contrast, saturation),
       elevation: 0,
       centerTitle: true,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: adjustColor(firstMainThemeColor, contrast, saturation),
+      backgroundColor: adjustColor(settingController.selectedColor.value, contrast, saturation),
       selectedItemColor: adjustColor(Colors.amber, contrast, saturation),
       unselectedItemColor: adjustColor(Colors.white, contrast, saturation),
       elevation: 0.0,
@@ -73,7 +73,7 @@ ThemeData darkTheme([Color? primaryColor]) {
       ),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: adjustColor(settingController.selectedColor.value, contrast, saturation),
+      backgroundColor: adjustColor(settingController.selectedColor.value != SettingController.defaultThemeColor ? settingController.selectedColor.value: firstMainThemeColor, contrast, saturation),
       foregroundColor: adjustColor(Colors.white, contrast, saturation),
       elevation: 0,
       centerTitle: true,
