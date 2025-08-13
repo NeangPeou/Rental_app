@@ -60,7 +60,6 @@ class _HomeState extends State<Home> {
 
     final List<String> titles = [
       'Home',
-      'Orders',
       'Notifications',
       'Setting',
     ];
