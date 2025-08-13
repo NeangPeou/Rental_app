@@ -20,7 +20,13 @@ class NotificationPage extends StatelessWidget {
           );
         }
         return ListView.separated(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.only(
+            left: 12,
+            right: 12,
+            top: 12,
+            bottom: MediaQuery.of(context).padding.bottom + 80, // space for nav bar
+          ),
+          physics: const BouncingScrollPhysics(), // Smooth scrolling
           itemCount: controller.notifications.length,
           separatorBuilder: (_, __) => const Divider(height: 1),
           itemBuilder: (context, index) {
@@ -67,10 +73,7 @@ class NotificationPage extends StatelessWidget {
                 style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
               onTap: () {
-                controller.markAsRead(index);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Tapped: ${notif['title']}')),
-                );
+                controller.markAsRead(index); // Just mark as read
               },
             );
           },
