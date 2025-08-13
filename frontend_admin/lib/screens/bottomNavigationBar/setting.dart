@@ -118,7 +118,7 @@ class _SettingState extends State<Setting> {
                     Icons.dark_mode,
                     "Dark Mode",
                     settingController.isDarkMode.value ?? false,
-                        (value) => settingController.toggleTheme(value),
+                    (value) => settingController.toggleTheme(value),
                   );
                 }),
                 Divider(height: 0),
@@ -411,7 +411,7 @@ class _SettingState extends State<Setting> {
       title: Text(title, style: Theme.of(context).textTheme.titleMedium),
       value: value,
       onChanged: onChanged,
-      activeColor: firstMainThemeColor,
+      activeColor: settingController.selectedColor.value,
     );
   }
 
