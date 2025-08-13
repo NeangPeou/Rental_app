@@ -4,8 +4,10 @@ import 'package:flutter/rendering.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/dashboard.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/notification_page.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/setting.dart';
+import 'package:frontend_admin/screens/bottomNavigationBar/userForm/user_form.dart';
 import 'package:frontend_admin/utils/helper.dart';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
+import 'package:get/get.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -74,6 +76,19 @@ class _HomeState extends State<Home> {
         child: pages[_controller.index],
       ),
       extendBody: true,
+      floatingActionButton: _controller.index == 0 
+      ? FloatingActionButton(
+          onPressed: () {
+              Get.to(
+                UserForm(),
+                arguments: 'Create Users'
+              );
+          },
+          backgroundColor: Theme.of(context).secondaryHeaderColor,
+          child: Icon(Icons.person_add_outlined),
+        )
+      : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       bottomNavigationBar: AnimatedSlide(
         offset: _bottomBarOffset,
         duration: const Duration(milliseconds: 250),
