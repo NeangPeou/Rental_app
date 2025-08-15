@@ -48,7 +48,7 @@ class SettingController extends GetxController {
     saturation.value = box.read(StorageKeys.saturation) ?? 1.0;
     contrast.value = box.read(StorageKeys.contrast) ?? 1.0;
     fontSize.value = box.read(StorageKeys.fontSize) ?? 1.0;
-    selectedLanguage.value = box.read(StorageKeys.selectedLanguage) ?? 'Spanish';
+    selectedLanguage.value = box.read(StorageKeys.selectedLanguage) ?? 'English';
 
     // Listen to system brightness changes
     PlatformDispatcher.instance.onPlatformBrightnessChanged = () {

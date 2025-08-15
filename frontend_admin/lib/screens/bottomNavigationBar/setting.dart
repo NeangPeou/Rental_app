@@ -23,7 +23,6 @@ class Setting extends StatefulWidget {
     {'nameKey': 'german', 'name': 'German', 'code': FlagsCode.DE, 'locale': Locale('de', 'DE')},
     {'nameKey': 'japanese', 'name': 'Japanese', 'code': FlagsCode.JP, 'locale': Locale('ja', 'JP')},
     {'nameKey': 'chinese', 'name': 'Chinese', 'code': FlagsCode.CN, 'locale': Locale('zh', 'CN')},
-    {'nameKey': 'arabic', 'name': 'Arabic', 'code': FlagsCode.SA, 'locale': Locale('ar', 'SA')},
     {'nameKey': 'russian', 'name': 'Russian', 'code': FlagsCode.RU, 'locale': Locale('ru', 'RU')},
     {'nameKey': 'korean', 'name': 'Korean', 'code': FlagsCode.KR, 'locale': Locale('ko', 'KR')},
   ];
