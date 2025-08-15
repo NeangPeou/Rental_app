@@ -11,9 +11,22 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flag/flag.dart';
 
 class Setting extends StatefulWidget {
   const Setting({super.key});
+  static final languages = [
+    {'nameKey': 'khmer', 'name': 'Khmer', 'code': FlagsCode.KH, 'locale': Locale('km', 'KH')},
+    {'nameKey': 'english', 'name': 'English', 'code': FlagsCode.US, 'locale': Locale('en', 'US')},
+    {'nameKey': 'spanish', 'name': 'Spanish', 'code': FlagsCode.ES, 'locale': Locale('es', 'ES')},
+    {'nameKey': 'french', 'name': 'French', 'code': FlagsCode.FR, 'locale': Locale('fr', 'FR')},
+    {'nameKey': 'german', 'name': 'German', 'code': FlagsCode.DE, 'locale': Locale('de', 'DE')},
+    {'nameKey': 'japanese', 'name': 'Japanese', 'code': FlagsCode.JP, 'locale': Locale('ja', 'JP')},
+    {'nameKey': 'chinese', 'name': 'Chinese', 'code': FlagsCode.CN, 'locale': Locale('zh', 'CN')},
+    {'nameKey': 'arabic', 'name': 'Arabic', 'code': FlagsCode.SA, 'locale': Locale('ar', 'SA')},
+    {'nameKey': 'russian', 'name': 'Russian', 'code': FlagsCode.RU, 'locale': Locale('ru', 'RU')},
+    {'nameKey': 'korean', 'name': 'Korean', 'code': FlagsCode.KR, 'locale': Locale('ko', 'KR')},
+  ];
 
   @override
   State<Setting> createState() => _SettingState();
@@ -79,7 +92,7 @@ class _SettingState extends State<Setting> {
       body: ListView(
         children: [
           SizedBox(height: 10),
-          _buildSectionTitle("Account Settings"),
+          _buildSectionTitle('account_settings'),
           Container(
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
@@ -88,18 +101,18 @@ class _SettingState extends State<Setting> {
             ),
             child: Column(
               children: [
-                _buildSettingsTile(Icons.person, "My Account", onTap: () {
-                  Get.to(() => const MyAccount(), arguments: "My Account");
+                _buildSettingsTile(Icons.person, "my_account", onTap: () {
+                  Get.to(() => const MyAccount(), arguments: "my_account".tr);
                 }),
                 Divider(height: 0),
-                _buildSettingsTile(Icons.security, "Privacy & Safety", onTap: () {}),
+                _buildSettingsTile(Icons.security, "privacy_safety", onTap: () {}),
                 Divider(height: 0),
-                _buildSettingsTile(Icons.notifications, "Notifications", onTap: () {}),
+                _buildSettingsTile(Icons.notifications, "notifications", onTap: () {}),
               ],
             )
           ),
 
-          _buildSectionTitle("App Settings"),
+          _buildSectionTitle("app_settings"),
           Container(
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
@@ -108,25 +121,27 @@ class _SettingState extends State<Setting> {
             ),
             child: Column(
               children: [
-                _buildSettingsTile(Icons.palette, "Appearance", onTap: () {
-                  Get.to(() => const Appearance(), arguments: "Appearance");
+                _buildSettingsTile(Icons.palette, "appearance", onTap: () {
+                  Get.to(() => const Appearance(), arguments: "appearance".tr);
                 }),
                 Divider(height: 0),
                 Obx(() {
                   return _buildSwitchTile(
                     Icons.dark_mode,
-                    "Dark Mode",
+                    "dark_mode",
                     settingController.isDarkMode.value ?? false,
                     (value) => settingController.toggleTheme(value),
                   );
                 }),
                 Divider(height: 0),
-                _buildSettingsTile(Icons.language, "Language", onTap: () {}),
+                _buildSettingsTile(Icons.language, "language", onTap: () {
+                  showLanguageBottomSheet();
+                }),
               ],
             ),
           ),
 
-          _buildSectionTitle("Support"),
+          _buildSectionTitle("support"),
           Container(
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
@@ -135,9 +150,9 @@ class _SettingState extends State<Setting> {
             ),
             child: Column(
               children: [
-                _buildSettingsTile(Icons.help_outline, "Help", onTap: () {}),
+                _buildSettingsTile(Icons.help_outline, "help", onTap: () {}),
                 Divider(height: 0),
-                _buildSettingsTile(Icons.feedback, "Feedback", onTap: () {}),
+                _buildSettingsTile(Icons.feedback, "feedback", onTap: () {}),
               ],
             ),
           ),
@@ -155,22 +170,22 @@ class _SettingState extends State<Setting> {
                 radius: 18,
                 child: Icon(Icons.logout_sharp, color: Colors.red, size: 20),
               ),
-              title: Text("Log Out", style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.red)),
+              title: Text('logout'.tr, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.red)),
               onTap: (){
                 Get.defaultDialog(
                   radius: 10,
                   contentPadding: EdgeInsets.all(20),
                   titlePadding: EdgeInsets.only(top: 20),
-                  title: "Log Out",
+                  title: "logout".tr,
                   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                  content: Text("Are you sure you want to log out?", style: Get.textTheme.bodyMedium),
+                  content: Text("logout_confirmation".tr, style: Get.textTheme.bodyMedium),
                   cancel: ElevatedButton(
                     onPressed: () async {
                       await _logout(context);
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
                     child: Center(
-                      child: Text("Log Out", style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white)),
+                      child: Text("logout".tr, style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white)),
                     ),
                   ),
                   confirm: ElevatedButton(
@@ -179,7 +194,7 @@ class _SettingState extends State<Setting> {
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).focusColor),
                     child: Center(
-                      child: Text("Cancel", style: Theme.of(context).textTheme.labelMedium),
+                      child: Text("cancel".tr, style: Theme.of(context).textTheme.labelMedium),
                     ),
                   ),
                 );
@@ -187,7 +202,7 @@ class _SettingState extends State<Setting> {
             ),
           ),
 
-          _buildSectionTitle("Developer Settings"),
+          _buildSectionTitle("developer_settings"),
           Container(
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
@@ -199,7 +214,7 @@ class _SettingState extends State<Setting> {
                 ListTile(
                   leading: Icon(Icons.cached),
                   trailing: Icon(Icons.chevron_right, color: Colors.grey),
-                  title: Text("Cache Action", style: Theme.of(context).textTheme.titleMedium),
+                  title: Text("cache_action".tr, style: Theme.of(context).textTheme.titleMedium),
                   onTap: () {
                     Get.bottomSheet(
                       SafeArea(
@@ -229,13 +244,13 @@ class _SettingState extends State<Setting> {
 
                               // Title
                               Center(
-                                child: Text("Clear Caches", style: Get.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                                child: Text("clear_caches".tr, style: Get.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                               ),
                               const SizedBox(height: 40),
 
                               // Message
                               Center(
-                                child: Text("Are you sure you want to clear caches?", style: Get.textTheme.bodyMedium),
+                                child: Text("clear_caches_confirmation".tr, style: Get.textTheme.bodyMedium),
                               ),
                               const SizedBox(height: 40),
 
@@ -247,7 +262,7 @@ class _SettingState extends State<Setting> {
                                       onPressed: () {
                                         Get.back();
                                       },
-                                      child: Text("Cancel", style: Get.textTheme.labelMedium),
+                                      child: Text("cancel".tr, style: Get.textTheme.labelMedium),
                                     ),
                                   ),
                                   const SizedBox(width: 10),
@@ -269,7 +284,7 @@ class _SettingState extends State<Setting> {
                                                   children: [
                                                     Icon(Icons.layers_clear_sharp, color: Theme.of(context).dividerColor, size: 18),
                                                     SizedBox(width: 8),
-                                                    Text('Caches Cleared!', style: TextStyle(color: Theme.of(context).dividerColor)),
+                                                    Text('caches_cleared'.tr, style: TextStyle(color: Theme.of(context).dividerColor)),
                                                   ],
                                                 ),
                                               ),
@@ -292,7 +307,7 @@ class _SettingState extends State<Setting> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.redAccent,
                                       ),
-                                      child: Text("Clear", style: Get.textTheme.labelMedium?.copyWith(color: Colors.white)),
+                                      child: Text("clear".tr, style: Get.textTheme.labelMedium?.copyWith(color: Colors.white)),
                                     ),
                                   ),
                                 ],
@@ -327,7 +342,7 @@ class _SettingState extends State<Setting> {
                               children: [
                                 Icon(Icons.copy, color: Theme.of(context).dividerColor, size: 18),
                                 SizedBox(width: 8),
-                                Text('Copied to clipboard.'),
+                                Text('copied_clipboard'.tr),
                               ],
                             ),
                           ),
@@ -348,7 +363,7 @@ class _SettingState extends State<Setting> {
                     },
                     child: Text("${deviceInfo['Model'] ?? ''}(${deviceInfo['Version'] ?? ''})"),
                   ),
-                  title: Text("Device Info", style: Theme.of(context).textTheme.titleMedium),
+                  title: Text("device_info_label".tr, style: Theme.of(context).textTheme.titleMedium),
                 ),
               ],
             ),
@@ -389,7 +404,7 @@ class _SettingState extends State<Setting> {
     return Padding(
       padding: const EdgeInsets.only(top: 20, left: 16, bottom: 5),
       child: Text(
-          title.toUpperCase(),
+          title.tr.toUpperCase(),
           style: Theme.of(context).textTheme.titleSmall
       ),
     );
@@ -398,7 +413,7 @@ class _SettingState extends State<Setting> {
   Widget _buildSettingsTile(IconData icon, String title, {required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(title, style: Theme.of(context).textTheme.titleMedium),
+      title: Text(title.tr, style: Theme.of(context).textTheme.titleMedium),
       trailing: Icon(Icons.chevron_right, color: Colors.grey),
       onTap: onTap,
     );
@@ -407,11 +422,100 @@ class _SettingState extends State<Setting> {
   Widget _buildSwitchTile(IconData icon, String title, bool value, ValueChanged<bool> onChanged) {
     return SwitchListTile(
       secondary: Icon(icon),
-      title: Text(title, style: Theme.of(context).textTheme.titleMedium),
+      title: Text(title.tr, style: Theme.of(context).textTheme.titleMedium),
       value: value,
       onChanged: onChanged,
       activeColor: settingController.selectedColor.value,
     );
   }
 
+  void showLanguageBottomSheet() {
+    Get.bottomSheet(
+      SafeArea(
+        bottom: true,
+        child: Obx(() => Container(
+          padding: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 15),
+          decoration: BoxDecoration(
+            color: Get.theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 15),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+              ),
+              Text("select_language".tr, style: Get.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: Get.height * 0.5,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Get.theme.cardColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: List.generate(Setting.languages.length, (index) {
+                      final lang = Setting.languages[index];
+                      final isLast = index == Setting.languages.length - 1;
+
+                      return Column(
+                        children: [
+                          ListTile(
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(2),
+                              child: Flag.fromCode(
+                                lang['code'] as FlagsCode,
+                                width: 30,
+                                height: 20,
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(lang['name'] as String),
+                                Text((lang['nameKey'] as String).tr, style: Get.textTheme.labelMedium?.copyWith(color: Colors.grey)),
+                              ],
+                            ),
+                            trailing: Radio<String>(
+                              value: lang['name'] as String,
+                              groupValue: settingController.selectedLanguage.value,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  settingController.setLanguage(value);
+                                  Get.updateLocale(lang['locale'] as Locale);
+                                }
+                              },
+                            ),
+                            onTap: () {
+                              settingController.setLanguage(lang['name'] as String);
+                              Get.updateLocale(lang['locale'] as Locale);
+                            },
+                          ),
+                          if (!isLast) const Divider(height: 1),
+                        ],
+                      );
+                    }),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )),
+      ),
+      isScrollControlled: true,
+    );
+  }
 }
