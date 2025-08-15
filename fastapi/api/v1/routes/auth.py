@@ -6,7 +6,7 @@ from controller import authcontroller
 from db.session import get_db
 from db.models import (user, user_session)
 from core.security import ALGORITHM, SECRET_KEY
-from schemas.user import LoginRequest, RegisterUser, TokenResponse
+from schemas.user import LoginRequest, RegisterUser, TokenResponse, UserCreate
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
@@ -17,6 +17,10 @@ def register(user_data: RegisterUser, db: Session = Depends(get_db), request_obj
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+@router.post("/create-owner")
+def create_owner(user_data: UserCreate, db: Session = Depends(get_db), current_user: user.User = Depends(authcontroller.get_current_user)):
+    return authcontroller.create_owner_controller(user_data, db, current_user)
 
 @router.post("/login", response_model=TokenResponse)
 def login(request: LoginRequest, db: Session = Depends(get_db), request_obj: Request = None):
