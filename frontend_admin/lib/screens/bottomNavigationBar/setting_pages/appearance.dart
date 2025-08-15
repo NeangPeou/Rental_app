@@ -56,7 +56,7 @@ class _AppearanceState extends State<Appearance> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Contrast", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+                      Text("contrast".tr, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
                       Obx(() => Text("${(settingController.contrast.value * 100).toInt()}%")),
                     ],
                   ),
@@ -90,14 +90,14 @@ class _AppearanceState extends State<Appearance> {
                       onPressed: () {
                         settingController.setContrast(1.0);
                       },
-                      child: Text("Reset to default", style: Theme.of(context).textTheme.labelLarge),
+                      child: Text("reset_default".tr, style: Theme.of(context).textTheme.labelLarge),
                     ),
                   ),
                 ],
               ),
             ),
             SizedBox(height: 5),
-            Text("Adjust the contrast between foreground and background colors", style: Theme.of(context).textTheme.bodySmall),
+            Text("contrast_description".tr, style: Theme.of(context).textTheme.bodySmall),
 
             SizedBox(height: 20),
             Container(
@@ -114,7 +114,7 @@ class _AppearanceState extends State<Appearance> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Saturation", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+                      Text("saturation".tr, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
                       Obx(() => Text("${(settingController.saturation.value * 100).toInt()}%")),
                     ],
                   ),
@@ -148,14 +148,14 @@ class _AppearanceState extends State<Appearance> {
                       onPressed: () {
                         settingController.setSaturation(1.0);
                       },
-                      child: Text("Reset to default", style: Theme.of(context).textTheme.labelLarge),
+                      child: Text("reset_default".tr, style: Theme.of(context).textTheme.labelLarge),
                     ),
                   ),
                 ],
               ),
             ),
             SizedBox(height: 5),
-            Text("Reduce the saturation of colors within the application, for those with color sensitivities. This does not effect the saturation of images, video, role colors or other user-provided content by default.", style: Theme.of(context).textTheme.bodySmall),
+            Text("saturation_description".tr, style: Theme.of(context).textTheme.bodySmall),
 
             SizedBox(height: 20),
             Container(
@@ -167,7 +167,7 @@ class _AppearanceState extends State<Appearance> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Change Color", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+                  Text("change_color".tr, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
                   SizedBox(
                     height: 100,
                     child: ListView.builder(
@@ -181,7 +181,7 @@ class _AppearanceState extends State<Appearance> {
                               Color pickedColor = settingController.selectedColor.value;
                               Get.defaultDialog(
                                 radius: 10,
-                                title: 'Pick a color',
+                                title: 'pick_color'.tr,
                                 titlePadding: EdgeInsets.only(top: 20, bottom: 10),
                                 contentPadding: EdgeInsets.symmetric(horizontal: 30),
                                 content: SingleChildScrollView(
@@ -199,14 +199,27 @@ class _AppearanceState extends State<Appearance> {
                                 ),
                                 confirm: Padding(
                                   padding: const EdgeInsets.only(bottom: 20),
-                                  child: Obx(() => ElevatedButton(
-                                    onPressed: () {
+                                  child: GestureDetector(
+                                    onTap: () {
                                       Get.back();
                                     },
                                     child: Center(
-                                      child: Text("Cancel", style: Theme.of(context).textTheme.labelMedium),
+                                      child:Obx(() => Container(
+                                        width: Get.width,
+                                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                        decoration: BoxDecoration(
+                                          color: settingController.selectedColor.value,
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "cancel".tr,
+                                            style: Theme.of(context).textTheme.labelMedium,
+                                          ),
+                                        ),
+                                      )),
                                     ),
-                                  )),
+                                  ),
                                 ),
                               );
                             },
@@ -274,7 +287,7 @@ class _AppearanceState extends State<Appearance> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text( "Text Size", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+                      Text("text_size".tr, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
                       Obx(() => Text("${(settingController.fontSize.value * 100).toInt()}%")),
                     ],
                   ),
@@ -305,7 +318,7 @@ class _AppearanceState extends State<Appearance> {
                       onPressed: () {
                         settingController.resetFontSize();
                       },
-                      child: Text("Reset to default", style: Theme.of(context).textTheme.labelLarge),
+                      child: Text("reset_default".tr, style: Theme.of(context).textTheme.labelLarge),
                     ),
                   ),
                 ],
