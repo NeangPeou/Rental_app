@@ -8,11 +8,6 @@ SettingController settingController = Get.put(SettingController());
 
 const Color firstMainThemeColor = Colors.teal;
 
-InputDecoration textInputDecoration = InputDecoration(
-  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-);
-
 ThemeData lightTheme([Color? primaryColor]) {
   final contrast = settingController.contrast.value;
   final saturation = settingController.saturation.value;

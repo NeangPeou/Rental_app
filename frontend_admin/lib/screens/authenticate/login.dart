@@ -58,7 +58,7 @@ class _LoginState extends State<Login> {
                     child: Column(
                       children: [
                         Center(
-                          child: Text("Sign In Account", style: Get.textTheme.titleMedium?.copyWith(color: Theme.of(context).secondaryHeaderColor, fontWeight: FontWeight.bold)),
+                          child: Text("sign_in_account".tr, style: Get.textTheme.titleMedium?.copyWith(color: Theme.of(context).secondaryHeaderColor, fontWeight: FontWeight.bold)),
                         ),
 
                         const SizedBox(height: 30),
@@ -66,19 +66,19 @@ class _LoginState extends State<Login> {
                         Helper.sampleTextField(
                           context: context,
                           controller: _userController,
-                          labelText: 'Username',
-                          validator: (value) => value == null || value.isEmpty ? 'Enter username' : null,
+                          labelText: 'username'.tr,
+                          validator: (value) => value == null || value.isEmpty ? 'enter_username'.tr : null,
                         ),
                         const SizedBox(height: 16),
 
                         Helper.sampleTextField(
                           context: context,
                           controller: _passController,
-                          labelText: 'Password',
-                          validator: (value) => value == null || value.isEmpty ? 'Enter password' : null,
+                          labelText: 'password'.tr,
+                          validator: (value) => value == null || value.isEmpty ? 'enter_password'.tr : null,
                           obscureText: _obscurePassword,
                           suffixIcon: IconButton(
-                            icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                            icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, size: 20),
                             onPressed: () {
                               setState(() {
                                 _obscurePassword = !_obscurePassword;
@@ -106,7 +106,7 @@ class _LoginState extends State<Login> {
                                       });
                                     },
                                   ),
-                                  const Text("Remember"),
+                                  Text("remember".tr),
                                 ],
                               ),
                             ),
@@ -118,7 +118,7 @@ class _LoginState extends State<Login> {
                                   overlayColor: MaterialStateProperty.all(Colors.transparent),
                                   backgroundColor: MaterialStateProperty.all(Colors.transparent),
                                 ),
-                                child: const Text("Forgot Password", style: TextStyle(color: Colors.blue)),
+                                child: Text("forgot_password".tr, style: TextStyle(color: Colors.blue)),
                               ),
                             ),
                           ],
@@ -149,7 +149,7 @@ class _LoginState extends State<Login> {
                                 }
                               }
                             },
-                            child: Text("Sign In", style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w600)),
+                            child: Text("sign_in".tr, style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w600)),
                           ),
                         ),
 
@@ -157,11 +157,11 @@ class _LoginState extends State<Login> {
 
                         // Divider
                         Row(
-                          children: const [
+                          children: [
                             Expanded(child: Divider()),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 8),
-                              child: Text("Sign up with"),
+                              child: Text("sign_up_with".tr),
                             ),
                             Expanded(child: Divider()),
                           ],
@@ -188,9 +188,9 @@ class _LoginState extends State<Login> {
                         // Sign up text
                         Wrap(
                           alignment: WrapAlignment.center,
-                          children: const [
-                            Text("Don't have an account? "),
-                            Text("Create Account", style: TextStyle(color: Colors.blue)),
+                          children: [
+                            Text("${"dont_have_account".tr} "),
+                            Text("create_account".tr, style: TextStyle(color: Colors.blue)),
                           ],
                         ),
                       ],

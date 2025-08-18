@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -106,7 +107,9 @@ class _SettingState extends State<Setting> {
                 Divider(height: 0),
                 _buildSettingsTile(Icons.security, "privacy_safety", onTap: () {}),
                 Divider(height: 0),
-                _buildSettingsTile(Icons.notifications, "notifications", onTap: () {}),
+                _buildSettingsTile(Icons.notifications, "notifications", onTap: () {
+                  showNotificationBottomSheet();
+                }),
               ],
             )
           ),
@@ -213,7 +216,7 @@ class _SettingState extends State<Setting> {
                 ListTile(
                   leading: Icon(Icons.cached),
                   trailing: Icon(Icons.chevron_right, color: Colors.grey),
-                  title: Text("cache_action".tr, style: Theme.of(context).textTheme.titleMedium),
+                  title: Text("cache_action".tr, style: Theme.of(context).textTheme.bodyMedium),
                   onTap: () {
                     Get.bottomSheet(
                       SafeArea(
@@ -362,7 +365,7 @@ class _SettingState extends State<Setting> {
                     },
                     child: Text("${deviceInfo['Model'] ?? ''}(${deviceInfo['Version'] ?? ''})"),
                   ),
-                  title: Text("device_info_label".tr, style: Theme.of(context).textTheme.titleMedium),
+                  title: Text("device_info_label".tr, style: Theme.of(context).textTheme.bodyMedium),
                 ),
               ],
             ),
@@ -403,25 +406,26 @@ class _SettingState extends State<Setting> {
     return Padding(
       padding: const EdgeInsets.only(top: 20, left: 16, bottom: 5),
       child: Text(
-          title.tr.toUpperCase(),
-          style: Theme.of(context).textTheme.titleSmall
+          title.tr,
+          style: Theme.of(context).textTheme.bodyMedium
       ),
     );
   }
 
-  Widget _buildSettingsTile(IconData icon, String title, {required VoidCallback onTap}) {
+  Widget _buildSettingsTile(IconData? icon, String title, {required VoidCallback onTap}) {
     return ListTile(
-      leading: Icon(icon),
-      title: Text(title.tr, style: Theme.of(context).textTheme.titleMedium),
+      leading: icon != null ? Icon(icon) : null,
+      title: Text(title.tr, style: Theme.of(context).textTheme.bodyMedium),
       trailing: Icon(Icons.chevron_right, color: Colors.grey),
       onTap: onTap,
     );
   }
 
-  Widget _buildSwitchTile(IconData icon, String title, bool value, ValueChanged<bool> onChanged) {
+  Widget _buildSwitchTile(IconData? icon, String title, bool value, ValueChanged<bool> onChanged) {
     return SwitchListTile(
-      secondary: Icon(icon),
-      title: Text(title.tr, style: Theme.of(context).textTheme.titleMedium),
+      contentPadding: EdgeInsets.only(left: 16, right: 16),
+      secondary: icon != null ? Icon(icon) : null,
+      title: Text(title.tr, style: Theme.of(context).textTheme.bodyMedium),
       value: value,
       onChanged: onChanged,
       activeColor: settingController.selectedColor.value,
@@ -513,6 +517,71 @@ class _SettingState extends State<Setting> {
             ],
           ),
         )),
+      ),
+      isScrollControlled: true,
+    );
+  }
+
+  void showNotificationBottomSheet() {
+
+    Get.bottomSheet(
+      SafeArea(
+        bottom: true,
+        child: Container(
+          height: Get.height * .5,
+          padding: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 15),
+          decoration: BoxDecoration(
+            color: Get.theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 15),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+              ),
+              Text("In-app notifications", style: Theme.of(context).textTheme.bodyMedium),
+              Obx(() => Container(
+                margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                padding: EdgeInsets.zero,
+                decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: _buildSwitchTile(
+                  null,
+                  "Get notifications within App.",
+                  settingController.inAppNotifications.value,
+                  (value) {
+                    settingController.setNotificationInApp(value);
+                  },
+                ),
+              )),
+              SizedBox(height: 20),
+              Text("System notifications", style: Theme.of(context).textTheme.bodyMedium),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                padding: EdgeInsets.zero,
+                decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: _buildSettingsTile(null, "Get notifications outside of App.", onTap: (){
+                  AppSettings.openAppSettingsPanel(AppSettingsPanelType.wifi);
+                }),
+              ),
+            ],
+          ),
+        ),
       ),
       isScrollControlled: true,
     );
