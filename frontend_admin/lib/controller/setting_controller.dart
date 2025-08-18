@@ -17,6 +17,7 @@ class SettingController extends GetxController {
   late bool isSystemDark;
   RxDouble fontSize = 1.0.obs;
   RxString selectedLanguage = 'English'.obs;
+  RxBool inAppNotifications = true.obs;
 
   @override
   void onInit() {
@@ -48,7 +49,8 @@ class SettingController extends GetxController {
     saturation.value = box.read(StorageKeys.saturation) ?? 1.0;
     contrast.value = box.read(StorageKeys.contrast) ?? 1.0;
     fontSize.value = box.read(StorageKeys.fontSize) ?? 1.0;
-    selectedLanguage.value = box.read(StorageKeys.selectedLanguage) ?? 'English';
+    selectedLanguage.value = box.read(StorageKeys.selectedLanguage) ?? 'Khmer';
+    inAppNotifications.value = box.read(StorageKeys.inAppNotifications) ?? true;
 
     // Listen to system brightness changes
     PlatformDispatcher.instance.onPlatformBrightnessChanged = () {
@@ -115,6 +117,11 @@ class SettingController extends GetxController {
     box.write(StorageKeys.selectedLanguage, lang);
   }
 
+  void setNotificationInApp(value){
+    inAppNotifications.value = value;
+    box.write(StorageKeys.inAppNotifications, value);
+  }
+
   // Clear all stored settings
   Future<void> clearStorage() async {
     await box.erase();
@@ -128,8 +135,8 @@ class SettingController extends GetxController {
     saturation.value = 1.0;
     contrast.value = 1.0;
     fontSize.value = 1.0;
-    setLanguage('English');
-    Get.updateLocale(Locale('en', 'US'));
+    setLanguage('Khmer');
+    Get.updateLocale(Locale('km', 'KH'));
 
     applyTheme();
   }

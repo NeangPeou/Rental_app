@@ -45,6 +45,7 @@ dependencies:
   flutter_colorpicker: ^1.1.0
   flutter_launcher_icons: ^0.14.4
   flag: ^7.0.0
+  app_settings: ^6.1.1
 
 flutter_icons:
   android: "launcher_icon"

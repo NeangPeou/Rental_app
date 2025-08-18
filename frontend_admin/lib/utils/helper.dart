@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:frontend_admin/shared/constants.dart';
+import 'package:get/get.dart';
 
 class Helper {
   static AppBar sampleAppBar(String title,BuildContext context, String? logoImg) {
@@ -24,7 +25,7 @@ class Helper {
     Widget? suffixIcon,
     TextInputType keyboardType = TextInputType.text,
     bool passwordType = false,
-    void Function(String)? onChanged,  // <-- Add this
+    void Function(String)? onChanged,
   }) {
     final theme = Theme.of(context);
 
@@ -40,31 +41,33 @@ class Helper {
           decoration: InputDecoration(
             labelText: labelText,
             labelStyle: theme.textTheme.bodyMedium,
-            suffixIcon: showClearIcon
-                ? IconButton(
-              icon: const Icon(Icons.clear),
+            suffixIcon: showClearIcon ? IconButton(
+              icon: CircleAvatar(
+                backgroundColor: Get.theme.cardColor,
+                radius: 10,
+                child: const Icon(Icons.clear_rounded, size: 15),
+              ),
               onPressed: () {
                 controller.clear();
                 // Optionally call onChanged after clearing
                 if (onChanged != null) onChanged('');
               },
-            )
-                : suffixIcon,
+            ) : suffixIcon,
             border: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderRadius: BorderRadius.all(Radius.circular(15)),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              borderRadius: const BorderRadius.all(Radius.circular(15)),
               borderSide: BorderSide(color: theme.colorScheme.outline),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              borderRadius: const BorderRadius.all(Radius.circular(15)),
               borderSide: BorderSide(color: theme.colorScheme.onSecondaryContainer),
             ),
           ),
           validator: validator,
           style: theme.textTheme.bodyLarge,
-          onChanged: onChanged, // forward here
+          onChanged: onChanged,
         );
       },
     );
