@@ -81,7 +81,7 @@ class _HomeState extends State<Home> {
           onPressed: () {
               Get.to(
                 UserForm(),
-                arguments: 'Create Users'
+                arguments: ("CreateUsers".tr)
               );
           },
           backgroundColor: Theme.of(context).secondaryHeaderColor,

@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
-from controller import authcontroller
+from controller import authcontroller, usercontroller
 from db.session import get_db
 from db.models import (user, user_session)
 from core.security import ALGORITHM, SECRET_KEY
-from schemas.user import LoginRequest, RegisterUser, TokenResponse, UserCreate
+from schemas.user import LoginRequest, RegisterUser, TokenResponse
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
@@ -17,10 +17,6 @@ def register(user_data: RegisterUser, db: Session = Depends(get_db), request_obj
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
-
-@router.post("/create-owner")
-def create_owner(user_data: UserCreate, db: Session = Depends(get_db), current_user: user.User = Depends(authcontroller.get_current_user)):
-    return authcontroller.create_owner_controller(user_data, db, current_user)
 
 @router.post("/login", response_model=TokenResponse)
 def login(request: LoginRequest, db: Session = Depends(get_db), request_obj: Request = None):
@@ -77,7 +73,7 @@ def logout(request: Request ,db: Session = Depends(get_db)):
     return authcontroller.logout_controller(request, db)
 
 @router.get("/me")
-def get_current_user(current_user: user.User = Depends(authcontroller.get_current_user)):
+def get_current_user(current_user: user.User = Depends(usercontroller.get_current_user)):
     return {
         "id": current_user.userID,
         "username": current_user.userName,
