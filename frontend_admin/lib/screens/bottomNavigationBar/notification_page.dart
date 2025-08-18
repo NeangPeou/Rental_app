@@ -12,9 +12,6 @@ class NotificationPage extends StatelessWidget {
     final WebSocketController wsService = Get.put(WebSocketController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Notifications"),
-      ),
       body: Obx(() {
         // Listen to the messages from the WebSocket service
         if (wsService.messageStream.value == null) {
@@ -32,20 +29,6 @@ class NotificationPage extends StatelessWidget {
           ],
         );
       }),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: TextField(
-          onSubmitted: (message) {
-            // Send a message to the WebSocket server
-            wsService.sendMessage(message);
-          },
-          decoration: InputDecoration(
-            labelText: 'Enter your message',
-            suffixIcon: Icon(Icons.send),
-            border: OutlineInputBorder(),
-          ),
-        ),
-      ),
     );
   }
 }
