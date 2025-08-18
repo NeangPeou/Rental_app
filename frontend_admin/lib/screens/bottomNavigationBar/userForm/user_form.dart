@@ -14,11 +14,12 @@ class _UserFormState extends State<UserForm> {
   final _formKey = GlobalKey<FormState>();
   final UserController controller = Get.put(UserController());
   late String title;
+  final RxBool _obscurePassword = true.obs;
 
   @override
   void initState() {
     super.initState();
-    title = Get.arguments ?? "Create Owner";
+    title = Get.arguments ?? "";
   }
 
   Widget buildTextField({
@@ -31,6 +32,7 @@ class _UserFormState extends State<UserForm> {
     void Function(String)? onChanged,
     bool readOnly = false,
     VoidCallback? onTap,
+    Widget? suffixIcon,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -42,6 +44,7 @@ class _UserFormState extends State<UserForm> {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
           ),
+          suffixIcon: suffixIcon,
         ),
         keyboardType: keyboardType,
         obscureText: obscureText,
@@ -77,22 +80,32 @@ class _UserFormState extends State<UserForm> {
             child: Column(
               children: [
                 buildTextField(
-                  label: 'Username',
+                  label: ('Username'.tr),
                   validator: (v) => v!.isEmpty ? 'Enter username' : null,
                   onChanged: (v) => controller.username = v,
                 ),
-                buildTextField(
-                  label: 'Password',
-                  obscureText: true,
+                Obx(() => buildTextField(
+                  label: ('Password'.tr),
+                  obscureText: _obscurePassword.value,
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Please enter password';
                     if (v.length < 3) return 'Password must be at least 3 characters';
                     return null;
                   },
                   onChanged: (v) => controller.password = v,
-                ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword.value
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      _obscurePassword.value = !_obscurePassword.value;
+                    },
+                  ),
+                )),
                 buildTextField(
-                  label: 'Phone Number',
+                  label: ('PhoneNumber'.tr),
                   keyboardType: TextInputType.phone,
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Enter phone number';
@@ -102,15 +115,15 @@ class _UserFormState extends State<UserForm> {
                   onChanged: (v) => controller.phoneNumber = v,
                 ),
                 buildTextField(
-                  label: 'Passport',
+                  label: ('Passport'.tr),
                   onChanged: (v) => controller.passport = v,
                 ),
                 buildTextField(
-                  label: 'ID Card',
+                  label: ('IDCard'.tr),
                   onChanged: (v) => controller.idCard = v,
                 ),
                 buildTextField(
-                  label: 'Address',
+                  label: ('Address'.tr),
                   onChanged: (v) => controller.address = v,
                 ),
                 SizedBox(height: 20),
@@ -119,7 +132,7 @@ class _UserFormState extends State<UserForm> {
                   children: [
                     ElevatedButton(
                       onPressed: () => Get.back(),
-                      child: Text('Cancel'),
+                      child: Text('cancel'.tr),
                     ),
                     SizedBox(width: 8),
                     ElevatedButton(
@@ -131,7 +144,7 @@ class _UserFormState extends State<UserForm> {
                           }
                         }
                       },
-                      child: Text('Save'),
+                      child: Text('save'.tr),
                     ),
                   ],
                 ),
