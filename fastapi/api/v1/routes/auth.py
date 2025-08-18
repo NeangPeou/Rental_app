@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, WebSocket, WebSocketDisconnect
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
@@ -79,3 +79,38 @@ def get_current_user(current_user: user.User = Depends(usercontroller.get_curren
         "username": current_user.userName,
         "role": current_user.role_id if current_user.role_id else None
     }
+
+# WebSocket connection manager
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections:
+            await connection.send_text(message)
+
+manager = ConnectionManager()
+
+@router.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
+    # Accept the WebSocket connection
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()  # Receive message from the client
+            # You can add authentication here based on a token or user
+            # If needed, fetch user from DB based on token
+            await manager.broadcast(f"Message from client: {data}")
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+        print("Client disconnected")
