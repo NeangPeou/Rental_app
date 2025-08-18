@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:frontend_admin/shared/constants.dart';
-import 'package:frontend_admin/storage/storage_keys.dart';
+import 'package:frontend_rental/shared/constants.dart';
+import 'package:frontend_rental/storage/storage_keys.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 

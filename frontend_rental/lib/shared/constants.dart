@@ -1,7 +1,7 @@
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
-import 'package:frontend_admin/controller/setting_controller.dart';
+import 'package:frontend_rental/controller/setting_controller.dart';
 import 'package:get/get.dart';
-
 import '../storage/storage_keys.dart';
 
 SettingController settingController = Get.put(SettingController());

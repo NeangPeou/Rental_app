@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_admin/models/error.dart';
-import 'package:frontend_admin/services/auth.dart';
-import 'package:frontend_admin/shared/message_dialog.dart';
-import 'package:frontend_admin/utils/helper.dart';
+import 'package:frontend_rental/models/error.dart';
+import 'package:frontend_rental/services/auth.dart';
+import 'package:frontend_rental/shared/message_dialog.dart';
+import 'package:frontend_rental/utils/helper.dart';
 import 'package:get/get.dart';
 
 class Login extends StatefulWidget {
@@ -115,8 +115,8 @@ class _LoginState extends State<Login> {
                               child: TextButton(
                                 onPressed: () {},
                                 style: ButtonStyle(
-                                  overlayColor: MaterialStateProperty.all(Colors.transparent),
-                                  backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                                  overlayColor: WidgetStateProperty.all(Colors.transparent),
+                                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
                                 ),
                                 child: Text("forgot_password".tr, style: TextStyle(color: Colors.blue)),
                               ),

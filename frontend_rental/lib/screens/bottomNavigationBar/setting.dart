@@ -5,9 +5,9 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend_admin/controller/setting_controller.dart';
-import 'package:frontend_admin/screens/bottomNavigationBar/setting_pages/appearance.dart';
-import 'package:frontend_admin/screens/bottomNavigationBar/setting_pages/my_account.dart';
+import 'package:frontend_rental/controller/setting_controller.dart';
+import 'package:frontend_rental/screens/bottomNavigationBar/setting_pages/appearance.dart';
+import 'package:frontend_rental/screens/bottomNavigationBar/setting_pages/my_account.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -384,12 +384,14 @@ class _SettingState extends State<Setting> {
         headers: {'Authorization': 'Bearer $token'},
       );
       if (response.statusCode != 200) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Logout failed. Please try again.')),
         );
         return;
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error during logout. Please try again.')),
       );
