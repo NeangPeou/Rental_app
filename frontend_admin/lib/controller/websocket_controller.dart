@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -10,7 +11,7 @@ class WebSocketController extends GetxController {
     super.onInit();
     // Initialize WebSocket connection when the controller is created
     _channel = WebSocketChannel.connect(
-      Uri.parse('wss://rental-app-3ow8.onrender.com/api/ws'), // WebSocket URL
+      Uri.parse('wss://${dotenv.env['SOCKET_URL']}/api/ws'), // WebSocket URL
     );
 
     // Listen to incoming messages and update messageStream
