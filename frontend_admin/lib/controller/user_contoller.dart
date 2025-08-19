@@ -83,7 +83,7 @@ class UserController extends GetxController {
       }
 
       final response = await http.get(
-        Uri.parse('${dotenv.env['API_URL']}/api/owners?sort_by=$sortBy&order=$order'),
+        Uri.parse('${dotenv.env['API_URL']}/api/owners'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
@@ -93,7 +93,7 @@ class UserController extends GetxController {
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         owners.value = data.map((owner) => {
-          'userID': owner['userID']?.toString() ?? '',
+          'id': owner['id']?.toString() ?? '',
           'userName': owner['userName']?.toString() ?? '',
           'phoneNumber': owner['phoneNumber']?.toString() ?? '',
           'passport': owner['passport']?.toString() ?? '',

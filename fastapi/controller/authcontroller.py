@@ -23,8 +23,8 @@ def login_controller(request: LoginRequest, db: Session, request_obj: Request = 
         )
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
-    access_token = create_access_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
-    refresh_token = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id, "user_id": users.userID})
+    access_token = create_access_token({"name": users.userName, "password": users.password, "id": users.id})
+    refresh_token = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id})
 
     ip_address = request_obj.client.host if request_obj else None
     session = user_session.UserSession(
@@ -62,9 +62,8 @@ def register_controller(user_data: RegisterUser, db: Session, request_obj: Reque
         db.refresh(roles)
 
     hashed_password = get_password_hash(user_data.password)
-    user_id = generate_user_id(db)
+    # user_id = generate_user_id(db)
     users = user.User(
-        userID=user_id,
         userName=user_data.username,
         password=hashed_password,
         role_id=roles.id,
@@ -90,8 +89,8 @@ def register_controller(user_data: RegisterUser, db: Session, request_obj: Reque
         host_name=host_name
     )
 
-    access_token = create_access_token({"name": users.userName, "id": users.id, "user_id": users.userID})
-    refresh_token = create_refresh_token({"name": users.userName, "id": users.id, "user_id": users.userID})
+    access_token = create_access_token({"name": users.userName, "id": users.id})
+    refresh_token = create_refresh_token({"name": users.userName, "id": users.id})
 
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 

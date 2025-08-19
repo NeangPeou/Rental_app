@@ -8,7 +8,7 @@ from schemas.user import UpdateUser, UserCreate, UserResponse
 
 router = APIRouter()
 
-@router.get("/owners", response_model=List[UserResponse])
+@router.get("/owners")
 def get_owners(
     db: Session = Depends(get_db),
     current_user: user.User = Depends(usercontroller.get_current_user)

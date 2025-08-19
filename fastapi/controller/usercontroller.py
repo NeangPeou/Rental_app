@@ -30,14 +30,19 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     except JWTError as e:
         raise credentials_exception
 
-def generate_user_id(db: Session):
-    latest_user = db.query(user.User).filter(user.User.userID.like("sw_rental_%")).order_by(user.User.userID.desc()).first()
+def generate_user_id(db: Session, user_data: UserCreate):
+    latest_user = db.query(user.User).order_by(user.User.id.desc()).first()
+
+    # If no such user exists, return the original username
     if not latest_user:
-        return "sw_rental_001" 
-    latest_id = latest_user.userID
-    number = int(latest_id.replace("sw_rental_", ""))
-    new_number = number + 1
-    return f"sw_rental_{new_number:03d}"
+        latest_id = latest_user.id
+        new_username = f"{user_data.username}{latest_id + 1}"
+        return user_data.username
+
+    # Append next ID to username to make it unique
+    latest_id = latest_user.id
+    new_username = f"{user_data.username}{latest_id + 1}"
+    return new_username
 
 
 def get_owners_controller(db: Session, current_user: user.User = Depends(get_current_user)):
@@ -55,12 +60,7 @@ def get_owners_controller(db: Session, current_user: user.User = Depends(get_cur
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch owners: {str(e)}")
 
-def create_owner_controller(
-    user_data: UserCreate, 
-    db: Session, 
-    current_user: user.User = Depends(get_current_user),
-    request_obj: Request = None
-):
+def create_owner_controller(user_data: UserCreate, db: Session, current_user: user.User = Depends(get_current_user), request_obj: Request = None):
     try:
         admin_role = db.query(role.Role).filter(role.Role.role == "Admin").first()
         if not admin_role or current_user.role_id != admin_role.id:
@@ -78,9 +78,8 @@ def create_owner_controller(
             db.refresh(owner_role)
 
         hashed_password = get_password_hash(user_data.password)
-        user_id = generate_user_id(db)
+        # user_id = generate_user_id(db, user_data)
         users = user.User(
-            userID=user_id,
             userName=user_data.username,
             password=hashed_password,
             role_id=owner_role.id,
@@ -93,6 +92,8 @@ def create_owner_controller(
         db.commit()
         db.refresh(users)
 
+        update_username(users.id, f"{users.userName}{users.id}", db)
+
         ip_address = request_obj.client.host if request_obj else 'unknown'
         host_name = user_data.deviceName if hasattr(user_data, 'deviceName') else ip_address or 'unknown'
         log_action(
@@ -104,10 +105,26 @@ def create_owner_controller(
             host_name=host_name
         )
 
-        return {"message": f"Owner {users.userName} created successfully", "user_id": users.userID}
+        return {"message": f"Owner {users.userName} created successfully", "user_id": users.id}
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to create owner: {str(e)}")
+    
+def update_username(user_id: int, new_username: str, db: Session):
+    user_obj = db.query(user.User).filter(user.User.id == user_id).first()
+    if not user_obj:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check for duplicate
+    existing_user = db.query(user.User).filter(user.User.userName == new_username).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already exists")
+    
+    user_obj.userName = new_username
+    db.commit()
+    db.refresh(user_obj)
+    return {"message": "Username updated successfully", "userName": user_obj.userName}
+
     
 def update_owner_controller(
     user_id: str,
@@ -177,7 +194,7 @@ def delete_owner_controller(
         if not admin_role or current_user.role_id != admin_role.id:
             raise HTTPException(status_code=403, detail="Only admins can delete owners")
 
-        owner = db.query(user.User).filter(user.User.userID == user_id).first()
+        owner = db.query(user.User).filter(user.User.id == user_id).first()
         if not owner:
             raise HTTPException(status_code=404, detail="Owner not found")
 
@@ -200,7 +217,7 @@ def delete_owner_controller(
             host_name=ip_address
         )
 
-        return {"message": f"Owner {owner.userName} and associated logs deleted successfully", "user_id": owner.userID}
+        return {"message": f"Owner {owner.userName} and associated logs deleted successfully", "user_id": owner.id}
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to delete owner and logs: {str(e)}")

@@ -61,7 +61,6 @@ def token_is_valid(request: Request, db: Session = Depends(get_db)):
 
         return {
             "valid": True,
-            "user_id": userData.userID,
             "username": userData.userName,
             "phone": userData.phoneNumber
         }
@@ -75,7 +74,6 @@ def logout(request: Request ,db: Session = Depends(get_db)):
 @router.get("/me")
 def get_current_user(current_user: user.User = Depends(usercontroller.get_current_user)):
     return {
-        "id": current_user.userID,
         "username": current_user.userName,
         "role": current_user.role_id if current_user.role_id else None
     }

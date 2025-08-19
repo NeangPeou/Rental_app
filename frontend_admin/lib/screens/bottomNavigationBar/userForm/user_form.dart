@@ -15,7 +15,7 @@ class _UserFormState extends State<UserForm> {
   final _formKey = GlobalKey<FormState>();
   final UserController controller = Get.find<UserController>();
   late String title;
-  String? userID;
+  String? userName;
   final RxBool _obscurePassword = true.obs;
 
   final TextEditingController usernameCtrl = TextEditingController();
@@ -31,8 +31,8 @@ class _UserFormState extends State<UserForm> {
     if (Get.arguments is Map<String, dynamic>) {
       final Map<String, dynamic> args = Get.arguments;
       title = args['title']?.toString() ?? 'Update Owner';
-      userID = args['userID']?.toString();
-      if (userID != null) {
+      userName = args['userName']?.toString();
+      if (userName != null) {
         usernameCtrl.text = args['userName']?.toString() ?? '';
         phoneCtrl.text = args['phoneNumber']?.toString() ?? '';
         passportCtrl.text = args['passport']?.toString() ?? '';
@@ -87,7 +87,7 @@ class _UserFormState extends State<UserForm> {
                   labelText: ('Password'.tr),
                   obscureText: _obscurePassword.value,
                   passwordType: true,
-                  validator: userID == null
+                  validator: userName == null
                       ? (v) {
                           if (v == null || v.isEmpty) return ('enter_password'.tr);
                           if (v.length < 3) {
@@ -96,7 +96,7 @@ class _UserFormState extends State<UserForm> {
                           return null;
                         }
                       : null,
-                  isRequired: userID == null,
+                  isRequired: userName == null,
                   onChanged: (v) => controller.password = v,
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -166,7 +166,7 @@ class _UserFormState extends State<UserForm> {
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          if (userID == null) {
+                          if (userName == null) {
                             Helper.showLoadingDialog(context);
                             await controller.createOwner();
                             if(!Get.isSnackbarOpen || Get.isSnackbarOpen && Get.currentRoute != '/Home'){
@@ -175,7 +175,7 @@ class _UserFormState extends State<UserForm> {
                             }
                           } else {
                             Helper.showLoadingDialog(context);
-                            await controller.updateOwner(userID!);
+                            await controller.updateOwner(userName!);
                             if(!Get.isSnackbarOpen || Get.isSnackbarOpen && Get.currentRoute != '/Home'){
                               Get.off(() => const Home(), arguments: {'index': 0});
                             }
@@ -183,7 +183,7 @@ class _UserFormState extends State<UserForm> {
                           }
                         }
                       },
-                      child: Text(userID == null ? 'save'.tr : 'update'.tr),
+                      child: Text(userName == null ? 'save'.tr : 'update'.tr),
                     ),
                   ],
                 ),

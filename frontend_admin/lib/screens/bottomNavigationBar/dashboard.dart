@@ -188,7 +188,7 @@ class _DashboardState extends State<Dashboard> {
                                                               ),
                                                               onPressed: () {
                                                                 Get.back();
-                                                                controller.deleteOwner(owner['userID']);
+                                                                controller.deleteOwner(owner['id']);
                                                               },
                                                               child: Text('delete'.tr, style: const TextStyle(color: Colors.white)),
                                                             ),
