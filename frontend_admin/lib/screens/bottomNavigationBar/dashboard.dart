@@ -44,7 +44,9 @@ class _DashboardState extends State<Dashboard> {
         padding: const EdgeInsets.all(5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+
           children: [
+            SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -64,8 +66,7 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
             ),
-            const SizedBox(height: 10),
-            // Second Container: Recent Owners (Scrollable)
+            const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
@@ -91,7 +92,9 @@ class _DashboardState extends State<Dashboard> {
                                   elevation: 1,
                                   color: Colors.teal,
                                   margin: const EdgeInsets.only(bottom: 8),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                   child: ListTile(
                                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                     leading: CircleAvatar(radius: 20, backgroundImage: AssetImage(owner['image'] ?? 'assets/images/user.png')),
@@ -117,11 +120,9 @@ class _DashboardState extends State<Dashboard> {
                                         IconButton(
                                           icon: const Icon(Icons.edit, size: 18),
                                           onPressed: () {
-                                            Get.to(
-                                              const UserForm(),
-                                              arguments: {
+                                            Get.to(() => UserForm(), arguments: {
                                                 'title': 'UpdateOwner'.tr,
-                                                'userID': owner['userID'],
+                                                'id': owner['id'],
                                                 'userName': owner['userName'],
                                                 'phoneNumber': owner['phoneNumber'],
                                                 'passport': owner['passport'],

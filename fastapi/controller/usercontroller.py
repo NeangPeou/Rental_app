@@ -78,7 +78,6 @@ def create_owner_controller(user_data: UserCreate, db: Session, current_user: us
             db.refresh(owner_role)
 
         hashed_password = get_password_hash(user_data.password)
-        # user_id = generate_user_id(db, user_data)
         users = user.User(
             userName=user_data.username,
             password=hashed_password,
@@ -114,12 +113,11 @@ def update_username(user_id: int, new_username: str, db: Session):
     user_obj = db.query(user.User).filter(user.User.id == user_id).first()
     if not user_obj:
         raise HTTPException(status_code=404, detail="User not found")
-    
-    # Check for duplicate
+
     existing_user = db.query(user.User).filter(user.User.userName == new_username).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
-    
+
     user_obj.userName = new_username
     db.commit()
     db.refresh(user_obj)
@@ -127,7 +125,7 @@ def update_username(user_id: int, new_username: str, db: Session):
 
     
 def update_owner_controller(
-    user_id: str,
+    id: str,
     user_data: UpdateUser,
     db: Session,
     current_user: user.User = Depends(get_current_user),
@@ -138,21 +136,28 @@ def update_owner_controller(
         if not admin_role or current_user.role_id != admin_role.id:
             raise HTTPException(status_code=403, detail="Only admins can update owners")
 
-        owner = db.query(user.User).filter(user.User.userID == user_id).first()
+        owner = db.query(user.User).filter(user.User.id == id).first()
         if not owner:
             raise HTTPException(status_code=404, detail="Owner not found")
 
         owner_role = db.query(role.Role).filter(role.Role.role == "Owner").first()
         if not owner_role or owner.role_id != owner_role.id:
             raise HTTPException(status_code=400, detail="User is not an owner")
+       
+        if user_data.username:
+            current_prefix = owner.userName.rstrip('0123456789')
+            if user_data.username != current_prefix: 
+                new_username = f"{user_data.username}{owner.id}"
+                existing_user = db.query(user.User).filter(user.User.userName == new_username).first()
+                if existing_user:
+                    pass
+                else:
+                    owner.userName = new_username
+            else:
+                pass
+        else:
+            pass 
 
-        if user_data.username and user_data.username != owner.userName:
-            existing_user = db.query(user.User).filter(user.User.userName == user_data.username).first()
-            if existing_user:
-                raise HTTPException(status_code=400, detail="Username already exists")
-
-        if user_data.username is not None:
-            owner.userName = user_data.username
         if user_data.password is not None:
             owner.password = get_password_hash(user_data.password)
         if user_data.phoneNumber is not None:
@@ -178,13 +183,14 @@ def update_owner_controller(
             host_name=host_name
         )
 
-        return {"message": f"Owner {owner.userName} updated successfully", "user_id": owner.userID}
+        return {"message": f"Owner {owner.userName} updated successfully", "user_id": owner.id}
     except Exception as e:
         db.rollback()
+        print(f"Error updating owner: {str(e)}")  # Debug log
         raise HTTPException(status_code=500, detail=f"Failed to update owner: {str(e)}")
     
 def delete_owner_controller(
-    user_id: str,
+    id: str,
     db: Session,
     current_user: user.User = Depends(get_current_user),
     request_obj: Request = None
@@ -194,7 +200,7 @@ def delete_owner_controller(
         if not admin_role or current_user.role_id != admin_role.id:
             raise HTTPException(status_code=403, detail="Only admins can delete owners")
 
-        owner = db.query(user.User).filter(user.User.id == user_id).first()
+        owner = db.query(user.User).filter(user.User.id == id).first()
         if not owner:
             raise HTTPException(status_code=404, detail="Owner not found")
 
