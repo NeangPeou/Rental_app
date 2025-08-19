@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_admin/controller/user_contoller.dart';
+import 'package:frontend_admin/screens/home/home.dart';
 import 'package:frontend_admin/utils/helper.dart';
 import 'package:get/get.dart';
 
@@ -12,48 +13,40 @@ class UserForm extends StatefulWidget {
 
 class _UserFormState extends State<UserForm> {
   final _formKey = GlobalKey<FormState>();
-  final UserController controller = Get.put(UserController());
+  final UserController controller = Get.find<UserController>();
   late String title;
+  String? userID;
   final RxBool _obscurePassword = true.obs;
+
+  final TextEditingController usernameCtrl = TextEditingController();
+  final TextEditingController passwordCtrl = TextEditingController();
+  final TextEditingController phoneCtrl = TextEditingController();
+  final TextEditingController passportCtrl = TextEditingController();
+  final TextEditingController idCardCtrl = TextEditingController();
+  final TextEditingController addressCtrl = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    title = Get.arguments ?? "";
-  }
-
-  Widget buildTextField({
-    required String label,
-    String? initialValue,
-    TextEditingController? controller,
-    TextInputType keyboardType = TextInputType.text,
-    bool obscureText = false,
-    String? Function(String?)? validator,
-    void Function(String)? onChanged,
-    bool readOnly = false,
-    VoidCallback? onTap,
-    Widget? suffixIcon,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        initialValue: initialValue,
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          suffixIcon: suffixIcon,
-        ),
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        validator: validator,
-        onChanged: onChanged,
-        readOnly: readOnly,
-        onTap: onTap,
-      ),
-    );
+    if (Get.arguments is Map<String, dynamic>) {
+      final Map<String, dynamic> args = Get.arguments;
+      title = args['title']?.toString() ?? 'Update Owner';
+      userID = args['userID']?.toString();
+      if (userID != null) {
+        usernameCtrl.text = args['userName']?.toString() ?? '';
+        phoneCtrl.text = args['phoneNumber']?.toString() ?? '';
+        passportCtrl.text = args['passport']?.toString() ?? '';
+        idCardCtrl.text = args['idCard']?.toString() ?? '';
+        addressCtrl.text = args['address']?.toString() ?? '';
+        controller.username = usernameCtrl.text;
+        controller.phoneNumber = phoneCtrl.text;
+        controller.passport = passportCtrl.text;
+        controller.idCard = idCardCtrl.text;
+        controller.address = addressCtrl.text;
+      }
+    } else {
+      title = Get.arguments?.toString() ?? 'Create Owner';
+    }
   }
 
   @override
@@ -61,13 +54,13 @@ class _UserFormState extends State<UserForm> {
     return Scaffold(
       appBar: Helper.sampleAppBar(title, context, null),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 8,
@@ -79,19 +72,31 @@ class _UserFormState extends State<UserForm> {
             key: _formKey,
             child: Column(
               children: [
-                buildTextField(
-                  label: ('Username'.tr),
-                  validator: (v) => v!.isEmpty ? 'Enter username' : null,
+                Helper.sampleTextField(
+                  context: context,
+                  controller: usernameCtrl,
+                  labelText: ('Username'.tr),
+                  validator: (v) => v!.isEmpty ? ('enter_username'.tr) : null,
+                  isRequired: true,
                   onChanged: (v) => controller.username = v,
                 ),
-                Obx(() => buildTextField(
-                  label: ('Password'.tr),
+                const SizedBox(height: 10),
+                Obx(() => Helper.sampleTextField(
+                  context: context,
+                  controller: passwordCtrl,
+                  labelText: ('Password'.tr),
                   obscureText: _obscurePassword.value,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Please enter password';
-                    if (v.length < 3) return 'Password must be at least 3 characters';
-                    return null;
-                  },
+                  passwordType: true,
+                  validator: userID == null
+                      ? (v) {
+                          if (v == null || v.isEmpty) return ('enter_password'.tr);
+                          if (v.length < 3) {
+                            return ('Password_must_be_at_least_characters'.tr);
+                          }
+                          return null;
+                        }
+                      : null,
+                  isRequired: userID == null,
                   onChanged: (v) => controller.password = v,
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -104,47 +109,77 @@ class _UserFormState extends State<UserForm> {
                     },
                   ),
                 )),
-                buildTextField(
-                  label: ('PhoneNumber'.tr),
+                const SizedBox(height: 10),
+                Helper.sampleTextField(
+                  context: context,
+                  controller: phoneCtrl,
+                  labelText: ('PhoneNumber'.tr),
                   keyboardType: TextInputType.phone,
                   validator: (v) {
-                    if (v == null || v.isEmpty) return 'Enter phone number';
-                    if (!RegExp(r'^\+?\d{8,15}$').hasMatch(v)) return 'Invalid phone number';
+                    if (v == null || v.isEmpty) {
+                      return ('enter_phone_number'.tr);
+                    }
+                    if (!RegExp(r'^\+?\d{8,15}$').hasMatch(v)) {
+                      return ('Invalid_phone_number'.tr);
+                    }
                     return null;
                   },
+                  isRequired: true,
                   onChanged: (v) => controller.phoneNumber = v,
                 ),
-                buildTextField(
-                  label: ('Passport'.tr),
+                const SizedBox(height: 10),
+                Helper.sampleTextField(
+                  context: context,
+                  controller: passportCtrl,
+                  labelText: ('Passport'.tr),
+                  validator: (v) => null,
                   onChanged: (v) => controller.passport = v,
                 ),
-                buildTextField(
-                  label: ('IDCard'.tr),
+                const SizedBox(height: 10),
+                Helper.sampleTextField(
+                  context: context,
+                  controller: idCardCtrl,
+                  labelText: ('IDCard'.tr),
+                  validator: (v) => null,
                   onChanged: (v) => controller.idCard = v,
                 ),
-                buildTextField(
-                  label: ('Address'.tr),
+                const SizedBox(height: 10),
+                Helper.sampleTextField(
+                  context: context,
+                  controller: addressCtrl,
+                  labelText: ('Address'.tr),
+                  validator: (v) => null,
                   onChanged: (v) => controller.address = v,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ElevatedButton(
-                      onPressed: () => Get.back(),
+                      onPressed: () {
+                        Get.closeAllSnackbars();
+                        Get.back();
+                      },
                       child: Text('cancel'.tr),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          await controller.createOwner();
-                          if (!Get.isSnackbarOpen) {
-                            Get.back();
+                          if (userID == null) {
+                            await controller.createOwner();
+                            if(!Get.isSnackbarOpen || Get.isSnackbarOpen && Get.currentRoute != '/Home'){
+                              Get.off(() => const Home(), arguments: {'index': 0});
+                            }
+                          } else {
+                            await controller.updateOwner(userID!);
+                            if(!Get.isSnackbarOpen || Get.isSnackbarOpen && Get.currentRoute != '/Home'){
+                              Get.off(() => const Home(), arguments: {'index': 0});
+                            }
                           }
                         }
                       },
-                      child: Text('save'.tr),
+                      child: Text(userID == null ? 'save'.tr : 'update'.tr),
                     ),
                   ],
                 ),

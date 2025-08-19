@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_admin/controller/user_contoller.dart';
+import 'package:frontend_admin/screens/bottomNavigationBar/userForm/user_form.dart';
+import 'package:get/get.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -8,51 +11,31 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  final List<Map<String, dynamic>> orders = [
-    {
-      "car": "Luxury Villa",
-      "user": "John Doe",
-      "date": "Aug 01 – Aug 05",
-      "status": "Completed",
-      "statusColor": Colors.green,
-      "image": "assets/images/house.png"
-    },
-    {
-      "car": "Beach Condo",
-      "user": "Jane Smith",
-      "date": "Aug 02 – Aug 06",
-      "status": "Ongoing",
-      "statusColor": Colors.blue,
-      "image": "assets/images/condo.png"
-    },
-    {
-      "car": "City Apartment",
-      "user": "Michael Brown",
-      "date": "Aug 03 – Aug 07",
-      "status": "Completed",
-      "statusColor": Colors.green,
-      "image": "assets/images/apartment.png"
-    },
-  ];
+  final UserController controller = Get.find<UserController>();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.fetchOwners(); // Initial fetch
+  }
 
   Widget _buildStatCard(String title, String value, IconData icon) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          color: Colors.teal,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           children: [
-            Icon(icon, size: 28, color: Colors.blue),
+            Icon(icon, size: 28),
             const SizedBox(height: 8),
             Text(
               value,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             Text(title, style: Theme.of(context).textTheme.bodySmall),
           ],
@@ -70,95 +53,268 @@ class _DashboardState extends State<Dashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Dashboard",
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              "Dashboard".tr,
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
-
-            // Stats Row
-            Row(
-              children: [
-                _buildStatCard("Properties", "15", Icons.home),
-                const SizedBox(width: 12),
-                _buildStatCard("Bookings", "03", Icons.calendar_month),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                _buildStatCard("Requests", "02", Icons.message),
-                const SizedBox(width: 12),
-                _buildStatCard("Users", "10", Icons.person),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-            Text("Recent Orders",
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-
-            ...orders.map((order) {
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
+            // First Container: Statistics
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor.withAlpha(100),
                 ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: AssetImage(order['image']),
-                      radius: 22,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(order['car'],
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(fontWeight: FontWeight.w600)),
-                          Text(order['user'],
-                              style: Theme.of(context).textTheme.bodySmall),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(order['date'],
-                            style: Theme.of(context).textTheme.bodySmall),
-                        Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: order['statusColor'].withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            order['status'],
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: order['statusColor'],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      _buildStatCard("Requests", "02", Icons.message),
+                      const SizedBox(width: 12),
+                      Obx(
+                        () => _buildStatCard(
+                          "UsersOwner".tr,
+                          controller.owners.length.toString(),
+                          Icons.person,
                         ),
-                      ],
-                    )
-                  ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Second Container: Recent Owners (Scrollable)
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor.withAlpha(100),
                 ),
-              );
-            }),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "UsersOwnerList".tr,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Scrollable list inside container
+                  Obx(
+                    () => SizedBox(
+                      height: Get.height * .5,
+                      child: controller.owners.isEmpty
+                          ? Center(
+                              child: Text(
+                                "NoUser".tr,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: controller.owners.length,
+                              itemBuilder: (context, index) {
+                                final owner = controller.owners[index];
+                                return Card(
+                                  elevation: 1,
+                                  color: Colors.teal,
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    leading: CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage: AssetImage(
+                                        owner['image'] ??
+                                            'assets/images/user.png',
+                                      ),
+                                    ),
+                                    title: Text(
+                                      owner['userName'] ?? 'Unknown User',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                    subtitle: Text(
+                                      owner['phoneNumber'] ?? '',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
+                                    ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        // status badge
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 3,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                (owner['statusColor']
+                                                    as Color?) ??
+                                                Colors.grey,
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            owner['status'] ?? '',
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        // edit button
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.edit,
+                                            size: 18,
+                                          ),
+                                          onPressed: () {
+                                            Get.to(
+                                              const UserForm(),
+                                              arguments: {
+                                                'title': 'UpdateOwner'.tr,
+                                                'userID': owner['userID'],
+                                                'userName': owner['userName'],
+                                                'phoneNumber':
+                                                    owner['phoneNumber'],
+                                                'passport': owner['passport'],
+                                                'idCard': owner['idCard'],
+                                                'address': owner['address'],
+                                              },
+                                            );
+                                          },
+                                        ),
+                                        // delete button
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            size: 18,
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () {
+                                            Get.dialog(
+                                              Dialog(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(16),
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(20),
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Container(
+                                                        padding: const EdgeInsets.all(16),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.red.withOpacity(0.1),
+                                                          shape: BoxShape.circle,
+                                                        ),
+                                                        child: const Icon(
+                                                          Icons.warning_rounded,
+                                                          color: Colors.red,
+                                                          size: 40,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 16),
+                                                      // Title
+                                                      Text(
+                                                        'ConfirmDelete'.tr,
+                                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                              fontWeight: FontWeight.bold,
+                                                            ),
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      // Content
+                                                      Text(
+                                                        'AreYouSureDelete'.tr.replaceFirst(
+                                                              '{userName}',
+                                                              owner['userName'],
+                                                            ),
+                                                        textAlign: TextAlign.center,
+                                                        style: Theme.of(context).textTheme.bodyMedium,
+                                                      ),
+                                                      const SizedBox(height: 20),
+                                                      // Buttons
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                        children: [
+                                                          // Cancel Button
+                                                          Expanded(
+                                                            child: OutlinedButton(
+                                                              style: OutlinedButton.styleFrom(
+                                                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(10),
+                                                                ),
+                                                              ),
+                                                              onPressed: () => Get.back(),
+                                                              child: Text('cancel'.tr),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(width: 12),
+                                                          // Delete Button
+                                                          Expanded(
+                                                            child: ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                backgroundColor: Colors.red,
+                                                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(10),
+                                                                ),
+                                                              ),
+                                                              onPressed: () {
+                                                                Get.back();
+                                                                controller.deleteOwner(owner['userID']);
+                                                              },
+                                                              child: Text(
+                                                                'delete'.tr,
+                                                                style: const TextStyle(color: Colors.white),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

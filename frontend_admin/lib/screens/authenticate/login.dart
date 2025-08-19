@@ -68,6 +68,7 @@ class _LoginState extends State<Login> {
                           controller: _userController,
                           labelText: 'username'.tr,
                           validator: (value) => value == null || value.isEmpty ? 'enter_username'.tr : null,
+                          isRequired: true, 
                         ),
                         const SizedBox(height: 16),
 
@@ -86,6 +87,7 @@ class _LoginState extends State<Login> {
                             },
                           ),
                           passwordType: true,
+                          isRequired: true, 
                         ),
 
                         const SizedBox(height: 10),
