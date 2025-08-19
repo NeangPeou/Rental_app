@@ -172,7 +172,7 @@ class _SettingState extends State<Setting> {
                 radius: 18,
                 child: Icon(Icons.logout_sharp, color: Colors.red, size: 20),
               ),
-              title: Text('logout'.tr, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.red)),
+              title: Text('logout'.tr, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.red)),
               onTap: (){
                 Get.defaultDialog(
                   radius: 10,
@@ -523,10 +523,9 @@ class _SettingState extends State<Setting> {
   }
 
   void showNotificationBottomSheet() {
-
     Get.bottomSheet(
       SafeArea(
-        bottom: true,
+        bottom: false,
         child: Container(
           height: Get.height * .5,
           padding: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 15),
