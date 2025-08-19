@@ -23,20 +23,12 @@ class _DashboardState extends State<Dashboard> {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.teal,
-          borderRadius: BorderRadius.circular(12),
-        ),
+        decoration: BoxDecoration(color: Colors.teal, borderRadius: BorderRadius.circular(12)),
         child: Column(
           children: [
             Icon(icon, size: 28),
             const SizedBox(height: 8),
-            Text(
-              value,
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-            ),
+            Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
             Text(title, style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
@@ -49,26 +41,16 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Dashboard".tr,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            // First Container: Statistics
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Theme.of(context).dividerColor.withAlpha(100),
-                ),
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
               ),
               child: Column(
                 children: [
@@ -76,50 +58,30 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       _buildStatCard("Requests", "02", Icons.message),
                       const SizedBox(width: 12),
-                      Obx(
-                        () => _buildStatCard(
-                          "UsersOwner".tr,
-                          controller.owners.length.toString(),
-                          Icons.person,
-                        ),
-                      ),
+                      Obx(() => _buildStatCard("UsersOwner".tr, controller.owners.length.toString(), Icons.person)),
                     ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 10),
             // Second Container: Recent Owners (Scrollable)
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Theme.of(context).dividerColor.withAlpha(100),
-                ),
+                border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "UsersOwnerList".tr,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // Scrollable list inside container
+                  Text("UsersOwnerList".tr, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                   Obx(
                     () => SizedBox(
                       height: Get.height * .5,
                       child: controller.owners.isEmpty
-                          ? Center(
-                              child: Text(
-                                "NoUser".tr,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            )
+                          ? Center(child: Text("NoUser".tr, style: Theme.of(context).textTheme.bodyMedium))
                           : ListView.builder(
                               itemCount: controller.owners.length,
                               itemBuilder: (context, index) {
@@ -128,69 +90,31 @@ class _DashboardState extends State<Dashboard> {
                                   elevation: 1,
                                   color: Colors.teal,
                                   margin: const EdgeInsets.only(bottom: 8),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                   child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    leading: CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage: AssetImage(
-                                        owner['image'] ??
-                                            'assets/images/user.png',
-                                      ),
-                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    leading: CircleAvatar(radius: 20, backgroundImage: AssetImage(owner['image'] ?? 'assets/images/user.png')),
                                     title: Text(
                                       owner['userName'] ?? 'Unknown User',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                                     ),
-                                    subtitle: Text(
-                                      owner['phoneNumber'] ?? '',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodySmall,
-                                    ),
+                                    subtitle: Text(owner['phoneNumber'] ?? '', style: Theme.of(context).textTheme.bodySmall),
                                     trailing: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         // status badge
                                         Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 6,
-                                            vertical: 3,
-                                          ),
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                           decoration: BoxDecoration(
-                                            color:
-                                                (owner['statusColor']
-                                                    as Color?) ??
-                                                Colors.grey,
-                                            borderRadius: BorderRadius.circular(
-                                              6,
-                                            ),
+                                            color: (owner['statusColor'] as Color?) ?? Colors.grey,
+                                            borderRadius: BorderRadius.circular(6),
                                           ),
-                                          child: Text(
-                                            owner['status'] ?? '',
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
+                                          child: Text(owner['status'] ?? '', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
                                         ),
                                         const SizedBox(width: 8),
                                         // edit button
                                         IconButton(
-                                          icon: const Icon(
-                                            Icons.edit,
-                                            size: 18,
-                                          ),
+                                          icon: const Icon(Icons.edit, size: 18),
                                           onPressed: () {
                                             Get.to(
                                               const UserForm(),
@@ -198,8 +122,7 @@ class _DashboardState extends State<Dashboard> {
                                                 'title': 'UpdateOwner'.tr,
                                                 'userID': owner['userID'],
                                                 'userName': owner['userName'],
-                                                'phoneNumber':
-                                                    owner['phoneNumber'],
+                                                'phoneNumber': owner['phoneNumber'],
                                                 'passport': owner['passport'],
                                                 'idCard': owner['idCard'],
                                                 'address': owner['address'],
@@ -209,17 +132,11 @@ class _DashboardState extends State<Dashboard> {
                                         ),
                                         // delete button
                                         IconButton(
-                                          icon: const Icon(
-                                            Icons.delete,
-                                            size: 18,
-                                            color: Colors.red,
-                                          ),
+                                          icon: const Icon(Icons.delete, size: 18, color: Colors.red),
                                           onPressed: () {
                                             Get.dialog(
                                               Dialog(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(16),
-                                                ),
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                                 child: Padding(
                                                   padding: const EdgeInsets.all(20),
                                                   child: Column(
@@ -227,31 +144,19 @@ class _DashboardState extends State<Dashboard> {
                                                     children: [
                                                       Container(
                                                         padding: const EdgeInsets.all(16),
-                                                        decoration: BoxDecoration(
-                                                          color: Colors.red.withOpacity(0.1),
-                                                          shape: BoxShape.circle,
-                                                        ),
-                                                        child: const Icon(
-                                                          Icons.warning_rounded,
-                                                          color: Colors.red,
-                                                          size: 40,
-                                                        ),
+                                                        decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), shape: BoxShape.circle),
+                                                        child: const Icon(Icons.warning_rounded, color: Colors.red, size: 40),
                                                       ),
                                                       const SizedBox(height: 16),
                                                       // Title
                                                       Text(
                                                         'ConfirmDelete'.tr,
-                                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                                              fontWeight: FontWeight.bold,
-                                                            ),
+                                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                                                       ),
                                                       const SizedBox(height: 8),
                                                       // Content
                                                       Text(
-                                                        'AreYouSureDelete'.tr.replaceFirst(
-                                                              '{userName}',
-                                                              owner['userName'],
-                                                            ),
+                                                        'AreYouSureDelete'.tr.replaceFirst('{userName}', owner['userName']),
                                                         textAlign: TextAlign.center,
                                                         style: Theme.of(context).textTheme.bodyMedium,
                                                       ),
@@ -265,9 +170,7 @@ class _DashboardState extends State<Dashboard> {
                                                             child: OutlinedButton(
                                                               style: OutlinedButton.styleFrom(
                                                                 padding: const EdgeInsets.symmetric(vertical: 12),
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.circular(10),
-                                                                ),
+                                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                                               ),
                                                               onPressed: () => Get.back(),
                                                               child: Text('cancel'.tr),
@@ -280,18 +183,13 @@ class _DashboardState extends State<Dashboard> {
                                                               style: ElevatedButton.styleFrom(
                                                                 backgroundColor: Colors.red,
                                                                 padding: const EdgeInsets.symmetric(vertical: 12),
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.circular(10),
-                                                                ),
+                                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                                               ),
                                                               onPressed: () {
                                                                 Get.back();
                                                                 controller.deleteOwner(owner['userID']);
                                                               },
-                                                              child: Text(
-                                                                'delete'.tr,
-                                                                style: const TextStyle(color: Colors.white),
-                                                              ),
+                                                              child: Text('delete'.tr, style: const TextStyle(color: Colors.white)),
                                                             ),
                                                           ),
                                                         ],
@@ -303,7 +201,6 @@ class _DashboardState extends State<Dashboard> {
                                             );
                                           },
                                         ),
-
                                       ],
                                     ),
                                   ),

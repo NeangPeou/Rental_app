@@ -25,9 +25,9 @@ ThemeData lightTheme([Color? primaryColor]) {
       style: ElevatedButton.styleFrom(
         backgroundColor: adjustColor(settingController.box.hasData(StorageKeys.selectedColor) ? settingController.selectedColor.value : Colors.teal, contrast, saturation),
         foregroundColor: adjustColor(Colors.black, contrast, saturation),
-        textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, inherit: true),
+        textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12, inherit: true),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         elevation: 0.0,
       ),
     ),
@@ -63,9 +63,9 @@ ThemeData darkTheme([Color? primaryColor]) {
       style: ElevatedButton.styleFrom(
         backgroundColor: adjustColor(settingController.box.hasData(StorageKeys.selectedColor) ? settingController.selectedColor.value : Colors.teal, contrast, saturation),
         foregroundColor: adjustColor(Colors.white, contrast, saturation),
-        textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, inherit: true),
+        textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12, inherit: true),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         elevation: 0.0,
       ),
     ),

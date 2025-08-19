@@ -167,15 +167,19 @@ class _UserFormState extends State<UserForm> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           if (userID == null) {
+                            Helper.showLoadingDialog(context);
                             await controller.createOwner();
                             if(!Get.isSnackbarOpen || Get.isSnackbarOpen && Get.currentRoute != '/Home'){
+                              Helper.closeLoadingDialog(context);
                               Get.off(() => const Home(), arguments: {'index': 0});
                             }
                           } else {
+                            Helper.showLoadingDialog(context);
                             await controller.updateOwner(userID!);
                             if(!Get.isSnackbarOpen || Get.isSnackbarOpen && Get.currentRoute != '/Home'){
                               Get.off(() => const Home(), arguments: {'index': 0});
                             }
+                            Helper.closeLoadingDialog(context);
                           }
                         }
                       },
