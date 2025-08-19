@@ -32,3 +32,23 @@ class UserCreate(BaseModel):
     idCard: Optional[str] = None
     address: Optional[str] = None
     deviceName: Optional[str] = None
+
+class UserResponse(BaseModel):
+    userID: str
+    userName: str
+    phoneNumber: Optional[str] = None
+    passport: Optional[str] = None
+    idCard: Optional[str] = None
+    address: Optional[str] = None
+
+    class Config:
+        orm_mode = True  
+
+class UpdateUser(BaseModel):
+    username: Optional[str] = None
+    password: Optional[str] = None
+    phoneNumber: Optional[str] = None
+    passport: Optional[str] = None
+    idCard: Optional[str] = None
+    address: Optional[str] = None
+    deviceName: Optional[str] = None

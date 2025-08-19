@@ -20,12 +20,13 @@ class Helper {
     required BuildContext context,
     required TextEditingController controller,
     required String labelText,
-    required String? Function(String?) validator,
+    String? Function(String?)? validator,
     bool obscureText = false,
     Widget? suffixIcon,
     TextInputType keyboardType = TextInputType.text,
     bool passwordType = false,
     void Function(String)? onChanged,
+    bool isRequired = false,
   }) {
     final theme = Theme.of(context);
 
@@ -39,20 +40,33 @@ class Helper {
           obscureText: obscureText,
           keyboardType: keyboardType,
           decoration: InputDecoration(
-            labelText: labelText,
-            labelStyle: theme.textTheme.bodyMedium,
-            suffixIcon: showClearIcon ? IconButton(
-              icon: CircleAvatar(
-                backgroundColor: Get.theme.cardColor,
-                radius: 10,
-                child: const Icon(Icons.clear_rounded, size: 15),
+            label: RichText(
+              text: TextSpan(
+                text: labelText,
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+                children: isRequired
+                    ? [
+                        const TextSpan(
+                          text: ' *',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ]
+                    : [],
               ),
-              onPressed: () {
-                controller.clear();
-                // Optionally call onChanged after clearing
-                if (onChanged != null) onChanged('');
-              },
-            ) : suffixIcon,
+            ),
+            suffixIcon: showClearIcon
+                ? IconButton(
+                    icon: CircleAvatar(
+                      backgroundColor: Get.theme.cardColor,
+                      radius: 10,
+                      child: const Icon(Icons.clear_rounded, size: 15),
+                    ),
+                    onPressed: () {
+                      controller.clear();
+                      if (onChanged != null) onChanged('');
+                    },
+                  )
+                : suffixIcon,
             border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(15)),
             ),
@@ -62,7 +76,8 @@ class Helper {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: const BorderRadius.all(Radius.circular(15)),
-              borderSide: BorderSide(color: theme.colorScheme.onSecondaryContainer),
+              borderSide:
+                  BorderSide(color: theme.colorScheme.onSecondaryContainer),
             ),
           ),
           validator: validator,
