@@ -15,7 +15,7 @@ class _UserFormState extends State<UserForm> {
   final _formKey = GlobalKey<FormState>();
   final UserController controller = Get.find<UserController>();
   late String title;
-  String? userName;
+  String? id;
   final RxBool _obscurePassword = true.obs;
 
   final TextEditingController usernameCtrl = TextEditingController();
@@ -31,9 +31,10 @@ class _UserFormState extends State<UserForm> {
     if (Get.arguments is Map<String, dynamic>) {
       final Map<String, dynamic> args = Get.arguments;
       title = args['title']?.toString() ?? 'Update Owner';
-      userName = args['userName']?.toString();
-      if (userName != null) {
-        usernameCtrl.text = args['userName']?.toString() ?? '';
+      id = args['id']?.toString();
+      if (id != null) {
+        String displayUserName = args['userName']?.toString().replaceAll(RegExp(r'\d+$'), '') ?? '';
+        usernameCtrl.text = displayUserName;
         phoneCtrl.text = args['phoneNumber']?.toString() ?? '';
         passportCtrl.text = args['passport']?.toString() ?? '';
         idCardCtrl.text = args['idCard']?.toString() ?? '';
@@ -53,6 +54,7 @@ class _UserFormState extends State<UserForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Helper.sampleAppBar(title, context, null),
+      
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(5),
         child: Container(
@@ -67,6 +69,7 @@ class _UserFormState extends State<UserForm> {
                 offset: Offset(0, 4),
               ),
             ],
+            border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
           ),
           child: Form(
             key: _formKey,
@@ -87,7 +90,7 @@ class _UserFormState extends State<UserForm> {
                   labelText: ('Password'.tr),
                   obscureText: _obscurePassword.value,
                   passwordType: true,
-                  validator: userName == null
+                  validator: id == null
                       ? (v) {
                           if (v == null || v.isEmpty) return ('enter_password'.tr);
                           if (v.length < 3) {
@@ -96,7 +99,7 @@ class _UserFormState extends State<UserForm> {
                           return null;
                         }
                       : null,
-                  isRequired: userName == null,
+                  isRequired: id == null,
                   onChanged: (v) => controller.password = v,
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -166,7 +169,7 @@ class _UserFormState extends State<UserForm> {
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          if (userName == null) {
+                          if (id == null) {
                             Helper.showLoadingDialog(context);
                             await controller.createOwner();
                             if(!Get.isSnackbarOpen || Get.isSnackbarOpen && Get.currentRoute != '/Home'){
@@ -175,15 +178,15 @@ class _UserFormState extends State<UserForm> {
                             }
                           } else {
                             Helper.showLoadingDialog(context);
-                            await controller.updateOwner(userName!);
+                            await controller.updateOwner(id!);
                             if(!Get.isSnackbarOpen || Get.isSnackbarOpen && Get.currentRoute != '/Home'){
+                              Helper.closeLoadingDialog(context);
                               Get.off(() => const Home(), arguments: {'index': 0});
                             }
-                            Helper.closeLoadingDialog(context);
                           }
                         }
                       },
-                      child: Text(userName == null ? 'save'.tr : 'update'.tr),
+                      child: Text(id == null ? 'save'.tr : 'update'.tr),
                     ),
                   ],
                 ),

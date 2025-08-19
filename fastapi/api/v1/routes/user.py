@@ -24,21 +24,21 @@ def create_owner(
 ):
     return usercontroller.create_owner_controller(user_data, db, current_user, request_obj)
 
-@router.put("/update-owner/{user_id}")
+@router.put("/update-owner/{id}")
 def update_owner(
-    user_id: str,
+    id: str,
     user_data: UpdateUser,
     request_obj: Request = None,
     db: Session = Depends(get_db),
     current_user: user.User = Depends(usercontroller.get_current_user)
 ):
-    return usercontroller.update_owner_controller(user_id, user_data, db, current_user, request_obj)
+    return usercontroller.update_owner_controller(id, user_data, db, current_user, request_obj)
 
-@router.delete("/delete-owner/{user_id}")
+@router.delete("/delete-owner/{id}")
 def delete_owner(
-    user_id: str,
+    id: str,
     request_obj: Request = None,
     db: Session = Depends(get_db),
     current_user: user.User = Depends(usercontroller.get_current_user)
 ):
-    return usercontroller.delete_owner_controller(user_id, db, current_user, request_obj)
+    return usercontroller.delete_owner_controller(id, db, current_user, request_obj)

@@ -111,7 +111,7 @@ class UserController extends GetxController {
     }
   }
 
-  Future<void> updateOwner(String userID) async {
+  Future<void> updateOwner(String id) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('x-auth-token');
@@ -140,7 +140,7 @@ class UserController extends GetxController {
         'deviceName': deviceName
       };
       final response = await http.put(
-        Uri.parse('${dotenv.env['API_URL']}/api/update-owner/$userID'),
+        Uri.parse('${dotenv.env['API_URL']}/api/update-owner/$id'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
@@ -160,7 +160,7 @@ class UserController extends GetxController {
     }
   }
 
-  Future<void> deleteOwner(String userID) async {
+  Future<void> deleteOwner(String id) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('x-auth-token');
@@ -171,7 +171,7 @@ class UserController extends GetxController {
       }
 
       final response = await http.delete(
-        Uri.parse('${dotenv.env['API_URL']}/api/delete-owner/$userID'),
+        Uri.parse('${dotenv.env['API_URL']}/api/delete-owner/$id'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
