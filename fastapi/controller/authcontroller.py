@@ -98,7 +98,7 @@ def register_controller(user_data: RegisterUser, db: Session, request_obj: Reque
 def logout_controller(request: Request, db: Session):
     try:
         token = request.headers.get("Authorization", "").replace("Bearer ", "")
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_exp": False})
         user_obj = db.query(user.User).filter_by(userName=payload.get("name")).first()
 
         if not user_obj:
