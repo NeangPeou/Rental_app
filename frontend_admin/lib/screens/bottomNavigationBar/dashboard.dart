@@ -77,6 +77,7 @@ class _DashboardState extends State<Dashboard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("UsersOwnerList".tr, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 10),
                   Obx(
                     () => SizedBox(
                       height: Get.height * .5,

@@ -62,7 +62,6 @@ class UserController extends GetxController {
 
       if (response.statusCode == 200) {
         Get.snackbar('Success', 'Owner created successfully', duration: const Duration(seconds: 2));
-        await Future.delayed(const Duration(seconds: 1));
         Get.closeAllSnackbars();
         await fetchOwners();
       } else {
@@ -151,7 +150,6 @@ class UserController extends GetxController {
 
       if (response.statusCode == 200) {
         Get.snackbar('Success', 'Owner updated successfully', duration: const Duration(seconds: 2));
-        await Future.delayed(const Duration(seconds: 1));
         Get.closeAllSnackbars();
         await fetchOwners();
       } else {
