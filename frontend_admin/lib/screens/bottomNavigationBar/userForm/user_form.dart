@@ -54,7 +54,7 @@ class _UserFormState extends State<UserForm> {
     return Scaffold(
       appBar: Helper.sampleAppBar(title, context, null),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(5),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
