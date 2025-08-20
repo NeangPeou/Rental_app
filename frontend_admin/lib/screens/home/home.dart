@@ -84,17 +84,19 @@ class _HomeState extends State<Home> {
       ),
       extendBody: true,
       floatingActionButton: _controller.index == 0
-          ? FloatingActionButton(
-              onPressed: () {
-                Get.to(
-                  const UserForm(),
-                  arguments: {'title': 'CreateOwner'.tr},
-                );
-              },
-              backgroundColor: Theme.of(context).secondaryHeaderColor,
-              child: const Icon(Icons.person_add_outlined),
-            )
-          : null,
+          ? Container(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16), bottom: Radius.circular(16)),
+            border: Border.all(color: Theme.of(context).dividerColor.withAlpha(110)),
+          ),
+          child: FloatingActionButton(
+            onPressed: () {
+              Get.to(const UserForm(),arguments: {'title': 'CreateOwner'.tr});
+            },
+            backgroundColor: Theme.of(context).cardColor,
+            child: const Icon(Icons.person_add_outlined),
+          ),
+        ): null,
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       bottomNavigationBar: AnimatedSlide(
         offset: _bottomBarOffset,
@@ -113,7 +115,7 @@ class _HomeState extends State<Home> {
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.08),
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                    border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+                    border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
                   ),
                   child: AnimatedNotchBottomBar(
                     notchBottomBarController: _controller,
