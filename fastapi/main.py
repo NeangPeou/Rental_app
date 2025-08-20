@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from api.v1.routes import auth, user
+from api.v1.routes import auth, user, websocket_router
 from db.session import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
-from middleware.convert_snake_to_camel import ConvertSnakeToCamelMiddleware
+# from middleware.convert_snake_to_camel import ConvertSnakeToCamelMiddleware
 import os
 from sqlalchemy import create_engine, text
 
@@ -61,7 +61,8 @@ app.add_middleware(
 )
 
 # Add snake_case to camelCase middleware
-app.add_middleware(ConvertSnakeToCamelMiddleware)
+# app.add_middleware(ConvertSnakeToCamelMiddleware)
 
 app.include_router(auth.router, prefix="/api", tags=["Auth"])
 app.include_router(user.router, prefix="/api", tags=["User"])
+app.include_router(websocket_router.ws_router)

@@ -44,6 +44,7 @@ class UserService{
 
   Future<void> createOwner(BuildContext context, UserModel userModel) async {
     try {
+      final UserController userController = Get.put(UserController());
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('x-auth-token');
 
@@ -79,7 +80,7 @@ class UserService{
       );
 
       if (response.statusCode == 200) {
-        await fetchOwners(context);
+        userController.loadOwners(context);
       }
     } catch (e) {
       MessageDialog.showMessage('Information', e.toString(), context);
@@ -88,6 +89,7 @@ class UserService{
 
   Future<void> updateOwner(BuildContext context, int id, UserModel userModel) async {
     try {
+      final UserController userController = Get.put(UserController());
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('x-auth-token');
 
@@ -123,7 +125,7 @@ class UserService{
       );
 
       if (response.statusCode == 200) {
-        await fetchOwners(context);
+        userController.loadOwners(context);
       }
     } catch (e) {
       MessageDialog.showMessage('Information', e.toString(), context);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_admin/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -22,7 +23,7 @@ class _MyAccountState extends State<MyAccount> {
     // Connect to the FastAPI WebSocket server
     channel = WebSocketChannel.connect(
       // Uri.parse('ws://0.0.0.0:8000/api/ws'), // FastAPI WebSocket URL
-      Uri.parse('wss://rental-app-3ow8.onrender.com/api/ws'), // FastAPI WebSocket URL
+      Uri.parse('${dotenv.env['SOCKET_URL']}/ws/owners'),
     );
   }
 

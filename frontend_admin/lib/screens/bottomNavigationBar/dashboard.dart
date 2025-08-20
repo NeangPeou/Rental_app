@@ -81,139 +81,138 @@ class _DashboardState extends State<Dashboard> {
                 children: [
                   Text("UsersOwnerList".tr, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                   SizedBox(height: 10),
-                  Obx(
-                    () => SizedBox(
+                  Obx(() {
+                    if (userController.isLoading.value) {
+                      return SizedBox(
+                        height: Get.height * .5,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    } else if (userController.ownerList.isEmpty) {
+                      return SizedBox(height: Get.height * .5, child: Center(child: Text("NoUser".tr)));
+                    }
+
+                    return SizedBox(
                       height: Get.height * .5,
-                      child: userController.ownerList.isEmpty
-                          ? Center(child: Text("NoUser".tr, style: Theme.of(context).textTheme.bodyMedium))
-                          : ListView.builder(
-                              itemCount: userController.ownerList.length,
-                              itemBuilder: (context, index) {
-                                final owner = userController.ownerList[index];
-                                return Card(
-                                  elevation: 1,
-                                  color: Colors.teal,
-                                  margin: const EdgeInsets.only(bottom: 8),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                    // leading: CircleAvatar(radius: 20, backgroundImage: AssetImage(owner.image ?? 'assets/images/user.png')),
-                                    title: Text(
-                                      owner.userName,
-                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                                    ),
-                                    subtitle: Text(owner.phoneNumber, style: Theme.of(context).textTheme.bodySmall),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        // status badge
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                                          decoration: BoxDecoration(
-                                            color: Colors.green,
-                                            borderRadius: BorderRadius.circular(6),
-                                          ),
-                                          child: Text(owner.status ?? '', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        // edit button
-                                        IconButton(
-                                          icon: const Icon(Icons.edit, size: 18),
-                                          onPressed: () {
-                                            Get.to(() => UserForm(), arguments: {
-                                                'title': 'UpdateOwner'.tr,
-                                                'id': owner.id,
-                                                'userName': owner.userName,
-                                                'userID': owner.userID,
-                                                'phoneNumber': owner.phoneNumber,
-                                                'passport': owner.passport,
-                                                'idCard': owner.idCard,
-                                                'address': owner.address,
-                                              },
-                                            );
-                                          },
-                                        ),
-                                        // delete button
-                                        IconButton(
-                                          icon: const Icon(Icons.delete, size: 18, color: Colors.red),
-                                          onPressed: () {
-                                            Get.dialog(
-                                              Dialog(
-                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(20),
-                                                  child: Column(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      Container(
-                                                        padding: const EdgeInsets.all(16),
-                                                        decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), shape: BoxShape.circle),
-                                                        child: const Icon(Icons.warning_rounded, color: Colors.red, size: 40),
-                                                      ),
-                                                      const SizedBox(height: 16),
-                                                      // Title
-                                                      Text(
-                                                        'ConfirmDelete'.tr,
-                                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                                                      ),
-                                                      const SizedBox(height: 8),
-                                                      // Content
-                                                      Text(
-                                                        'AreYouSureDelete'.tr.replaceFirst('{userName}', owner.userName),
-                                                        textAlign: TextAlign.center,
-                                                        style: Theme.of(context).textTheme.bodyMedium,
-                                                      ),
-                                                      const SizedBox(height: 20),
-                                                      // Buttons
-                                                      Row(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                        children: [
-                                                          // Cancel Button
-                                                          Expanded(
-                                                            child: OutlinedButton(
-                                                              style: OutlinedButton.styleFrom(
-                                                                padding: const EdgeInsets.symmetric(vertical: 12),
-                                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                              ),
-                                                              onPressed: () => Get.back(),
-                                                              child: Text('cancel'.tr),
-                                                            ),
-                                                          ),
-                                                          const SizedBox(width: 12),
-                                                          // Delete Button
-                                                          Expanded(
-                                                            child: ElevatedButton(
-                                                              style: ElevatedButton.styleFrom(
-                                                                backgroundColor: Colors.red,
-                                                                padding: const EdgeInsets.symmetric(vertical: 12),
-                                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                              ),
-                                                              onPressed: () async{
-                                                                Get.back();
-                                                                await _userService.deleteOwner(context, owner.id!);
-                                                              },
-                                                              child: Text('delete'.tr, style: const TextStyle(color: Colors.white)),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
+                      child: ListView.builder(
+                        itemCount: userController.ownerList.length,
+                        itemBuilder: (context, index) {
+                          final owner = userController.ownerList[index];
+                          return Card(
+                            elevation: 1,
+                            color: Colors.teal,
+                            margin: const EdgeInsets.only(bottom: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                    ),
-                  ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              // leading: CircleAvatar(radius: 20, backgroundImage: AssetImage(owner.image ?? 'assets/images/user.png')),
+                              title: Text(owner.userName, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
+                              subtitle: Text(owner.phoneNumber, style: Theme.of(context).textTheme.bodySmall),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // status badge
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(owner.status ?? '', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  // edit button
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, size: 18),
+                                    onPressed: () {
+                                      Get.to(() => UserForm(), arguments: {
+                                        'title': 'UpdateOwner'.tr,
+                                        'id': owner.id,
+                                        'userName': owner.userName,
+                                        'userID': owner.userID,
+                                        'phoneNumber': owner.phoneNumber,
+                                        'passport': owner.passport,
+                                        'idCard': owner.idCard,
+                                        'address': owner.address,
+                                      },
+                                      );
+                                    },
+                                  ),
+                                  // delete button
+                                  IconButton(
+                                    icon: const Icon(Icons.delete, size: 18, color: Colors.red),
+                                    onPressed: () {
+                                      Get.dialog(
+                                        Dialog(
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(20),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  padding: const EdgeInsets.all(16),
+                                                  decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), shape: BoxShape.circle),
+                                                  child: const Icon(Icons.warning_rounded, color: Colors.red, size: 40),
+                                                ),
+                                                const SizedBox(height: 16),
+                                                // Title
+                                                Text('ConfirmDelete'.tr, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                                                const SizedBox(height: 8),
+                                                // Content
+                                                Text('AreYouSureDelete'.tr.replaceFirst('{userName}', owner.userName), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
+                                                const SizedBox(height: 20),
+                                                // Buttons
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                  children: [
+                                                    // Cancel Button
+                                                    Expanded(
+                                                      child: OutlinedButton(
+                                                        style: OutlinedButton.styleFrom(
+                                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                        ),
+                                                        onPressed: () => Get.back(),
+                                                        child: Text('cancel'.tr),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                    // Delete Button
+                                                    Expanded(
+                                                      child: ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Colors.red,
+                                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                        ),
+                                                        onPressed: () async{
+                                                          Get.back();
+                                                          await _userService.deleteOwner(context, owner.id!);
+                                                        },
+                                                        child: Text('delete'.tr, style: const TextStyle(color: Colors.white)),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }),
                 ],
               ),
             ),

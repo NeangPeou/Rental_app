@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_admin/controller/setting_controller.dart';
-import 'package:frontend_admin/controller/user_contoller.dart';
 import 'package:frontend_admin/screens/authenticate/login.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/setting.dart';
 import 'package:frontend_admin/screens/home/home.dart';
