@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_admin/controller/user_contoller.dart';
+import 'package:frontend_admin/models/user_model.dart';
 import 'package:frontend_admin/screens/home/home.dart';
+import 'package:frontend_admin/services/user_service.dart';
 import 'package:frontend_admin/utils/helper.dart';
 import 'package:get/get.dart';
 
@@ -13,10 +14,10 @@ class UserForm extends StatefulWidget {
 
 class _UserFormState extends State<UserForm> {
   final _formKey = GlobalKey<FormState>();
-  final UserController controller = Get.find<UserController>();
   late String title;
   int? id;
   final RxBool _obscurePassword = true.obs;
+  final UserService _userService = UserService();
 
   final TextEditingController usernameCtrl = TextEditingController();
   final TextEditingController passwordCtrl = TextEditingController();
@@ -31,18 +32,13 @@ class _UserFormState extends State<UserForm> {
     if (Get.arguments is Map<String, dynamic>) {
       final Map<String, dynamic> args = Get.arguments;
       title = args['title']?.toString() ?? 'Update Owner';
-      id = int.tryParse(args['id']);
+      id = int.tryParse(args['id']?.toString() ?? '');
       if (id != null) {
         usernameCtrl.text = args['userID']?.toString() ?? '';
         phoneCtrl.text = args['phoneNumber']?.toString() ?? '';
         passportCtrl.text = args['passport']?.toString() ?? '';
         idCardCtrl.text = args['idCard']?.toString() ?? '';
         addressCtrl.text = args['address']?.toString() ?? '';
-        controller.username = usernameCtrl.text;
-        controller.phoneNumber = phoneCtrl.text;
-        controller.passport = passportCtrl.text;
-        controller.idCard = idCardCtrl.text;
-        controller.address = addressCtrl.text;
       }
     } else {
       title = Get.arguments?.toString() ?? 'Create Owner';
@@ -80,7 +76,7 @@ class _UserFormState extends State<UserForm> {
                   labelText: ('Username'.tr),
                   validator: (v) => v!.isEmpty ? ('enter_username'.tr) : null,
                   isRequired: true,
-                  onChanged: (v) => controller.username = v,
+                  onChanged: (v) => usernameCtrl.text = v,
                 ),
                 const SizedBox(height: 10),
                 Obx(() => Helper.sampleTextField(
@@ -99,7 +95,7 @@ class _UserFormState extends State<UserForm> {
                         }
                       : null,
                   isRequired: id == null,
-                  onChanged: (v) => controller.password = v,
+                  onChanged: (v) => passwordCtrl.text = v,
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword.value
@@ -127,7 +123,7 @@ class _UserFormState extends State<UserForm> {
                     return null;
                   },
                   isRequired: true,
-                  onChanged: (v) => controller.phoneNumber = v,
+                  onChanged: (v) => phoneCtrl.text = v,
                 ),
                 const SizedBox(height: 10),
                 Helper.sampleTextField(
@@ -135,7 +131,7 @@ class _UserFormState extends State<UserForm> {
                   controller: passportCtrl,
                   labelText: ('Passport'.tr),
                   validator: (v) => null,
-                  onChanged: (v) => controller.passport = v,
+                  onChanged: (v) => passportCtrl.text = v,
                 ),
                 const SizedBox(height: 10),
                 Helper.sampleTextField(
@@ -143,7 +139,7 @@ class _UserFormState extends State<UserForm> {
                   controller: idCardCtrl,
                   labelText: ('IDCard'.tr),
                   validator: (v) => null,
-                  onChanged: (v) => controller.idCard = v,
+                  onChanged: (v) => idCardCtrl.text = v,
                 ),
                 const SizedBox(height: 10),
                 Helper.sampleTextField(
@@ -151,7 +147,7 @@ class _UserFormState extends State<UserForm> {
                   controller: addressCtrl,
                   labelText: ('Address'.tr),
                   validator: (v) => null,
-                  onChanged: (v) => controller.address = v,
+                  onChanged: (v) => addressCtrl.text = v,
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -170,14 +166,31 @@ class _UserFormState extends State<UserForm> {
                         if (_formKey.currentState!.validate()) {
                           if (id == null) {
                             Helper.showLoadingDialog(context);
-                            await controller.createOwner();
+                            UserModel userModel = UserModel(
+                                userName: usernameCtrl.text,
+                                password: passwordCtrl.text,
+                                phoneNumber: phoneCtrl.text,
+                                passport: passportCtrl.text,
+                                idCard: idCardCtrl.text,
+                                address: addressCtrl.text
+                            );
+                            await _userService.createOwner(context, userModel);
                             if(!Get.isSnackbarOpen || Get.isSnackbarOpen && Get.currentRoute != '/Home'){
                               Helper.closeLoadingDialog(context);
                               Get.off(() => const Home(), arguments: {'index': 0});
                             }
                           } else {
                             Helper.showLoadingDialog(context);
-                            await controller.updateOwner(id!);
+                            UserModel userModel = UserModel(
+                                id: id!,
+                                userName: usernameCtrl.text,
+                                password: passwordCtrl.text,
+                                phoneNumber: phoneCtrl.text,
+                                passport: passportCtrl.text,
+                                idCard: idCardCtrl.text,
+                                address: addressCtrl.text
+                            );
+                            await _userService.updateOwner(context, id!, userModel);
                             if(!Get.isSnackbarOpen || Get.isSnackbarOpen && Get.currentRoute != '/Home'){
                               Helper.closeLoadingDialog(context);
                               Get.off(() => const Home(), arguments: {'index': 0});

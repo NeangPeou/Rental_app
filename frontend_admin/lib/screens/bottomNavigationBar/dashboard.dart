@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_admin/controller/user_contoller.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/userForm/user_form.dart';
+import 'package:frontend_admin/services/user_service.dart';
 import 'package:get/get.dart';
 
 class Dashboard extends StatefulWidget {
@@ -11,12 +12,13 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  final UserController controller = Get.find<UserController>();
+  final UserController userController = Get.put(UserController());
+  final UserService _userService = UserService();
 
   @override
   void initState() {
     super.initState();
-    controller.fetchOwners(); // Initial fetch
+    userController.loadOwners(context);
   }
 
   Widget _buildStatCard(String title, String value, IconData icon) {
@@ -60,7 +62,7 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       _buildStatCard("Requests", "02", Icons.message),
                       const SizedBox(width: 12),
-                      Obx(() => _buildStatCard("UsersOwner".tr, controller.owners.length.toString(), Icons.person)),
+                      Obx(() => _buildStatCard("UsersOwner".tr, userController.ownerList.length.toString(), Icons.person)),
                     ],
                   ),
                 ],
@@ -82,12 +84,12 @@ class _DashboardState extends State<Dashboard> {
                   Obx(
                     () => SizedBox(
                       height: Get.height * .5,
-                      child: controller.owners.isEmpty
+                      child: userController.ownerList.isEmpty
                           ? Center(child: Text("NoUser".tr, style: Theme.of(context).textTheme.bodyMedium))
                           : ListView.builder(
-                              itemCount: controller.owners.length,
+                              itemCount: userController.ownerList.length,
                               itemBuilder: (context, index) {
-                                final owner = controller.owners[index];
+                                final owner = userController.ownerList[index];
                                 return Card(
                                   elevation: 1,
                                   color: Colors.teal,
@@ -97,12 +99,12 @@ class _DashboardState extends State<Dashboard> {
                                   ),
                                   child: ListTile(
                                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                    leading: CircleAvatar(radius: 20, backgroundImage: AssetImage(owner['image'] ?? 'assets/images/user.png')),
+                                    // leading: CircleAvatar(radius: 20, backgroundImage: AssetImage(owner.image ?? 'assets/images/user.png')),
                                     title: Text(
-                                      owner['userName'] ?? 'Unknown User',
+                                      owner.userName,
                                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                                     ),
-                                    subtitle: Text(owner['phoneNumber'] ?? '', style: Theme.of(context).textTheme.bodySmall),
+                                    subtitle: Text(owner.phoneNumber, style: Theme.of(context).textTheme.bodySmall),
                                     trailing: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
@@ -110,10 +112,10 @@ class _DashboardState extends State<Dashboard> {
                                         Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                           decoration: BoxDecoration(
-                                            color: (owner['statusColor'] as Color?) ?? Colors.grey,
+                                            color: Colors.green,
                                             borderRadius: BorderRadius.circular(6),
                                           ),
-                                          child: Text(owner['status'] ?? '', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+                                          child: Text(owner.status ?? '', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
                                         ),
                                         const SizedBox(width: 8),
                                         // edit button
@@ -122,13 +124,13 @@ class _DashboardState extends State<Dashboard> {
                                           onPressed: () {
                                             Get.to(() => UserForm(), arguments: {
                                                 'title': 'UpdateOwner'.tr,
-                                                'id': owner['id'],
-                                                'userName': owner['userName'],
-                                                'userID': owner['userID'],
-                                                'phoneNumber': owner['phoneNumber'],
-                                                'passport': owner['passport'],
-                                                'idCard': owner['idCard'],
-                                                'address': owner['address'],
+                                                'id': owner.id,
+                                                'userName': owner.userName,
+                                                'userID': owner.userID,
+                                                'phoneNumber': owner.phoneNumber,
+                                                'passport': owner.passport,
+                                                'idCard': owner.idCard,
+                                                'address': owner.address,
                                               },
                                             );
                                           },
@@ -159,7 +161,7 @@ class _DashboardState extends State<Dashboard> {
                                                       const SizedBox(height: 8),
                                                       // Content
                                                       Text(
-                                                        'AreYouSureDelete'.tr.replaceFirst('{userName}', owner['userName']),
+                                                        'AreYouSureDelete'.tr.replaceFirst('{userName}', owner.userName),
                                                         textAlign: TextAlign.center,
                                                         style: Theme.of(context).textTheme.bodyMedium,
                                                       ),
@@ -188,9 +190,9 @@ class _DashboardState extends State<Dashboard> {
                                                                 padding: const EdgeInsets.symmetric(vertical: 12),
                                                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                                               ),
-                                                              onPressed: () {
+                                                              onPressed: () async{
                                                                 Get.back();
-                                                                controller.deleteOwner(owner['id']);
+                                                                await _userService.deleteOwner(context, owner.id!);
                                                               },
                                                               child: Text('delete'.tr, style: const TextStyle(color: Colors.white)),
                                                             ),
