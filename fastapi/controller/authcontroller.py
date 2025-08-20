@@ -5,7 +5,6 @@ from fastapi import HTTPException
 from db.models import (user, role, system_log, user_session)
 from core.security import create_access_token, create_refresh_token, get_password_hash, verify_password, SECRET_KEY, ALGORITHM
 from sqlalchemy.orm import Session
-from controller.usercontroller import generate_user_id
 from helper.hepler import log_action
 from schemas.user import LoginRequest, RegisterUser
 from jose import jwt
@@ -62,7 +61,6 @@ def register_controller(user_data: RegisterUser, db: Session, request_obj: Reque
         db.refresh(roles)
 
     hashed_password = get_password_hash(user_data.password)
-    # user_id = generate_user_id(db)
     users = user.User(
         userName=user_data.username,
         password=hashed_password,
