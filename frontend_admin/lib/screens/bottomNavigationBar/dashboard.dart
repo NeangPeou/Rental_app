@@ -18,7 +18,9 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    userController.loadOwners(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      userController.loadOwners(context);
+    });
   }
 
   Widget _buildStatCard(String title, String value, IconData icon) {

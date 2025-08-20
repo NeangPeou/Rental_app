@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend_admin/controller/user_contoller.dart';
 import 'package:frontend_admin/models/user_model.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,7 +42,6 @@ class UserService{
 
   Future<void> createOwner(BuildContext context, UserModel userModel) async {
     try {
-      final UserController userController = Get.put(UserController());
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('x-auth-token');
 
@@ -80,7 +77,7 @@ class UserService{
       );
 
       if (response.statusCode == 200) {
-        userController.loadOwners(context);
+        // userController.loadOwners(context);
       }
     } catch (e) {
       MessageDialog.showMessage('Information', e.toString(), context);
@@ -89,7 +86,6 @@ class UserService{
 
   Future<void> updateOwner(BuildContext context, int id, UserModel userModel) async {
     try {
-      final UserController userController = Get.put(UserController());
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('x-auth-token');
 
@@ -125,7 +121,7 @@ class UserService{
       );
 
       if (response.statusCode == 200) {
-        userController.loadOwners(context);
+        // userController.loadOwners(context);
       }
     } catch (e) {
       MessageDialog.showMessage('Information', e.toString(), context);
@@ -134,7 +130,6 @@ class UserService{
 
   Future<void> deleteOwner(BuildContext context, int id) async {
     try {
-      final UserController userController = Get.put(UserController());
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('x-auth-token');
 
@@ -151,7 +146,7 @@ class UserService{
       );
 
       if (response.statusCode == 200) {
-        userController.loadOwners(context);
+        // userController.loadOwners(context);
       }
     } catch (e) {
       MessageDialog.showMessage('Information', e.toString(), context);
