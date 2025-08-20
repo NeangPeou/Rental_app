@@ -11,7 +11,7 @@ class WebSocketController extends GetxController {
     super.onInit();
     // Initialize WebSocket connection when the controller is created
     _channel = WebSocketChannel.connect(
-      Uri.parse('wss://${dotenv.env['SOCKET_URL']}/api/ws'), // WebSocket URL
+      Uri.parse('${dotenv.env['SOCKET_URL']}/api/ws'), // WebSocket URL
     );
 
     // Listen to incoming messages and update messageStream
