@@ -124,6 +124,7 @@ class _DashboardState extends State<Dashboard> {
                                                 'title': 'UpdateOwner'.tr,
                                                 'id': owner['id'],
                                                 'userName': owner['userName'],
+                                                'userID': owner['userID'],
                                                 'phoneNumber': owner['phoneNumber'],
                                                 'passport': owner['passport'],
                                                 'idCard': owner['idCard'],

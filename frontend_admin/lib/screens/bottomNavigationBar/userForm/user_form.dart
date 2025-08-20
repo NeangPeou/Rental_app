@@ -15,7 +15,7 @@ class _UserFormState extends State<UserForm> {
   final _formKey = GlobalKey<FormState>();
   final UserController controller = Get.find<UserController>();
   late String title;
-  String? id;
+  int? id;
   final RxBool _obscurePassword = true.obs;
 
   final TextEditingController usernameCtrl = TextEditingController();
@@ -31,10 +31,9 @@ class _UserFormState extends State<UserForm> {
     if (Get.arguments is Map<String, dynamic>) {
       final Map<String, dynamic> args = Get.arguments;
       title = args['title']?.toString() ?? 'Update Owner';
-      id = args['id']?.toString();
+      id = int.tryParse(args['id']);
       if (id != null) {
-        String displayUserName = args['userName']?.toString().replaceAll(RegExp(r'\d+$'), '') ?? '';
-        usernameCtrl.text = displayUserName;
+        usernameCtrl.text = args['userID']?.toString() ?? '';
         phoneCtrl.text = args['phoneNumber']?.toString() ?? '';
         passportCtrl.text = args['passport']?.toString() ?? '';
         idCardCtrl.text = args['idCard']?.toString() ?? '';

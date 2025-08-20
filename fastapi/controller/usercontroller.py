@@ -1,4 +1,5 @@
 
+import re
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -30,21 +31,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     except JWTError as e:
         raise credentials_exception
 
-def generate_user_id(db: Session, user_data: UserCreate):
-    latest_user = db.query(user.User).order_by(user.User.id.desc()).first()
-
-    # If no such user exists, return the original username
-    if not latest_user:
-        latest_id = latest_user.id
-        new_username = f"{user_data.username}{latest_id + 1}"
-        return user_data.username
-
-    # Append next ID to username to make it unique
-    latest_id = latest_user.id
-    new_username = f"{user_data.username}{latest_id + 1}"
-    return new_username
-
-
 def get_owners_controller(db: Session, current_user: user.User = Depends(get_current_user)):
     try:
         admin_role = db.query(role.Role).filter(role.Role.role == "Admin").first()
@@ -56,7 +42,17 @@ def get_owners_controller(db: Session, current_user: user.User = Depends(get_cur
             raise HTTPException(status_code=404, detail="Owner role not found")
 
         owners = db.query(user.User).filter(user.User.role_id == owner_role.id).order_by(desc(user.User.id)).all()
-        return owners
+        return [
+                {
+                'id': str(o.id),
+                'userName': o.userName,
+                'userID': re.sub(f"{o.id}$", "", o.userName or ""),
+                'phoneNumber': o.phoneNumber,
+                'passport': o.passport,
+                'idCard': o.idCard,
+                'address': o.address,
+            } for o in owners
+        ]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch owners: {str(e)}")
 
@@ -124,13 +120,7 @@ def update_username(user_id: int, new_username: str, db: Session):
     return {"message": "Username updated successfully", "userName": user_obj.userName}
 
     
-def update_owner_controller(
-    id: str,
-    user_data: UpdateUser,
-    db: Session,
-    current_user: user.User = Depends(get_current_user),
-    request_obj: Request = None
-):
+def update_owner_controller(id: int, user_data: UpdateUser, db: Session, current_user: user.User = Depends(get_current_user), request_obj: Request = None):
     try:
         admin_role = db.query(role.Role).filter(role.Role.role == "Admin").first()
         if not admin_role or current_user.role_id != admin_role.id:
@@ -145,19 +135,7 @@ def update_owner_controller(
             raise HTTPException(status_code=400, detail="User is not an owner")
        
         if user_data.username:
-            current_prefix = owner.userName.rstrip('0123456789')
-            if user_data.username != current_prefix: 
-                new_username = f"{user_data.username}{owner.id}"
-                existing_user = db.query(user.User).filter(user.User.userName == new_username).first()
-                if existing_user:
-                    pass
-                else:
-                    owner.userName = new_username
-            else:
-                pass
-        else:
-            pass 
-
+            owner.userName = user_data.username + str(id) or None
         if user_data.password is not None:
             owner.password = get_password_hash(user_data.password)
         if user_data.phoneNumber is not None:

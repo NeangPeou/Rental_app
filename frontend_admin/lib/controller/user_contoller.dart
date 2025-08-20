@@ -95,6 +95,7 @@ class UserController extends GetxController {
         owners.value = data.map((owner) => {
           'id': owner['id']?.toString() ?? '',
           'userName': owner['userName']?.toString() ?? '',
+          'userID': owner['userID']?.toString() ?? '',
           'phoneNumber': owner['phoneNumber']?.toString() ?? '',
           'passport': owner['passport']?.toString() ?? '',
           'idCard': owner['idCard']?.toString() ?? '',
@@ -111,7 +112,7 @@ class UserController extends GetxController {
     }
   }
 
-  Future<void> updateOwner(String id) async {
+  Future<void> updateOwner(int id) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('x-auth-token');
