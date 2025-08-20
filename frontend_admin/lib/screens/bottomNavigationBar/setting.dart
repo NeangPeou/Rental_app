@@ -97,7 +97,8 @@ class _SettingState extends State<Setting> {
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(10)
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
             ),
             child: Column(
               children: [
@@ -119,7 +120,8 @@ class _SettingState extends State<Setting> {
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
             ),
             child: Column(
               children: [
@@ -148,7 +150,8 @@ class _SettingState extends State<Setting> {
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
             ),
             child: Column(
               children: [
@@ -164,7 +167,8 @@ class _SettingState extends State<Setting> {
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
             ),
             child: ListTile(
               leading: const CircleAvatar(
@@ -209,7 +213,8 @@ class _SettingState extends State<Setting> {
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
             ),
             child: Column(
               children: [
@@ -229,6 +234,7 @@ class _SettingState extends State<Setting> {
                               topLeft: Radius.circular(20),
                               topRight: Radius.circular(20),
                             ),
+                            border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
                           ),
                           child: Wrap(
                             children: [
