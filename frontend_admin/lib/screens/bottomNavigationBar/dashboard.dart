@@ -1,8 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_admin/controller/user_contoller.dart';
-import 'package:frontend_admin/models/user_model.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/userForm/user_form.dart';
 import 'package:frontend_admin/services/user_service.dart';
 import 'package:get/get.dart';
@@ -23,61 +20,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    channel = WebSocketChannel.connect(
-      Uri.parse('${dotenv.env['SOCKET_URL']}/api/ws/owners'),
-    );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      channel?.sink.add(jsonEncode({
-        "action": "init",
-      }));
-    });
-    channel?.stream.listen((message) {
-      final decode = jsonDecode(message);
-      String action = decode['action'];
-
-      switch (action) {
-        case 'create':
-          _handleCreate(decode['data']);
-          break;
-        case 'update':
-          _handleUpdate(decode['id'], decode['data']);
-          break;
-        case 'delete':
-          _handleDelete(decode['id']);
-          break;
-        case 'init':
-          _handleInit(decode['data']);
-          break;
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    channel?.sink.close();
-  }
-
-  void _handleInit(List<dynamic> ownerJsonList) {
-    final owners = ownerJsonList.map((json) => UserModel.fromJson(json)).toList();
-    userController.ownerList.assignAll(owners);
-  }
-
-  void _handleCreate(dynamic newOwnerJson) {
-    final newOwner = UserModel.fromJson(newOwnerJson);
-    userController.ownerList.add(newOwner);
-  }
-
-  void _handleUpdate(String id, dynamic updatedOwnerJson) {
-    final index = userController.ownerList.indexWhere((owner) => owner.id == id);
-    if (index != -1) {
-      userController.ownerList[index] = UserModel.fromJson(updatedOwnerJson);
-      userController.ownerList.refresh();
-    }
-  }
-
-  void _handleDelete(String id) {
-    userController.ownerList.removeWhere((owner) => owner.id == id);
+    userController.connectWebSocket();
   }
 
   Widget _buildStatCard(String title, String value, IconData icon) {
