@@ -1,8 +1,10 @@
+import json
 import socket
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from db.models import system_log
 from fastapi import WebSocket
-from typing import List
+from typing import Dict, List
 
 def log_action(db: Session, user_id: int, action: str, log_type: str, message: str, host_name: str = None):
     hostname = host_name or socket.gethostname()
@@ -16,19 +18,24 @@ def log_action(db: Session, user_id: int, action: str, log_type: str, message: s
 
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: List[WebSocket] = []
+        self.active_connections: Dict[str, List[WebSocket]] = {}
 
-    async def connect(self, websocket: WebSocket):
+    async def connect(self, websocket: WebSocket, channel: str):
         await websocket.accept()
-        self.active_connections.append(websocket)
+        if channel not in self.active_connections:
+            self.active_connections[channel] = []
+        self.active_connections[channel].append(websocket)
 
-    def disconnect(self, websocket: WebSocket):
-        if websocket in self.active_connections:
-            self.active_connections.remove(websocket)
+    def disconnect(self, websocket: WebSocket, channel: str):
+        if channel in self.active_connections:
+            self.active_connections[channel].remove(websocket)
 
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
+    async def broadcast(self, message: dict, channel: str):
+        import json
+        from fastapi.encoders import jsonable_encoder
 
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message)
+        text = json.dumps(jsonable_encoder(message))
+        for connection in self.active_connections.get(channel, []):
+            await connection.send_text(text)
+
+manager = ConnectionManager()

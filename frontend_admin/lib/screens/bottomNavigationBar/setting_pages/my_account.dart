@@ -23,7 +23,7 @@ class _MyAccountState extends State<MyAccount> {
     // Connect to the FastAPI WebSocket server
     channel = WebSocketChannel.connect(
       // Uri.parse('ws://0.0.0.0:8000/api/ws'), // FastAPI WebSocket URL
-      Uri.parse('${dotenv.env['SOCKET_URL']}/ws/owners'),
+      Uri.parse('${dotenv.env['SOCKET_URL']}/api/ws'),
     );
   }
 

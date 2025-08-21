@@ -34,15 +34,17 @@ class UserCreate(BaseModel):
     deviceName: Optional[str] = None
 
 class UserResponse(BaseModel):
-    userID: str
+    id: int
+    userID: Optional[str] = None
     userName: str
     phoneNumber: Optional[str] = None
     passport: Optional[str] = None
     idCard: Optional[str] = None
     address: Optional[str] = None
 
-    class Config:
-        orm_mode = True  
+    model_config = {
+        "from_attributes": True
+    }
 
 class UpdateUser(BaseModel):
     username: Optional[str] = None

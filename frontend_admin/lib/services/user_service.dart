@@ -77,7 +77,6 @@ class UserService{
       );
 
       if (response.statusCode == 200) {
-        // userController.loadOwners(context);
       }
     } catch (e) {
       MessageDialog.showMessage('Information', e.toString(), context);
@@ -128,7 +127,7 @@ class UserService{
     }
   }
 
-  Future<void> deleteOwner(BuildContext context, int id) async {
+  Future<void> deleteOwner(BuildContext context, String id) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('x-auth-token');

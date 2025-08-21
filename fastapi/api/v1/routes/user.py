@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, Request
+import json
+from fastapi import APIRouter, Depends, Request, WebSocket, WebSocketDisconnect
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from controller import usercontroller
 from db.session import get_db
 from db.models import (user)
 from schemas.user import UpdateUser, UserCreate
-from helper.hepler import ConnectionManager
+from helper.hepler import manager
 
 router = APIRouter()
-manager = ConnectionManager()
 
 @router.get("/owners")
 def get_owners(db: Session = Depends(get_db), current_user: user.User = Depends(usercontroller.get_current_user)):
@@ -15,11 +16,11 @@ def get_owners(db: Session = Depends(get_db), current_user: user.User = Depends(
 
 @router.post("/create-owner")
 async def create_owner(user_data: UserCreate, request_obj: Request = None, db: Session = Depends(get_db), current_user: user.User = Depends(usercontroller.get_current_user)):
-    owner = usercontroller.create_owner_controller(user_data, db, current_user, request_obj)
+    owner = await usercontroller.create_owner_controller(user_data, db, current_user, request_obj)
     await manager.broadcast({
         "action": "create",
         "data": owner
-    })
+    }, channel="/ws/owners")
     return owner
 
 @router.put("/update-owner/{id}")
@@ -29,7 +30,7 @@ async def update_owner(id: str, user_data: UpdateUser, request_obj: Request = No
         "action": "update",
         "id": id,
         "data": owner
-    })
+    }, channel="/ws/owners")
     return owner
 
 @router.delete("/delete-owner/{id}")
@@ -37,6 +38,27 @@ async def delete_owner(id: str, request_obj: Request = None, db: Session = Depen
     owner = usercontroller.delete_owner_controller(id, db, current_user, request_obj)
     await manager.broadcast({
         "action": "delete",
-        "id": id
-    })
+        "id": str(id),
+        "data": owner
+    }, channel="/ws/owners")
     return owner
+
+@router.websocket("/ws/owners")
+async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
+    channel = "/ws/owners"
+    await manager.connect(websocket, channel)
+
+    try:
+        while True:
+            data = await websocket.receive_text()
+            payload = json.loads(data)
+            action = payload.get("action")
+
+            if action == "init":
+                owners = usercontroller.get_owners_controller(db, current_user=None)
+                await websocket.send_text(json.dumps({
+                    "action": "init",
+                    "data": jsonable_encoder(owners)
+                }))
+    except WebSocketDisconnect:
+        manager.disconnect(websocket, channel)

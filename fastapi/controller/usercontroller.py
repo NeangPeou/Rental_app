@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from db.models import (user, role, system_log)
 from core.security import get_password_hash, SECRET_KEY, ALGORITHM
 from helper.hepler import log_action
-from schemas.user import UpdateUser, UserCreate
+from schemas.user import UpdateUser, UserCreate, UserResponse
 from db.session import get_db
 from jose import JWTError, jwt
 from sqlalchemy import desc
@@ -34,7 +34,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 def get_owners_controller(db: Session, current_user: user.User = Depends(get_current_user)):
     try:
         admin_role = db.query(role.Role).filter(role.Role.role == "Admin").first()
-        if not admin_role or current_user.role_id != admin_role.id:
+        if not admin_role:
             raise HTTPException(status_code=403, detail="Only admins can access owner list")
 
         owner_role = db.query(role.Role).filter(role.Role.role == "Owner").first()
@@ -56,7 +56,7 @@ def get_owners_controller(db: Session, current_user: user.User = Depends(get_cur
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch owners: {str(e)}")
 
-def create_owner_controller(user_data: UserCreate, db: Session, current_user: user.User = Depends(get_current_user), request_obj: Request = None):
+async def create_owner_controller(user_data: UserCreate, db: Session, current_user: user.User = Depends(get_current_user), request_obj: Request = None):
     try:
         admin_role = db.query(role.Role).filter(role.Role.role == "Admin").first()
         if not admin_role or current_user.role_id != admin_role.id:
@@ -87,7 +87,7 @@ def create_owner_controller(user_data: UserCreate, db: Session, current_user: us
         db.commit()
         db.refresh(users)
 
-        update_username(users.id, f"{users.userName}{users.id}", db)
+        data = update_username(users.id, f"{users.userName}{users.id}", db)
 
         ip_address = request_obj.client.host if request_obj else 'unknown'
         host_name = user_data.deviceName if hasattr(user_data, 'deviceName') else ip_address or 'unknown'
@@ -100,7 +100,8 @@ def create_owner_controller(user_data: UserCreate, db: Session, current_user: us
             host_name=host_name
         )
 
-        return {"message": f"Owner {users.userName} created successfully", "user_id": users.id}
+        user_response = UserResponse.from_orm(data)
+        return user_response
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to create owner: {str(e)}")
@@ -117,7 +118,7 @@ def update_username(user_id: int, new_username: str, db: Session):
     user_obj.userName = new_username
     db.commit()
     db.refresh(user_obj)
-    return {"message": "Username updated successfully", "userName": user_obj.userName}
+    return user_obj
 
     
 def update_owner_controller(id: int, user_data: UpdateUser, db: Session, current_user: user.User = Depends(get_current_user), request_obj: Request = None):
@@ -160,19 +161,14 @@ def update_owner_controller(id: int, user_data: UpdateUser, db: Session, current
             message=f"Owner {owner.userName} updated by admin {current_user.userName}",
             host_name=host_name
         )
-
-        return {"message": f"Owner {owner.userName} updated successfully", "user_id": owner.id}
+        user_response = UserResponse.from_orm(owner)
+        return user_response
     except Exception as e:
         db.rollback()
         print(f"Error updating owner: {str(e)}")  # Debug log
         raise HTTPException(status_code=500, detail=f"Failed to update owner: {str(e)}")
     
-def delete_owner_controller(
-    id: str,
-    db: Session,
-    current_user: user.User = Depends(get_current_user),
-    request_obj: Request = None
-):
+def delete_owner_controller(id: str, db: Session, current_user: user.User = Depends(get_current_user), request_obj: Request = None):
     try:
         admin_role = db.query(role.Role).filter(role.Role.role == "Admin").first()
         if not admin_role or current_user.role_id != admin_role.id:
@@ -200,8 +196,8 @@ def delete_owner_controller(
             message=f"Owner {owner.userName} and associated logs deleted by {current_user.userName}",
             host_name=ip_address
         )
-
-        return {"message": f"Owner {owner.userName} and associated logs deleted successfully", "user_id": owner.id}
+        user_response = UserResponse.from_orm(owner)
+        return user_response
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to delete owner and logs: {str(e)}")

@@ -11,14 +11,22 @@ class UserController extends GetxController {
   final RxList<Map<String, dynamic>> owners = <Map<String, dynamic>>[].obs;
   RxList<UserModel> ownerList = <UserModel>[].obs;
   final UserService _userService = UserService();
-  late WebSocketChannel channel;
+  WebSocketChannel? channel;
   RxBool isLoading = false.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    _connectWebSocket();
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   // _connectWebSocket();
+  //   channel = WebSocketChannel.connect(
+  //     // Uri.parse('${dotenv.env['SOCKET_URL']}/ws/owners'),
+  //       Uri.parse('${dotenv.env['SOCKET_URL']}/ws/owners')
+  //   );
+  //
+  //   channel?.stream.listen((message) {
+  //     print(message);
+  //   });
+  // }
 
   Future<void> loadOwners(BuildContext context) async {
     isLoading.value = true;
@@ -31,36 +39,36 @@ class UserController extends GetxController {
   }
 
   void _connectWebSocket() {
-    channel = WebSocketChannel.connect(
-      // Uri.parse('${dotenv.env['SOCKET_URL']}/ws/owners'),
-        Uri.parse('${dotenv.env['SOCKET_URL']}/ws/owners')
-    );
+    // channel = WebSocketChannel.connect(
+    //   // Uri.parse('${dotenv.env['SOCKET_URL']}/ws/owners'),
+    //     Uri.parse('${dotenv.env['SOCKET_URL']}/ws/owners')
+    // );
 
-    channel.stream.listen((message) {
-      try {
-        final data = json.decode(message);
-
-        switch (data['action']) {
-          case 'create':
-            _handleCreate(data['data']);
-            break;
-          case 'update':
-            _handleUpdate(data['id'], data['data']);
-            break;
-          case 'delete':
-            _handleDelete(data['id']);
-            break;
-        }
-      } catch (e) {
-        print('Error parsing WebSocket message: $e');
-      }
-    }, onDone: () async {
-      await Future.delayed(Duration(seconds: 5));
-      _connectWebSocket();
-    }, onError: (error) async {
-      await Future.delayed(Duration(seconds: 5));
-      _connectWebSocket();
-    });
+    // channel.stream.listen((message) {
+    //   try {
+    //     final data = json.decode(message);
+    //
+    //     switch (data['action']) {
+    //       case 'create':
+    //         _handleCreate(data['data']);
+    //         break;
+    //       case 'update':
+    //         _handleUpdate(data['id'], data['data']);
+    //         break;
+    //       case 'delete':
+    //         _handleDelete(data['id']);
+    //         break;
+    //     }
+    //   } catch (e) {
+    //     print('Error parsing WebSocket message: $e');
+    //   }
+    // }, onDone: () async {
+    //   await Future.delayed(Duration(seconds: 5));
+    //   _connectWebSocket();
+    // }, onError: (error) async {
+    //   await Future.delayed(Duration(seconds: 5));
+    //   _connectWebSocket();
+    // });
   }
 
   void _handleCreate(dynamic newOwnerJson) {
@@ -82,7 +90,7 @@ class UserController extends GetxController {
 
   @override
   void onClose() {
-    channel.sink.close();
+    channel?.sink.close();
     super.onClose();
   }
 }

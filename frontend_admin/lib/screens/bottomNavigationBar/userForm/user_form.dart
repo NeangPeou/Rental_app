@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_admin/models/user_model.dart';
 import 'package:frontend_admin/screens/home/home.dart';
 import 'package:frontend_admin/services/user_service.dart';
 import 'package:frontend_admin/utils/helper.dart';
 import 'package:get/get.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class UserForm extends StatefulWidget {
   const UserForm({super.key});
@@ -18,6 +20,7 @@ class _UserFormState extends State<UserForm> {
   int? id;
   final RxBool _obscurePassword = true.obs;
   final UserService _userService = UserService();
+  WebSocketChannel? channel;
 
   final TextEditingController usernameCtrl = TextEditingController();
   final TextEditingController passwordCtrl = TextEditingController();
@@ -29,6 +32,10 @@ class _UserFormState extends State<UserForm> {
   @override
   void initState() {
     super.initState();
+    channel = WebSocketChannel.connect(
+      Uri.parse('${dotenv.env['SOCKET_URL']}/api/ws/owners'),
+    );
+
     if (Get.arguments is Map<String, dynamic>) {
       final Map<String, dynamic> args = Get.arguments;
       title = args['title']?.toString() ?? 'Update Owner';
@@ -182,7 +189,7 @@ class _UserFormState extends State<UserForm> {
                           } else {
                             Helper.showLoadingDialog(context);
                             UserModel userModel = UserModel(
-                                id: id!,
+                                id: id.toString(),
                                 userName: usernameCtrl.text,
                                 password: passwordCtrl.text,
                                 phoneNumber: phoneCtrl.text,
