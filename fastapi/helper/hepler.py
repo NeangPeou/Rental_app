@@ -31,9 +31,6 @@ class ConnectionManager:
             self.active_connections[channel].remove(websocket)
 
     async def broadcast(self, message: dict, channel: str):
-        import json
-        from fastapi.encoders import jsonable_encoder
-
         text = json.dumps(jsonable_encoder(message))
         for connection in self.active_connections.get(channel, []):
             await connection.send_text(text)
