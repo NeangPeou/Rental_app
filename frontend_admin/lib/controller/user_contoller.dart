@@ -56,6 +56,12 @@ class UserController extends GetxController {
           handleInit(decode['data']);
           break;
       }
+    },
+    onDone: () {
+      reconnectWithDelay();
+    },
+    onError: (error) {
+      reconnectWithDelay();
     });
   }
 
@@ -84,5 +90,10 @@ class UserController extends GetxController {
   void handleDelete(String id) {
     ownerList.removeWhere((owner) => owner.id == id);
     isLoading.value = false;
+  }
+
+  void reconnectWithDelay() async {
+    await Future.delayed(const Duration(seconds: 3));
+    connectWebSocket();
   }
 }
