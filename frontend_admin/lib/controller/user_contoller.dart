@@ -69,6 +69,7 @@ class UserController extends GetxController {
     final newOwner = UserModel.fromJson(newOwnerJson);
     if (!ownerList.any((owner) => owner.id == newOwner.id)) {
       ownerList.insert(0, newOwner);
+      isLoading.value = false;
     }
   }
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_admin/controller/user_contoller.dart';
 import 'package:frontend_admin/models/user_model.dart';
-import 'package:frontend_admin/screens/home/home.dart';
 import 'package:frontend_admin/services/user_service.dart';
 import 'package:frontend_admin/utils/helper.dart';
 import 'package:get/get.dart';
@@ -185,10 +184,8 @@ class _UserFormState extends State<UserForm> {
                                 address: addressCtrl.text
                             );
                             await _userService.createOwner(context, userModel);
-                            if(!Get.isSnackbarOpen || Get.isSnackbarOpen && Get.currentRoute != '/Home'){
                               Helper.closeLoadingDialog(context);
-                              Get.off(() => const Home(), arguments: {'index': 0});
-                            }
+                              Get.back();
                           } else {
                             userController.isLoading.value = true;
                             Helper.showLoadingDialog(context);
@@ -202,10 +199,8 @@ class _UserFormState extends State<UserForm> {
                                 address: addressCtrl.text
                             );
                             await _userService.updateOwner(context, id!, userModel);
-                            if(!Get.isSnackbarOpen || Get.isSnackbarOpen && Get.currentRoute != '/Home'){
-                              Helper.closeLoadingDialog(context);
-                              Get.off(() => const Home(), arguments: {'index': 0});
-                            }
+                            Helper.closeLoadingDialog(context);
+                            Get.back();
                           }
                         }
                       },
