@@ -103,32 +103,34 @@ class _DashboardState extends State<Dashboard> {
                           return Card(
                             elevation: 1,
                             color: Colors.teal,
-                            margin: const EdgeInsets.only(bottom: 8),
+                            margin: const EdgeInsets.only(bottom: 4),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              // leading: CircleAvatar(radius: 20, backgroundImage: AssetImage(owner.image ?? 'assets/images/user.png')),
-                              title: Text(owner.userName, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
-                              subtitle: Text(owner.phoneNumber, style: Theme.of(context).textTheme.bodySmall),
+                              dense: true,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                              leading: CircleAvatar(radius: 25, backgroundImage: AssetImage('assets/app_icon/sw_logo.png'), backgroundColor: Colors.transparent),
+                              title: Text(owner.userName, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+                              subtitle: Text(owner.phoneNumber, style: Theme.of(context).textTheme.labelSmall, overflow: TextOverflow.ellipsis),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  // status badge
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                     decoration: BoxDecoration(
                                       color: Colors.green,
                                       borderRadius: BorderRadius.circular(6),
                                     ),
-                                    child: Text(owner.status ?? '', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+                                    child: Text(owner.status ?? '', style: Get.textTheme.bodySmall),
                                   ),
-                                  const SizedBox(width: 8),
                                   // edit button
-                                  IconButton(
-                                    icon: const Icon(Icons.edit, size: 18),
-                                    onPressed: () {
+                                  InkWell(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                                      child: const Icon(Icons.edit, size: 18, color: Colors.white),
+                                    ),
+                                    onTap: () {
                                       Get.to(() => UserForm(), arguments: {
                                         'title': 'UpdateOwner'.tr,
                                         'id': owner.id,
@@ -138,14 +140,13 @@ class _DashboardState extends State<Dashboard> {
                                         'passport': owner.passport,
                                         'idCard': owner.idCard,
                                         'address': owner.address,
-                                      },
-                                      );
+                                      });
                                     },
                                   ),
                                   // delete button
-                                  IconButton(
-                                    icon: const Icon(Icons.delete, size: 18, color: Colors.red),
-                                    onPressed: () {
+                                  InkWell(
+                                    child: const Icon(Icons.delete, size: 18, color: Colors.red),
+                                    onTap: () {
                                       Get.dialog(
                                         Dialog(
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
