@@ -85,6 +85,8 @@ class AppTranslations extends Translations {
       "ConfirmDelete": "បញ្ជាក់ការលុប",
       "AreYouSureDelete": "តើអ្នកប្រាកដថាចង់លុប {userName} ទេ?",
       "delete": "លុប",
+      "systemLog" : "កំណត់ហេតុប្រព័ន្ធ",
+      "tabviewlog": "ចុចដើម្បីមើល",
     },
     'en_US': {
       'english': 'English',
@@ -166,7 +168,9 @@ class AppTranslations extends Translations {
       'NoUser': 'No User Found',
       "ConfirmDelete": "Confirm Delete",
       "AreYouSureDelete": "Are you sure you want to delete {userName}?",
-      "delete": "Delete"
+      "delete": "Delete",
+      "systemLog" : "System Log",
+      "tabviewlog": "Tab view",
     },
     'es_ES': {
       'english': 'Inglés',

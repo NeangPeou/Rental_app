@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_admin/controller/user_contoller.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/userForm/user_form.dart';
+import 'package:frontend_admin/screens/systemLogs/system_logs.dart';
 import 'package:frontend_admin/services/user_service.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -24,21 +25,30 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildStatCard(String title, String value, IconData icon) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(color: Colors.teal, borderRadius: BorderRadius.circular(12)),
-        child: Column(
-          children: [
-            Icon(icon, size: 28),
-            const SizedBox(height: 8),
-            Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-            Text(title, style: Theme.of(context).textTheme.bodySmall),
-          ],
+  return Container(
+    padding: const EdgeInsets.symmetric(vertical: 16),
+    decoration: BoxDecoration(
+      color: Colors.teal, 
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 28),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
-      ),
-    );
-  }
+        Text(
+          title,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ],
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,9 +71,23 @@ class _DashboardState extends State<Dashboard> {
                 children: [
                   Row(
                     children: [
-                      _buildStatCard("Requests", "02", Icons.message),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () {
+                            Get.to(() => const SystemLogs());
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: _buildStatCard("systemLog".tr, "tabviewlog".tr, Icons.system_security_update_good),
+                        ),
+                      ),
                       const SizedBox(width: 12),
-                      Obx(() => _buildStatCard("UsersOwner".tr, userController.ownerList.length.toString(), Icons.person)),
+                      Expanded(
+                        child: Obx(() => _buildStatCard(
+                          "UsersOwner".tr,
+                          userController.ownerList.length.toString(),
+                          Icons.person,
+                        )),
+                      ),
                     ],
                   ),
                 ],
