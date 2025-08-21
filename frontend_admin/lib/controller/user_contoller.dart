@@ -30,7 +30,6 @@ class UserController extends GetxController {
   }
 
   void connectWebSocket() {
-    isLoading.value = true;
     channel = WebSocketChannel.connect(
       Uri.parse('${dotenv.env['SOCKET_URL']}/api/ws/owners'),
     );
