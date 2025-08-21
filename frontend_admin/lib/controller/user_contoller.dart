@@ -66,7 +66,9 @@ class UserController extends GetxController {
 
   void handleCreate(dynamic newOwnerJson) {
     final newOwner = UserModel.fromJson(newOwnerJson);
-    ownerList.add(newOwner);
+    if (!ownerList.any((owner) => owner.id == newOwner.id)) {
+      ownerList.insert(0, newOwner);
+    }
   }
 
   void handleUpdate(String id, dynamic updatedOwnerJson) {
