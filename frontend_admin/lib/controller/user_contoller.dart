@@ -71,7 +71,6 @@ class UserController extends GetxController {
     if (!ownerList.any((owner) => owner.id == newOwner.id)) {
       ownerList.insert(0, newOwner);
     }
-    isLoading.value = false;
   }
 
   void handleUpdate(String id, dynamic updatedOwnerJson) {
@@ -80,11 +79,9 @@ class UserController extends GetxController {
       ownerList[index] = UserModel.fromJson(updatedOwnerJson);
       ownerList.refresh();
     }
-    isLoading.value = false;
   }
 
   void handleDelete(String id) {
     ownerList.removeWhere((owner) => owner.id == id);
-    isLoading.value = false;
   }
 }
