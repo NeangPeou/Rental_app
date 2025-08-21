@@ -77,10 +77,12 @@ class UserController extends GetxController {
     if (index != -1) {
       ownerList[index] = UserModel.fromJson(updatedOwnerJson);
       ownerList.refresh();
+      isLoading.value = false;
     }
   }
 
   void handleDelete(String id) {
     ownerList.removeWhere((owner) => owner.id == id);
+    isLoading.value = false;
   }
 }
