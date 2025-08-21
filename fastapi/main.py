@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.v1.routes import auth, user, websocket_router
+from api.v1.routes import auth, user
 from db.session import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 # from middleware.convert_snake_to_camel import ConvertSnakeToCamelMiddleware
@@ -65,4 +65,3 @@ app.add_middleware(
 
 app.include_router(auth.router, prefix="/api", tags=["Auth"])
 app.include_router(user.router, prefix="/api", tags=["User"])
-app.include_router(websocket_router.ws_router)
