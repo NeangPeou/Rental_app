@@ -9,7 +9,7 @@ class UserController extends GetxController {
   final RxList<Map<String, dynamic>> owners = <Map<String, dynamic>>[].obs;
   RxList<UserModel> ownerList = <UserModel>[].obs;
   WebSocketChannel? channel;
-  RxBool isLoading = false.obs;
+  RxBool isLoading = true.obs;
 
   @override
   void onInit() {
@@ -30,6 +30,7 @@ class UserController extends GetxController {
   }
 
   void connectWebSocket() {
+    isLoading.value = true;
     channel = WebSocketChannel.connect(
       Uri.parse('${dotenv.env['SOCKET_URL']}/api/ws/owners'),
     );
@@ -62,6 +63,7 @@ class UserController extends GetxController {
   void handleInit(List<dynamic> ownerJsonList) {
     final owners = ownerJsonList.map((json) => UserModel.fromJson(json)).toList();
     ownerList.assignAll(owners);
+    isLoading.value = false;
   }
 
   void handleCreate(dynamic newOwnerJson) {
@@ -69,6 +71,7 @@ class UserController extends GetxController {
     if (!ownerList.any((owner) => owner.id == newOwner.id)) {
       ownerList.insert(0, newOwner);
     }
+    isLoading.value = false;
   }
 
   void handleUpdate(String id, dynamic updatedOwnerJson) {
@@ -77,9 +80,11 @@ class UserController extends GetxController {
       ownerList[index] = UserModel.fromJson(updatedOwnerJson);
       ownerList.refresh();
     }
+    isLoading.value = false;
   }
 
   void handleDelete(String id) {
     ownerList.removeWhere((owner) => owner.id == id);
+    isLoading.value = false;
   }
 }

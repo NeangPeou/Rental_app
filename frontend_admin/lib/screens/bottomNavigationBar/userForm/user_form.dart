@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend_admin/controller/user_contoller.dart';
 import 'package:frontend_admin/models/user_model.dart';
 import 'package:frontend_admin/screens/home/home.dart';
 import 'package:frontend_admin/services/user_service.dart';
@@ -21,6 +22,7 @@ class _UserFormState extends State<UserForm> {
   final RxBool _obscurePassword = true.obs;
   final UserService _userService = UserService();
   WebSocketChannel? channel;
+  UserController userController = Get.put(UserController());
 
   final TextEditingController usernameCtrl = TextEditingController();
   final TextEditingController passwordCtrl = TextEditingController();
@@ -172,6 +174,7 @@ class _UserFormState extends State<UserForm> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           if (id == null) {
+                            userController.isLoading.value = true;
                             Helper.showLoadingDialog(context);
                             UserModel userModel = UserModel(
                                 userName: usernameCtrl.text,
@@ -187,6 +190,7 @@ class _UserFormState extends State<UserForm> {
                               Get.off(() => const Home(), arguments: {'index': 0});
                             }
                           } else {
+                            userController.isLoading.value = true;
                             Helper.showLoadingDialog(context);
                             UserModel userModel = UserModel(
                                 id: id.toString(),

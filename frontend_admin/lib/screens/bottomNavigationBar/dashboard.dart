@@ -191,8 +191,9 @@ class _DashboardState extends State<Dashboard> {
                                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                                         ),
                                                         onPressed: () async{
-                                                          await _userService.deleteOwner(context, owner.id.toString());
                                                           Get.back();
+                                                          userController.isLoading.value = true;
+                                                          await _userService.deleteOwner(context, owner.id.toString());
                                                         },
                                                         child: Text('delete'.tr, style: const TextStyle(color: Colors.white)),
                                                       ),

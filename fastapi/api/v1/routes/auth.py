@@ -83,13 +83,14 @@ def get_current_user(current_user: user.User = Depends(usercontroller.get_curren
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
     # Accept the WebSocket connection
-    await manager.connect(websocket)
+    channel = "/ws"
+    await manager.connect(websocket, channel)
     try:
         while True:
             data = await websocket.receive_text()  # Receive message from the client
             # You can add authentication here based on a token or user
             # If needed, fetch user from DB based on token
-            await manager.broadcast(f"Message from client: {data}")
+            await manager.broadcast(f"Message from client: {data}", channel = "/ws")
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        manager.disconnect(websocket, channel = "/ws")
         print("Client disconnected")
