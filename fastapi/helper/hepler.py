@@ -28,11 +28,21 @@ class ConnectionManager:
 
     def disconnect(self, websocket: WebSocket, channel: str):
         if channel in self.active_connections:
-            self.active_connections[channel].remove(websocket)
+            if websocket in self.active_connections[channel]:
+                self.active_connections[channel].remove(websocket)
+                if not self.active_connections[channel]: 
+                    del self.active_connections[channel]
 
     async def broadcast(self, message: dict, channel: str):
         text = json.dumps(jsonable_encoder(message))
+        to_remove = []
         for connection in self.active_connections.get(channel, []):
-            await connection.send_text(text)
+            try:
+                await connection.send_text(text)
+            except Exception as e:
+                to_remove.append(connection)
+
+        for conn in to_remove:
+            self.disconnect(conn, channel)
 
 manager = ConnectionManager()
