@@ -28,7 +28,7 @@ class _DashboardState extends State<Dashboard> {
   return Container(
     padding: const EdgeInsets.symmetric(vertical: 16),
     decoration: BoxDecoration(
-      color: Colors.teal, 
+      color: Theme.of(context).cardColor, 
       borderRadius: BorderRadius.circular(12),
     ),
     child: Column(
@@ -63,7 +63,6 @@ class _DashboardState extends State<Dashboard> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
               ),
@@ -97,7 +96,6 @@ class _DashboardState extends State<Dashboard> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
               ),
@@ -126,7 +124,7 @@ class _DashboardState extends State<Dashboard> {
                           final owner = userController.ownerList[index];
                           return Card(
                             elevation: 1,
-                            color: Colors.teal,
+                            color: Theme.of(context).cardColor,
                             margin: const EdgeInsets.only(bottom: 4),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
