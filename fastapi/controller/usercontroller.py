@@ -162,6 +162,7 @@ def update_owner_controller(id: int, user_data: UpdateUser, db: Session, current
             host_name=host_name
         )
         user_response = UserResponse.from_orm(owner)
+        user_response.userID = user_data.username
         return user_response
     except Exception as e:
         db.rollback()
