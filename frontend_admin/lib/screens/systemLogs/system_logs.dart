@@ -62,7 +62,6 @@ class SystemLogs extends StatelessWidget {
                       leading: _getLogIcon(log.logType),
                       title: Text(
                         log.message,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       subtitle: Text(log.createdAt),
                     ),
