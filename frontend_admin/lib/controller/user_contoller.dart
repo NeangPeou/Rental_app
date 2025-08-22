@@ -12,8 +12,7 @@ class UserController extends GetxController {
   RxList<UserModel> ownerList = <UserModel>[].obs;
   WebSocketChannel? channel;
   RxBool isLoading = true.obs;
-  RxList<UserModel> admin = <UserModel>[].obs;
-  Rxn<UserModel> currentUser = Rxn<UserModel>();
+  RxMap<String, dynamic> currentUser = <String, dynamic>{}.obs;
 
   @override
   void onInit() {
@@ -35,13 +34,16 @@ class UserController extends GetxController {
 
   Future<void> login(BuildContext context, String username, String password) async {
     try {
-      final fetchedUsers = await AuthService.login(context, username, password);
-      currentUser.value = fetchedUsers;
+      await AuthService.login(context, username, password);
     } catch (e) {
       rethrow;
     } finally{
       Helper.closeLoadingDialog(context);
     }
+  }
+
+  void setCurrentUser(Map<String, dynamic> user) {
+    currentUser.value = user;
   }
 
   void connectWebSocket() {

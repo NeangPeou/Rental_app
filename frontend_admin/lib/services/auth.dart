@@ -10,11 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
 
-import '../models/user_model.dart';
-
 class AuthService {
-  static Future<UserModel> login(BuildContext context, String username, String password) async {
+  static Future<void> login(BuildContext context, String username, String password) async {
     try {
+      UserController userController = Get.put(UserController());
       Helper.showLoadingDialog(context);
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       String deviceName = '';
@@ -47,7 +46,8 @@ class AuthService {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('x-auth-token', response!['accessToken']);
 
-        return UserModel.fromJson(response);
+        userController.setCurrentUser(response);
+        return;
       }
 
       throw Exception(response!['detail'] ?? 'Failed to login');
@@ -71,7 +71,7 @@ class AuthService {
       );
       if (res.statusCode == 200) {
         Map<String, dynamic>? response = jsonDecode(res.body);
-        userController.currentUser.value = UserModel.fromJson(response!);
+        userController.setCurrentUser(response!);
         return ErrorModel(isError: false, code: 'Information', message: 'Token valid');
       } else {
         return ErrorModel(

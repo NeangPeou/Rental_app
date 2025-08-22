@@ -74,7 +74,7 @@ class _HomeState extends State<Home> {
     ];
 
     return Scaffold(
-      appBar: Helper.sampleAppBar(titles[_controller.index], context, null),
+      appBar: Helper.sampleAppBar(titles[_controller.index], context, 'assets/app_icon/sw_logo.png'),
       body: NotificationListener<ScrollNotification>(
         onNotification: (scroll) {
           _handleScroll(scroll);

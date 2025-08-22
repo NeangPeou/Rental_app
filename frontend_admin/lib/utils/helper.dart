@@ -1,18 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:frontend_admin/screens/bottomNavigationBar/setting_pages/my_account.dart';
 import 'package:frontend_admin/shared/constants.dart';
 import 'package:get/get.dart';
 
 class Helper {
-  static AppBar sampleAppBar(String title,BuildContext context, String? logoImg) {
+  static AppBar sampleAppBar(String title,BuildContext context, String? logoImg, {VoidCallback? onLogoTap}) {
     return AppBar(
       title: Text(title, style: Theme.of(context).textTheme.titleMedium),
-      leading: logoImg != null
-          ? Padding(
-              padding: const EdgeInsets.all(6),
-              child: ClipOval(child: Image.asset(logoImg)),
-            )
-          : null,
+      actions: [
+        if (logoImg != null)
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: GestureDetector(
+            onTap: onLogoTap ?? () {
+              Get.to(() => MyAccount(), arguments: {'title': 'my_account'.tr});
+            },
+            child: ClipOval(
+              child: Image.asset(
+                logoImg,
+                height: 36,
+                width: 36,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        )
+      ],
     );
   }
 
@@ -40,10 +54,11 @@ class Helper {
           obscureText: obscureText,
           keyboardType: keyboardType,
           decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(left: 10, right: 10),
             label: RichText(
               text: TextSpan(
                 text: labelText,
-                style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+                style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
                 children: isRequired
                     ? [
                         const TextSpan(
@@ -68,14 +83,14 @@ class Helper {
                   )
                 : suffixIcon,
             border: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(15)),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
               borderSide: BorderSide(color: theme.colorScheme.outline),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(15)),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
               borderSide:
                   BorderSide(color: theme.colorScheme.onSecondaryContainer),
             ),

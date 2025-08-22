@@ -103,7 +103,7 @@ class _SettingState extends State<Setting> {
             child: Column(
               children: [
                 _buildSettingsTile(Icons.person, "my_account", onTap: () {
-                  Get.to(() => const MyAccount(), arguments: "my_account".tr);
+                  Get.to(() => const MyAccount(), arguments: {'title': 'my_account'.tr});
                 }),
                 Divider(height: 0),
                 _buildSettingsTile(Icons.security, "privacy_safety", onTap: () {}),
