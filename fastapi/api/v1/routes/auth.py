@@ -7,25 +7,31 @@ from db.session import get_db
 from db.models import (user, user_session)
 from core.security import ALGORITHM, SECRET_KEY
 from helper.hepler import ConnectionManager
-from schemas.user import LoginRequest, RegisterUser, TokenResponse
+from schemas.user import LoginRequest, RegisterUser, TokenResponse, UserResponse
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 manager = ConnectionManager()
 
-@router.post("/register", response_model=TokenResponse)
+@router.post("/register")
 def register(user_data: RegisterUser, db: Session = Depends(get_db), request_obj: Request = None):
-    user = authcontroller.register_controller(user_data, db, request_obj)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+    try:
+        user = authcontroller.register_controller(user_data, db, request_obj)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login")
 def login(request: LoginRequest, db: Session = Depends(get_db), request_obj: Request = None):
-    user = authcontroller.login_controller(request, db, request_obj)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+    try:
+        user = authcontroller.login_controller(request, db, request_obj)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/tokensValid")
 def token_is_valid(request: Request, db: Session = Depends(get_db)):
@@ -61,11 +67,9 @@ def token_is_valid(request: Request, db: Session = Depends(get_db)):
         if not session:
             raise HTTPException(status_code=401, detail="Session invalid or revoked")
 
-        return {
-            "valid": True,
-            "username": userData.userName,
-            "phone": userData.phoneNumber
-        }
+        user_response = UserResponse.from_orm(userData)
+        user_response.accessToken = token
+        return user_response
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 

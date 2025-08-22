@@ -390,15 +390,9 @@ class _SettingState extends State<Setting> {
         headers: {'Authorization': 'Bearer $token'},
       );
       if (response.statusCode != 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Logout failed. Please try again.')),
-        );
         return;
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error during logout. Please try again.')),
-      );
       return;
     }
     // Clear token and navigate to login

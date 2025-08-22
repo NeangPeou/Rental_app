@@ -87,6 +87,10 @@ class AppTranslations extends Translations {
       "delete": "លុប",
       "systemLog" : "កំណត់ហេតុប្រព័ន្ធ",
       "tabviewlog": "ចុចដើម្បីមើល",
+      'invalid_password': 'លេខសម្ងាត់មិនត្រឹមត្រូវ',
+      'invalid_username': 'ឈ្មោះអ្នកប្រើមិនត្រឹមត្រូវ',
+      'failed_to_login': 'ការចូលប្រើបានបរាជ័យ',
+      'information': 'ព័ត៌មាន',
     },
     'en_US': {
       'english': 'English',
@@ -171,6 +175,10 @@ class AppTranslations extends Translations {
       "delete": "Delete",
       "systemLog" : "System Log",
       "tabviewlog": "Tab view",
+      'invalid_password': 'Invalid password',
+      'invalid_username': 'Invalid username',
+      'failed_to_login': 'Failed to login',
+      'information': 'Information',
     },
     'es_ES': {
       'english': 'Inglés',

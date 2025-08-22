@@ -8,6 +8,8 @@ class UserModel {
   final String? idCard;
   final String? address;
   final String? status;
+  final String? accessToken;
+  final String? refreshToken;
 
   UserModel({
     this.id,
@@ -19,6 +21,8 @@ class UserModel {
     this.idCard,
     this.address,
     this.status = 'Active',
+    this.accessToken,
+    this.refreshToken,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -31,6 +35,20 @@ class UserModel {
       passport: json['passport']?.toString() ?? '',
       idCard: json['idCard']?.toString() ?? '',
       address: json['address']?.toString() ?? '',
+      accessToken: json['accessToken']?.toString() ?? '',
+      refreshToken: json['refreshToken']?.toString() ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'userName': userName,
+    'userID': userID,
+    'password': password,
+    'phoneNumber': phoneNumber,
+    'passport': passport,
+    'idCard': idCard,
+    'address': address,
+    'status': status,
+  };
 }

@@ -6,12 +6,14 @@ from db.models import (user, role, system_log, user_session)
 from core.security import create_access_token, create_refresh_token, get_password_hash, verify_password, SECRET_KEY, ALGORITHM
 from sqlalchemy.orm import Session
 from helper.hepler import log_action
-from schemas.user import LoginRequest, RegisterUser
+from schemas.user import LoginRequest, RegisterUser, TokenResponse, UserResponse
 from jose import jwt
     
 def login_controller(request: LoginRequest, db: Session, request_obj: Request = None):
     users = db.query(user.User).filter(user.User.userName == request.username).first()
-    if not users or not verify_password(request.password, users.password):
+    if not users:
+        raise HTTPException(status_code=404, detail="Invalid username")
+    if not verify_password(request.password, users.password):
         log_action(
             db=db,
             user_id=None,
@@ -20,17 +22,17 @@ def login_controller(request: LoginRequest, db: Session, request_obj: Request = 
             message=f"Failed login attempt for username: {request.username} from {request.deviceName or 'unknown device'}",
             host_name=request.deviceName or 'unknown'
         )
-        raise HTTPException(status_code=401, detail="Invalid username or password")
+        raise HTTPException(status_code=404, detail="Invalid password")
 
-    access_token = create_access_token({"name": users.userName, "password": users.password, "id": users.id})
-    refresh_token = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id})
+    accessToken = create_access_token({"name": users.userName, "password": users.password, "id": users.id})
+    refreshToken = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id})
 
     ip_address = request_obj.client.host if request_obj else None
     session = user_session.UserSession(
         user_id = users.id,
         deviceName = request.deviceName,
-        access_token = access_token,
-        refresh_token = refresh_token,
+        access_token = accessToken,
+        refresh_token = refreshToken,
         token_expired = datetime.utcnow() + timedelta(hours=2),
         refresh_expired = datetime.utcnow() + timedelta(days=7),
         ip_address = ip_address,
@@ -45,7 +47,10 @@ def login_controller(request: LoginRequest, db: Session, request_obj: Request = 
         hostName=request.deviceName or 'unknown'
     ))
     db.commit()
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+    user_response = UserResponse.from_orm(users)
+    user_response.accessToken = accessToken
+    user_response.refreshToken = refreshToken
+    return user_response
 
 def register_controller(user_data: RegisterUser, db: Session, request_obj: Request = None):
     existing_user = db.query(user.User).filter(user.User.userName == user_data.username).first()
@@ -87,10 +92,13 @@ def register_controller(user_data: RegisterUser, db: Session, request_obj: Reque
         host_name=host_name
     )
 
-    access_token = create_access_token({"name": users.userName, "id": users.id})
-    refresh_token = create_refresh_token({"name": users.userName, "id": users.id})
+    accessToken = create_access_token({"name": users.userName, "id": users.id})
+    refreshToken = create_refresh_token({"name": users.userName, "id": users.id})
 
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+    user_response = UserResponse.from_orm(users)
+    user_response.accessToken = accessToken
+    user_response.refreshToken = refreshToken
+    return user_response
 
 def logout_controller(request: Request, db: Session):
     try:

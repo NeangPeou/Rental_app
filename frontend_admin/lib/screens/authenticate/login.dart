@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_admin/models/error.dart';
-import 'package:frontend_admin/services/auth.dart';
+import 'package:frontend_admin/controller/user_contoller.dart';
 import 'package:frontend_admin/shared/message_dialog.dart';
 import 'package:frontend_admin/utils/helper.dart';
 import 'package:get/get.dart';
@@ -18,7 +17,9 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   final _userController = TextEditingController();
   final _passController = TextEditingController();
-  final AuthService _auth = AuthService();
+  String? _passwordError;
+  String? _usernameError;
+  UserController userController = Get.put(UserController());
 
   @override
   void dispose() {
@@ -67,7 +68,18 @@ class _LoginState extends State<Login> {
                           context: context,
                           controller: _userController,
                           labelText: 'username'.tr,
-                          validator: (value) => value == null || value.isEmpty ? 'enter_username'.tr : null,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return 'enter_username'.tr;
+                            if (_usernameError != null) return _usernameError;
+                            return null;
+                          },
+                          onChanged: (_) {
+                            if (_usernameError != null) {
+                              setState(() {
+                                _usernameError = null;
+                              });
+                            }
+                          },
                           isRequired: true, 
                         ),
                         const SizedBox(height: 16),
@@ -76,7 +88,18 @@ class _LoginState extends State<Login> {
                           context: context,
                           controller: _passController,
                           labelText: 'password'.tr,
-                          validator: (value) => value == null || value.isEmpty ? 'enter_password'.tr : null,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return 'enter_password'.tr;
+                            if (_passwordError != null) return _passwordError;
+                            return null;
+                          },
+                          onChanged: (_) {
+                            if (_passwordError != null) {
+                              setState(() {
+                                _passwordError = null;
+                              });
+                            }
+                          },
                           obscureText: _obscurePassword,
                           suffixIcon: IconButton(
                             icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, size: 20),
@@ -141,13 +164,29 @@ class _LoginState extends State<Login> {
 
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                ErrorModel errorModel = await _auth.login(context, _userController.text.trim(), _passController.text.trim());
-                                if (errorModel.isError) {
-                                  // ignore: use_build_context_synchronously
-                                  MessageDialog.showMessage(errorModel.code.toString(), errorModel.message.toString(), context);
-                                } else {
-                                  // ignore: use_build_context_synchronously
-                                  Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                                bool revalidate = false;
+                                try {
+                                  await userController.login(context, _userController.text.trim(), _passController.text.trim());
+                                  Get.offAllNamed('/home');
+                                } catch (e) {
+                                  String errorMsg = e.toString();
+
+                                  if (errorMsg.contains('Invalid username')) {
+                                    setState(() {
+                                      _usernameError = 'invalid_username'.tr;
+                                    });
+                                    revalidate = true;
+                                  } else if (errorMsg.contains('Invalid password')) {
+                                    setState(() {
+                                      _passwordError = 'invalid_password'.tr;
+                                    });
+                                    revalidate = true;
+                                  } else {
+                                    MessageDialog.showMessage('information'.tr, 'failed_to_login'.tr, context);
+                                  }
+                                }
+                                if (revalidate) {
+                                  _formKey.currentState!.validate();
                                 }
                               }
                             },

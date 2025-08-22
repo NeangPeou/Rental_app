@@ -19,11 +19,6 @@ class LoginRequest(BaseModel):
     class Config:
         populate_by_name = True
 
-class TokenResponse(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
-
 class UserCreate(BaseModel):
     username: str
     password: str
@@ -41,10 +36,18 @@ class UserResponse(BaseModel):
     passport: Optional[str] = None
     idCard: Optional[str] = None
     address: Optional[str] = None
+    accessToken: Optional[str] = None
+    refreshToken: Optional[str] = None
 
     model_config = {
         "from_attributes": True
     }
+
+class TokenResponse(BaseModel):
+    accessToken: str
+    refreshToken: str
+    tokenType: str = "bearer"
+    user: UserResponse
 
 class UpdateUser(BaseModel):
     username: Optional[str] = None

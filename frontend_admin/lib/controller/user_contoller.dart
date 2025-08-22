@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend_admin/services/auth.dart';
+import 'package:frontend_admin/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -10,6 +12,8 @@ class UserController extends GetxController {
   RxList<UserModel> ownerList = <UserModel>[].obs;
   WebSocketChannel? channel;
   RxBool isLoading = true.obs;
+  RxList<UserModel> admin = <UserModel>[].obs;
+  Rxn<UserModel> currentUser = Rxn<UserModel>();
 
   @override
   void onInit() {
@@ -27,6 +31,17 @@ class UserController extends GetxController {
   void dispose() {
     super.dispose();
     channel?.sink.close();
+  }
+
+  Future<void> login(BuildContext context, String username, String password) async {
+    try {
+      final fetchedUsers = await AuthService.login(context, username, password);
+      currentUser.value = fetchedUsers;
+    } catch (e) {
+      rethrow;
+    } finally{
+      Helper.closeLoadingDialog(context);
+    }
   }
 
   void connectWebSocket() {
