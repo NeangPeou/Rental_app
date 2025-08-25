@@ -23,6 +23,18 @@ def login_controller(request: LoginRequest, db: Session, request_obj: Request = 
             host_name=request.deviceName or 'unknown'
         )
         raise HTTPException(status_code=404, detail="Invalid password")
+    
+    user_role = db.query(role.Role).filter(role.Role.id == users.role_id).first()
+    if not user_role or user_role.role.lower() != "admin":
+        log_action(
+            db=db,
+            user_id=users.id,
+            action="LOGIN_ATTEMPT",
+            log_type="ERROR",
+            message=f"Unauthorized login attempt by non-admin user: {users.userName}",
+            host_name=request.deviceName or 'unknown'
+        )
+        raise HTTPException(status_code=403, detail="Only admins can log in")
 
     accessToken = create_access_token({"name": users.userName, "password": users.password, "id": users.id})
     refreshToken = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id})
