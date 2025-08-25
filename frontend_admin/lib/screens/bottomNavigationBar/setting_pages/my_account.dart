@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../controller/user_contoller.dart';
 import '../../../models/user_model.dart';
 import '../../../utils/helper.dart';
@@ -21,6 +25,8 @@ class _MyAccountState extends State<MyAccount> {
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
   String? _passwordError;
+  final ImagePicker _picker = ImagePicker();
+  XFile? _imageFile;
   final TextEditingController _currentPassController = TextEditingController();
   final TextEditingController _newPassController = TextEditingController();
   final TextEditingController _confirmPassController = TextEditingController();
@@ -67,23 +73,51 @@ class _MyAccountState extends State<MyAccount> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(3),
-                    margin: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Get.theme.cardColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: theme.colorScheme.secondaryContainer,
-                        width: 1
+                  child: GestureDetector(
+                    onTap: () => _showCupertinoImagePicker(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      margin: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Get.theme.cardColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: theme.colorScheme.secondaryContainer,
+                          width: 1,
+                        ),
                       ),
-                    ),
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Get.theme.cardColor,
-                      child: Icon(
-                        Icons.person,
-                        size: 55,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Get.theme.cardColor,
+                            backgroundImage: _imageFile != null ? FileImage(File(_imageFile!.path)) : null,
+                            child: _imageFile == null
+                                ? const Icon(Icons.person, size: 60)
+                                : null,
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                size: 20,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -196,6 +230,46 @@ class _MyAccountState extends State<MyAccount> {
       ),
     );
   }
+
+  void _showCupertinoImagePicker(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => CupertinoActionSheet(
+        title: Text("Select Profile Photo"),
+        actions: [
+          CupertinoActionSheetAction(
+            child: Text("Camera"),
+            onPressed: () {
+              Navigator.of(context).pop();
+              _pickImage(ImageSource.camera);
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: Text("Gallery"),
+            onPressed: () {
+              Navigator.of(context).pop();
+              _pickImage(ImageSource.gallery);
+            },
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          isDestructiveAction: true,
+          child: Text("Cancel"),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source, imageQuality: 85);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = pickedFile;
+      });
+    }
+  }
+
   void changePasswordBottomSheet() {
     _currentPassController.clear();
     _newPassController.clear();
@@ -325,7 +399,7 @@ class _MyAccountState extends State<MyAccount> {
                               isRequired: true,
                             ),
 
-                            const SizedBox(height: 30),
+                            const SizedBox(height: 20),
 
                             SizedBox(
                               width: Get.height,
