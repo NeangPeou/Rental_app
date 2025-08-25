@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_admin/shared/constants.dart';
-import 'package:frontend_admin/utils/helper.dart';
 import 'package:get/get.dart';
 
 class MessageDialog {
@@ -54,7 +53,6 @@ class MessageDialog {
                 width: double.infinity,
                 child: TextButton(
                   onPressed: () {
-                    Helper.closeLoadingDialog(context);
                     Navigator.of(context).pop();
                   },
                   style: TextButton.styleFrom(

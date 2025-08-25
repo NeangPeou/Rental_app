@@ -15,12 +15,6 @@ class UserController extends GetxController {
   RxMap<String, dynamic> currentUser = <String, dynamic>{}.obs;
 
   @override
-  void onInit() {
-    super.onInit();
-    connectWebSocket();
-  }
-
-  @override
   void onClose() {
     channel?.sink.close();
     super.onClose();
