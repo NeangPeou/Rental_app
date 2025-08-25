@@ -27,6 +27,10 @@ class UserCreate(BaseModel):
     idCard: Optional[str] = None
     address: Optional[str] = None
     deviceName: Optional[str] = None
+    gender: Optional[str] = Field(
+        default='Unknown',
+        description="Valid values: Male, Female, Other,"
+    )
 
 class UserResponse(BaseModel):
     id: int
@@ -36,6 +40,12 @@ class UserResponse(BaseModel):
     passport: Optional[str] = None
     idCard: Optional[str] = None
     address: Optional[str] = None
+
+    gender: Optional[str] = Field(
+        default='Unknown',
+        description="Valid values: Male, Female"
+    )
+
     accessToken: Optional[str] = None
     refreshToken: Optional[str] = None
 
@@ -57,3 +67,8 @@ class UpdateUser(BaseModel):
     idCard: Optional[str] = None
     address: Optional[str] = None
     deviceName: Optional[str] = None
+
+    gender: Optional[str] = Field(
+        default=None,
+        description="Valid values: Male, Female"
+    )

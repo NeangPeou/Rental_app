@@ -7,6 +7,7 @@ class UserModel {
   final String? passport;
   final String? idCard;
   final String? address;
+  final String? gender;
   final String? status;
   final String? accessToken;
   final String? refreshToken;
@@ -20,6 +21,7 @@ class UserModel {
     this.passport,
     this.idCard,
     this.address,
+    this.gender = 'Male',
     this.status = 'Active',
     this.accessToken,
     this.refreshToken,
@@ -35,6 +37,9 @@ class UserModel {
       passport: json['passport']?.toString() ?? '',
       idCard: json['idCard']?.toString() ?? '',
       address: json['address']?.toString() ?? '',
+      gender: ['Male', 'Female'].contains(json['gender']?.toString())
+        ? json['gender']?.toString()
+        : 'Male',
       accessToken: json['accessToken']?.toString() ?? '',
       refreshToken: json['refreshToken']?.toString() ?? '',
     );
@@ -49,6 +54,7 @@ class UserModel {
     'passport': passport,
     'idCard': idCard,
     'address': address,
+    'gender' : gender,
     'status': status,
   };
 }

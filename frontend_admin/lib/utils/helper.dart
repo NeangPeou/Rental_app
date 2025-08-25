@@ -42,13 +42,14 @@ class Helper {
     bool passwordType = false,
     void Function(String)? onChanged,
     bool isRequired = false,
+    bool enabled = true,
   }) {
     final theme = Theme.of(context);
 
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: controller,
       builder: (context, value, child) {
-        final showClearIcon = !passwordType && value.text.isNotEmpty;
+        final showClearIcon = enabled && !passwordType && value.text.isNotEmpty;
 
         return TextFormField(
           controller: controller,
@@ -95,8 +96,77 @@ class Helper {
           validator: validator,
           style: theme.textTheme.bodyLarge,
           onChanged: onChanged,
+          enabled: enabled,
         );
       },
+    );
+  }
+
+  static Widget sampleRadioGroup({
+    required BuildContext context,
+    required RxString selectedValue,
+    required List<String> options,
+    required String labelText,
+    String? Function(String?)? validator,
+    Icon? prefixIcon,
+  }) {
+    final theme = Theme.of(context);
+    final Map<String, IconData> genderIcons = {
+      'Male': Icons.male,
+      'Female': Icons.female,
+    };
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 5),
+        Obx(
+          () => Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: theme.colorScheme.outline),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    if (prefixIcon != null) ...[
+                      prefixIcon,
+                      const SizedBox(width: 8),
+                    ],
+                    Text(
+                      labelText.tr,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                ...options.map(
+                  (option) => RadioListTile<String>(
+                    title: Text(option.tr),
+                    value: option,
+                    groupValue: selectedValue.value,
+                    onChanged: (value) {
+                      if (value != null) {
+                        selectedValue.value = value;
+                      }
+                    },
+                    secondary: Icon(
+                      genderIcons[option],
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    dense: true,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
