@@ -56,8 +56,8 @@ def drop_columns():
         """))
         conn.commit()
 
-add_columns()
-drop_columns()
+# add_columns()
+# drop_columns()
 
 app.add_middleware(
     CORSMiddleware,
@@ -73,10 +73,3 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api", tags=["Auth"])
 app.include_router(user.router, prefix="/api", tags=["User"])
 app.include_router(systemlog.router, prefix="/api", tags=["SystemLog"])
-
-if __name__ == "__main__":
-    import uvicorn
-    import os
-
-    port = int(os.environ.get("PORT", 8000)) 
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
