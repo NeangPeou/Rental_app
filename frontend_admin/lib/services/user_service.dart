@@ -69,6 +69,7 @@ class UserService{
         'passport': userModel.passport,
         'idCard': userModel.idCard,
         'address': userModel.address,
+        'gender': userModel.gender,
         'deviceName': deviceName,
       };
       final response = await http.post(
@@ -112,6 +113,7 @@ class UserService{
         'passport': userModel.passport,
         'idCard': userModel.idCard,
         'address': userModel.address,
+        'gender': userModel.gender,
         'deviceName': deviceName,
       };
       final response = await http.put(

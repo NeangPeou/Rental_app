@@ -12,5 +12,6 @@ class User(Base):
     passport = Column(String, nullable=True)
     idCard = Column(String, nullable=True)
     address = Column(Text, nullable=True)
+    gender = Column(String, nullable=False, default='Male')
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

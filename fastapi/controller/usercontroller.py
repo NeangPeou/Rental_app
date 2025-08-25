@@ -15,6 +15,9 @@ from sqlalchemy import and_, desc
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 
+# Valid gender options
+VALID_GENDERS = {"Male", "Female"}
+
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -53,6 +56,7 @@ def get_owners_controller(db: Session, current_user: user.User = Depends(get_cur
                 'passport': o.passport,
                 'idCard': o.idCard,
                 'address': o.address,
+                'gender' : o.gender,
             } for o in owners
         ]
     except Exception as e:
@@ -74,6 +78,11 @@ async def create_owner_controller(user_data: UserCreate, db: Session, current_us
             db.add(owner_role)
             db.commit()
             db.refresh(owner_role)
+        
+        # Validate gender
+        gender = user_data.gender or 'Unknown'
+        if gender not in VALID_GENDERS:
+            raise HTTPException(status_code=400, detail=f"Invalid gender. Must be one of: {', '.join(VALID_GENDERS)}")
 
         hashed_password = get_password_hash(user_data.password)
         users = user.User(
@@ -83,7 +92,8 @@ async def create_owner_controller(user_data: UserCreate, db: Session, current_us
             phoneNumber=user_data.phoneNumber,
             passport=user_data.passport,
             idCard=user_data.idCard,
-            address=user_data.address
+            address=user_data.address,
+            gender = gender
         )
         db.add(users)
         db.commit()
@@ -148,6 +158,10 @@ def update_owner_controller(id: int, user_data: UpdateUser, db: Session, current
             owner.idCard = user_data.idCard or None
         if user_data.address is not None:
             owner.address = user_data.address or None
+        if user_data.gender is not None:
+            if user_data.gender not in VALID_GENDERS:
+                raise HTTPException(status_code=400, detail=f"Invalid gender. Must be one of: {', '.join(VALID_GENDERS)}")
+            owner.gender = user_data.gender
 
         db.commit()
         db.refresh(owner)

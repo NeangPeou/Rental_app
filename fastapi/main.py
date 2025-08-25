@@ -25,6 +25,13 @@ def add_columns():
             ) THEN
                 ALTER TABLE t_users ADD COLUMN address TEXT NOT NULL DEFAULT '';
             END IF;
+                          
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns
+                WHERE table_name = 't_users' AND column_name = 'gender'
+            ) THEN
+                ALTER TABLE t_users ADD COLUMN gender VARCHAR(10) NOT NULL DEFAULT 'Unknown';
+            END IF;
         END
         $$;
         """))
@@ -43,7 +50,7 @@ def drop_columns():
                 WHERE table_name = 't_users' AND column_name = 'addresss'
             ) THEN
                 ALTER TABLE t_users DROP COLUMN addresss;
-            END IF;
+            END IF;    
         END
         $$;
         """))

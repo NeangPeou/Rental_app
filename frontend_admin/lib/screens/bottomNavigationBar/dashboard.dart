@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_admin/controller/user_contoller.dart';
+import 'package:frontend_admin/screens/bottomNavigationBar/userForm/user_detail.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/userForm/user_form.dart';
 import 'package:frontend_admin/screens/systemLogs/system_logs.dart';
 import 'package:frontend_admin/services/user_service.dart';
@@ -160,7 +161,39 @@ class _DashboardState extends State<Dashboard> {
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                                 leading: CircleAvatar(radius: 25, backgroundImage: AssetImage('assets/app_icon/sw_logo.png'), backgroundColor: Colors.transparent),
                                 title: Text(owner.userName, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
-                                subtitle: Text(owner.phoneNumber, style: Theme.of(context).textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                                // subtitle: Text(owner.phoneNumber, style: Theme.of(context).textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      owner.phoneNumber,
+                                      style: Theme.of(context).textTheme.labelSmall,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      'Gender: ${owner.gender ?? 'Male'}'.tr,
+                                      style: Theme.of(context).textTheme.labelSmall,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                                onTap: () {
+                                  // Show UserDetail dialog
+                                  Get.dialog(
+                                    UserDetail(),
+                                    arguments: {
+                                      'id': owner.id,
+                                      'userName': owner.userName,
+                                      'userID': owner.userID,
+                                      'phoneNumber': owner.phoneNumber,
+                                      'passport': owner.passport,
+                                      'idCard': owner.idCard,
+                                      'address': owner.address,
+                                      'gender': owner.gender,
+                                      'status': owner.status,
+                                    },
+                                  );
+                                },
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -188,6 +221,7 @@ class _DashboardState extends State<Dashboard> {
                                           'passport': owner.passport,
                                           'idCard': owner.idCard,
                                           'address': owner.address,
+                                          'gender': owner.gender,
                                         });
                                       },
                                     ),
