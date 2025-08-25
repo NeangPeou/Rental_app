@@ -113,6 +113,7 @@ async def create_owner_controller(user_data: UserCreate, db: Session, current_us
         )
 
         user_response = UserResponse.from_orm(data)
+        user_response.userID = users.userName
         return user_response
     except Exception as e:
         db.rollback()
@@ -177,7 +178,7 @@ def update_owner_controller(id: int, user_data: UpdateUser, db: Session, current
             host_name=host_name
         )
         user_response = UserResponse.from_orm(owner)
-        user_response.userID = user_data.username
+        user_response.userID = owner.userName
         return user_response
     except Exception as e:
         db.rollback()
