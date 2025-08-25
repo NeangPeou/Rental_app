@@ -482,7 +482,7 @@ Widget buildLabeledInput({
                   decoration: InputDecoration(
                     hintText: hintText,
                     hintStyle: Get.textTheme.bodySmall?.copyWith(
-                      color: showError ? Colors.red.withOpacity(0.7) : null,
+                      color: showError ? Colors.red.withOpacity(0.7) : Colors.grey,
                     ),
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
