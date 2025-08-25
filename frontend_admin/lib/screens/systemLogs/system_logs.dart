@@ -37,7 +37,7 @@ class SystemLogs extends StatelessWidget {
           () => Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
@@ -50,19 +50,55 @@ class SystemLogs extends StatelessWidget {
                 itemCount: controller.logs.length,
                 itemBuilder: (context, index) {
                   final SystemLogModel log = controller.logs[index];
-                  return Card(
-                    color: Theme.of(context).cardColor,
-                    margin: const EdgeInsets.symmetric(vertical: 6),
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 2),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Theme.of(context).dividerColor.withAlpha(100),
+                        width: 1,
+                      ),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: ListTile(
-                      leading: _getLogIcon(log.logType),
-                      title: Text(
-                        log.message,
+                    child: Card(
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      subtitle: Text(log.createdAt),
+                      color: Theme.of(context).cardColor,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              child: _getLogIcon(log.logType),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    log.message,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    log.createdAt,
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w400),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              log.logType.toUpperCase(),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w400),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 },
