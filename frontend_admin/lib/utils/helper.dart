@@ -37,6 +37,7 @@ class Helper {
     String? Function(String?)? validator,
     bool obscureText = false,
     Widget? suffixIcon,
+    Widget? prefixIcon,
     TextInputType keyboardType = TextInputType.text,
     bool passwordType = false,
     void Function(String)? onChanged,
@@ -69,19 +70,16 @@ class Helper {
                     : [],
               ),
             ),
-            suffixIcon: showClearIcon
-                ? IconButton(
-                    icon: CircleAvatar(
-                      backgroundColor: Get.theme.cardColor,
-                      radius: 10,
-                      child: const Icon(Icons.clear_rounded, size: 15),
-                    ),
+            suffixIcon: showClearIcon ?
+                IconButton(
+                    icon: CircleAvatar(backgroundColor: Get.theme.cardColor, radius: 10, child: const Icon(Icons.clear_rounded, size: 15)),
                     onPressed: () {
                       controller.clear();
                       if (onChanged != null) onChanged('');
                     },
                   )
                 : suffixIcon,
+            prefixIcon: prefixIcon,
             border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
@@ -91,8 +89,7 @@ class Helper {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: const BorderRadius.all(Radius.circular(10)),
-              borderSide:
-                  BorderSide(color: theme.colorScheme.onSecondaryContainer),
+              borderSide: BorderSide(color: theme.colorScheme.onSecondaryContainer),
             ),
           ),
           validator: validator,

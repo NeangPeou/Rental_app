@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_admin/controller/setting_controller.dart';
 import 'package:frontend_admin/screens/authenticate/login.dart';
@@ -8,13 +9,18 @@ import 'package:frontend_admin/screens/wrapper.dart';
 import 'package:frontend_admin/shared/constants.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'controller/user_contoller.dart';
 import 'translate//AppTranslations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp
+  ]);
   await dotenv.load(fileName: '.env');
   await GetStorage.init();
   Get.put(SettingController());
+  Get.put(UserController());
   runApp(MyApp());
 }
 
