@@ -61,11 +61,7 @@ drop_columns()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = [
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-        "http://0.0.0.0:8000",
-        "https://rental-app-3ow8.onrender.com"],
+    allow_origins = ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
