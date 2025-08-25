@@ -49,7 +49,7 @@ class _MyAccountState extends State<MyAccount> {
       id = userInfo['id'] ?? '';
       if (id != null) {
         usernameCtrl.text = userInfo['userName'];
-        phoneCtrl.text = userInfo['phoneNumber'];
+        phoneCtrl.text = userInfo['phoneNumber'] ?? '';
         passportCtrl.text = userInfo['passport'] ?? '';
         idCardCtrl.text = userInfo['idCard'] ?? '';
         addressCtrl.text = userInfo['address'] ?? '';
