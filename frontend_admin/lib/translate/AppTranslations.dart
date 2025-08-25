@@ -108,6 +108,12 @@ class AppTranslations extends Translations {
       'active': 'សកម្ម',
       'Female': 'ស្រី', 
       'Male': 'ប្រុស',
+      'select_profile_photo': 'ជ្រើសរូបភាពប្រូហ្វាល់',
+      'camera': 'កាមេរ៉ា',
+      'gallery': 'រូបភាព',
+      'update_failed':'បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាព',
+      'name_already_exists':'ឈ្មោះមានរួចហើយ',
+      'updated_successfully': 'ធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ'
     },
     'en_US': {
       'english': 'English',
@@ -213,6 +219,12 @@ class AppTranslations extends Translations {
       'active': 'Active',
       'Female': 'Female', 
       'Male': 'Male',
+      'select_profile_photo': 'Select Profile Photo',
+      'camera': 'Camera',
+      'gallery': 'Gallery',
+      'update_failed':'Update failed',
+      'name_already_exists': 'Name already exists',
+      'updated_successfully': 'Updated successfully',
     },
     'es_ES': {
       'english': 'Inglés',

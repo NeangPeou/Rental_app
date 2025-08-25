@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend_admin/models/error.dart';
+import 'package:frontend_admin/services/user_service.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../controller/user_contoller.dart';
 import '../../../models/user_model.dart';
+import '../../../shared/message_dialog.dart';
 import '../../../utils/helper.dart';
 
 class MyAccount extends StatefulWidget {
@@ -21,13 +24,11 @@ class _MyAccountState extends State<MyAccount> {
   final _formPasswordKey = GlobalKey<FormState>();
   late String title;
   int? id;
-  bool _obscureCurrentPassword = true;
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
-  String? _passwordError;
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
-  final TextEditingController _currentPassController = TextEditingController();
+  final UserService _userService = UserService();
   final TextEditingController _newPassController = TextEditingController();
   final TextEditingController _confirmPassController = TextEditingController();
   final TextEditingController usernameCtrl = TextEditingController();
@@ -93,9 +94,7 @@ class _MyAccountState extends State<MyAccount> {
                             radius: 50,
                             backgroundColor: Get.theme.cardColor,
                             backgroundImage: _imageFile != null ? FileImage(File(_imageFile!.path)) : null,
-                            child: _imageFile == null
-                                ? const Icon(Icons.person, size: 60)
-                                : null,
+                            child: _imageFile == null ? const Icon(Icons.person, size: 60) : null,
                           ),
                           Positioned(
                             bottom: 0,
@@ -103,12 +102,8 @@ class _MyAccountState extends State<MyAccount> {
                             child: Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 2,
-                                ),
+                                color: Colors.grey,
+                                shape: BoxShape.circle
                               ),
                               child: const Icon(
                                 Icons.camera_alt,
@@ -184,8 +179,6 @@ class _MyAccountState extends State<MyAccount> {
                           ),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              Helper.showLoadingDialog(context);
-
                               UserModel userModel = UserModel(
                                 id: id?.toString(),
                                 userName: usernameCtrl.text,
@@ -195,9 +188,35 @@ class _MyAccountState extends State<MyAccount> {
                                 idCard: idCardCtrl.text,
                                 address: addressCtrl.text,
                               );
-                              // await _userService.updateOwner(context, id!, userModel);
-                              Helper.closeLoadingDialog(context);
-                              Get.back();
+                              ErrorModel error = await _userService.updateProfile(context, userModel);
+                              if(error.isError == true && error.message == 'name_already_exists') {
+                                MessageDialog.showMessage('information'.tr, 'name_already_exists'.tr, context);
+                              }else if (error.isError == false){
+                                Get.showSnackbar(
+                                  GetSnackBar(
+                                    messageText: const SizedBox.shrink(),
+                                    snackPosition: SnackPosition.TOP,
+                                    backgroundColor: Get.theme.cardColor,
+                                    snackStyle: SnackStyle.FLOATING,
+                                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                    padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 5),
+                                    borderRadius: 8,
+                                    duration: const Duration(seconds: 3),
+                                    isDismissible: true,
+                                    titleText: Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(Icons.save, size: 25, color: Colors.grey),
+                                        const SizedBox(width: 8),
+                                        Text('updated_successfully'.tr, style: Get.textTheme.titleMedium),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }else {
+                                MessageDialog.showMessage('information'.tr, 'update_failed'.tr, context);
+                              }
                             }
                           },
                           child: Text(id == null ? 'save'.tr : 'update'.tr),
@@ -235,17 +254,17 @@ class _MyAccountState extends State<MyAccount> {
     showCupertinoModalPopup(
       context: context,
       builder: (_) => CupertinoActionSheet(
-        title: Text("Select Profile Photo"),
+        title: Text("select_profile_photo".tr),
         actions: [
           CupertinoActionSheetAction(
-            child: Text("Camera"),
+            child: Text("camera".tr),
             onPressed: () {
               Navigator.of(context).pop();
               _pickImage(ImageSource.camera);
             },
           ),
           CupertinoActionSheetAction(
-            child: Text("Gallery"),
+            child: Text("gallery".tr),
             onPressed: () {
               Navigator.of(context).pop();
               _pickImage(ImageSource.gallery);
@@ -254,7 +273,7 @@ class _MyAccountState extends State<MyAccount> {
         ],
         cancelButton: CupertinoActionSheetAction(
           isDestructiveAction: true,
-          child: Text("Cancel"),
+          child: Text("cancel".tr),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -271,10 +290,8 @@ class _MyAccountState extends State<MyAccount> {
   }
 
   void changePasswordBottomSheet() {
-    _currentPassController.clear();
     _newPassController.clear();
     _confirmPassController.clear();
-    _obscureCurrentPassword = true;
     _obscureNewPassword = true;
     _obscureConfirmPassword = true;
     Get.bottomSheet(
@@ -317,37 +334,6 @@ class _MyAccountState extends State<MyAccount> {
                             Text('enter_passwords_instruction'.tr, style: Get.textTheme.bodyMedium, textAlign: TextAlign.center),
                             const SizedBox(height: 30),
 
-                            Helper.sampleTextField(
-                              context: context,
-                              controller: _currentPassController,
-                              labelText: 'current_password'.tr,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) return 'enter_current_password'.tr;
-                                return null;
-                              },
-                              obscureText: _obscureCurrentPassword,
-                              onChanged: (_) {
-                                if (_passwordError != null) {
-                                  setState(() {
-                                    _passwordError = null;
-                                  });
-                                }
-                              },
-                              suffixIcon: IconButton(
-                                icon: Icon(_obscureCurrentPassword ? Icons.visibility_off : Icons.visibility, size: 20),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscureCurrentPassword = !_obscureCurrentPassword;
-                                  });
-                                },
-                              ),
-                              prefixIcon: Icon(Icons.lock_outline),
-                              passwordType: true,
-                              isRequired: true,
-                            ),
-
-                            const SizedBox(height: 20),
-
                             /// New Password Field
                             Helper.sampleTextField(
                               context: context,
@@ -372,7 +358,7 @@ class _MyAccountState extends State<MyAccount> {
                               isRequired: true,
                             ),
 
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 10),
 
                             /// Confirm New Password Field
                             Helper.sampleTextField(
@@ -399,16 +385,41 @@ class _MyAccountState extends State<MyAccount> {
                               isRequired: true,
                             ),
 
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 10),
 
                             SizedBox(
                               width: Get.height,
                               child: ElevatedButton(
-                                  onPressed: () {
-                                    if (_formPasswordKey.currentState?.validate() ?? false) {
-                                      print('Valid form. Change password...');
-                                    } else {
-                                      print('Form not valid');
+                                  onPressed: ()async {
+                                    if (_formPasswordKey.currentState!.validate()) {
+                                      ErrorModel error = await _userService.updatePassword(context, id!, _newPassController.text.trim());
+                                      if (error.isError == false){
+                                        Get.back();
+                                        Get.showSnackbar(
+                                          GetSnackBar(
+                                            messageText: const SizedBox.shrink(), // Hide message
+                                            snackPosition: SnackPosition.TOP,
+                                            backgroundColor: Get.theme.cardColor,
+                                            snackStyle: SnackStyle.FLOATING,
+                                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                            padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 5),
+                                            borderRadius: 8,
+                                            duration: const Duration(seconds: 3),
+                                            isDismissible: true,
+                                            titleText: Row(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Icon(Icons.save, size: 25, color: Colors.grey),
+                                                const SizedBox(width: 8),
+                                                Text('updated_successfully'.tr, style: Get.textTheme.titleMedium),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }else {
+                                        MessageDialog.showMessage('information'.tr, 'update_failed'.tr, context);
+                                      }
                                     }
                                   },
                                   child: Text('change_password'.tr)
@@ -439,6 +450,7 @@ Widget buildLabeledInput({
   String? Function(String?)? validator,
 }) {
   return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -448,34 +460,52 @@ Widget buildLabeledInput({
             child: Text(label, style: Get.textTheme.bodyMedium),
           ),
           Expanded(
-            child: TextFormField(
-              controller: controller,
-              textAlign: TextAlign.right,
-              style: Get.textTheme.bodySmall,
-              keyboardType: keyboardType,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-                hintText: hintText,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                suffixIcon: IconButton(
-                  icon: CircleAvatar(
-                    backgroundColor: Get.theme.cardColor,
-                    radius: 10,
-                    child: const Icon(Icons.clear_rounded, size: 15),
-                  ),
-                  onPressed: () => controller.clear(),
-                )
-              ),
+            child: FormField<String>(
+              initialValue: controller.text,
               validator: (v) {
                 if (isRequired && (v == null || v.isEmpty)) {
                   return '$label ${'is_required'.tr}';
                 }
                 if (validator != null) return validator(v);
                 return null;
+              },
+              builder: (FormFieldState<String> state) {
+                final bool showError = isRequired && state.hasError;
+
+                return TextFormField(
+                  controller: controller,
+                  textAlign: TextAlign.right,
+                  style: Get.textTheme.bodySmall?.copyWith(
+                    color: showError ? Colors.red.withOpacity(0.7) : null,
+                  ),
+                  keyboardType: keyboardType,
+                  decoration: InputDecoration(
+                    hintText: hintText,
+                    hintStyle: Get.textTheme.bodySmall?.copyWith(
+                      color: showError ? Colors.red.withOpacity(0.7) : Colors.grey,
+                    ),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                    suffixIcon: IconButton(
+                      icon: CircleAvatar(
+                        backgroundColor: Get.theme.cardColor,
+                        radius: 10,
+                        child: const Icon(Icons.clear_rounded, size: 15),
+                      ),
+                      onPressed: () {
+                        controller.clear();
+                        state.didChange('');
+                      },
+                    ),
+                  ),
+                  onChanged: (value) {
+                    state.didChange(value);
+                  },
+                );
               },
             ),
           ),

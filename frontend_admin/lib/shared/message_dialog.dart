@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_admin/shared/constants.dart';
+import 'package:frontend_admin/utils/helper.dart';
+import 'package:get/get.dart';
 
 class MessageDialog {
   static void showMessage(String title, String message, BuildContext context) {
@@ -52,6 +54,7 @@ class MessageDialog {
                 width: double.infinity,
                 child: TextButton(
                   onPressed: () {
+                    Helper.closeLoadingDialog(context);
                     Navigator.of(context).pop();
                   },
                   style: TextButton.styleFrom(
@@ -61,7 +64,7 @@ class MessageDialog {
                     ),
                   ),
                   child: Text(
-                    'Cancel',
+                    'cancel'.tr,
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
