@@ -80,7 +80,7 @@ async def create_owner_controller(user_data: UserCreate, db: Session, current_us
             db.refresh(owner_role)
         
         # Validate gender
-        gender = user_data.gender or 'Unknown'
+        gender = user_data.gender or 'Male'
         if gender not in VALID_GENDERS:
             raise HTTPException(status_code=400, detail=f"Invalid gender. Must be one of: {', '.join(VALID_GENDERS)}")
 

@@ -107,6 +107,7 @@ class UserService{
       }
 
       final payload = {
+        'id': userModel.id,
         'username': userModel.userName,
         'password': userModel.password,
         'phoneNumber': userModel.phoneNumber,
@@ -176,6 +177,7 @@ class UserService{
         'passport': userModel.passport,
         'idCard': userModel.idCard,
         'address': userModel.address,
+        'gender': userModel.gender,
       };
 
       final response = await http.put(

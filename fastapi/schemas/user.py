@@ -28,8 +28,8 @@ class UserCreate(BaseModel):
     address: Optional[str] = None
     deviceName: Optional[str] = None
     gender: Optional[str] = Field(
-        default='Unknown',
-        description="Valid values: Male, Female, Other,"
+        default='Male',
+        description="Valid values: Male, Female"
     )
 
 class UserResponse(BaseModel):
@@ -42,7 +42,7 @@ class UserResponse(BaseModel):
     address: Optional[str] = None
 
     gender: Optional[str] = Field(
-        default='Unknown',
+        default='Male',
         description="Valid values: Male, Female"
     )
 
@@ -68,11 +68,8 @@ class UpdateUser(BaseModel):
     idCard: Optional[str] = None
     address: Optional[str] = None
     deviceName: Optional[str] = None
-      
-    gender: Optional[str] = Field(
-        default=None,
-        description="Valid values: Male, Female"
-    )
+    gender: Optional[str] = Field(default=None, description="Valid values: Male, Female")
+
 class ChangePasswordRequest(BaseModel):
     id: int
     currentPassword: Optional[str] = None
