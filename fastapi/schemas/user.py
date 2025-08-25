@@ -50,6 +50,7 @@ class TokenResponse(BaseModel):
     user: UserResponse
 
 class UpdateUser(BaseModel):
+    id: int
     username: Optional[str] = None
     password: Optional[str] = None
     phoneNumber: Optional[str] = None
@@ -57,3 +58,10 @@ class UpdateUser(BaseModel):
     idCard: Optional[str] = None
     address: Optional[str] = None
     deviceName: Optional[str] = None
+
+class ChangePasswordRequest(BaseModel):
+    id: int
+    currentPassword: Optional[str] = None
+    newPassword: Optional[str] = None
+    confirmPassword: Optional[str] = None
+    deviceInfo: Optional[str] = None

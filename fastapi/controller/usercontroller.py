@@ -1,15 +1,17 @@
 
+from datetime import datetime, timedelta
+import json
 import re
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from db.models import (user, role, system_log)
-from core.security import get_password_hash, SECRET_KEY, ALGORITHM
+from db.models import (user, role, system_log, user_session)
+from core.security import create_access_token, create_refresh_token, get_password_hash, SECRET_KEY, ALGORITHM, verify_password
 from helper.hepler import log_action
-from schemas.user import UpdateUser, UserCreate, UserResponse
+from schemas.user import ChangePasswordRequest, UpdateUser, UserCreate, UserResponse
 from db.session import get_db
 from jose import JWTError, jwt
-from sqlalchemy import desc
+from sqlalchemy import and_, desc
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 
@@ -120,7 +122,6 @@ def update_username(user_id: int, new_username: str, db: Session):
     db.refresh(user_obj)
     return user_obj
 
-    
 def update_owner_controller(id: int, user_data: UpdateUser, db: Session, current_user: user.User = Depends(get_current_user), request_obj: Request = None):
     try:
         admin_role = db.query(role.Role).filter(role.Role.role == "Admin").first()
@@ -202,3 +203,75 @@ def delete_owner_controller(id: str, db: Session, current_user: user.User = Depe
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to delete owner and logs: {str(e)}")
+
+def update_profile_controller(user_data: UpdateUser, db: Session, current_user):
+    try:
+        user_record = db.query(user.User).filter(user.User.id == user_data.id).first()
+        if not user_record:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        if user_data.username:
+            duplicate_user = db.query(user.User).filter(and_(user.User.userName == user_data.username, user.User.id != user_data.id)).first()
+
+            if duplicate_user:
+                raise HTTPException(status_code=400, detail="Username already taken")
+
+        user_record.userName = user_data.username or user_record.userName
+        user_record.phoneNumber = user_data.phoneNumber or user_record.phoneNumber
+        user_record.passport = user_data.passport
+        user_record.idCard = user_data.idCard
+        user_record.address = user_data.address
+
+        db.commit()
+        db.refresh(user_record)
+        user_response = UserResponse.from_orm(user_record)
+        user_response.userID = user_data.username
+        return user_response
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"{str(e)}")
+
+def change_password_controller(user_data: ChangePasswordRequest, db: Session, current_user, request_obj: Request = None):
+    try:
+        user_record = db.query(user.User).filter(user.User.id == user_data.id).first()
+
+        if not user_record:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        user_record.password = get_password_hash(user_data.newPassword)
+        accessToken = create_access_token({"name": user_record.userName, "password": user_record.password, "id": user_record.id})
+        refreshToken = create_refresh_token({"name": user_record.userName, "password": user_record.password, "id": user_record.id})
+
+        device_info = None
+        try:
+            device_info = json.loads(user_data.deviceInfo) if user_data.deviceInfo else None
+        except Exception:
+            device_info = {"info": user_data.deviceInfo}
+
+        ip_address = request_obj.client.host if request_obj else None
+
+        session = user_session.UserSession(
+            user_id = user_record.id,
+            deviceName = device_info.get("Model") if isinstance(device_info, dict) else None,
+            access_token = accessToken,
+            refresh_token = refreshToken,
+            token_expired = datetime.utcnow() + timedelta(hours=2),
+            refresh_expired = datetime.utcnow() + timedelta(days=7),
+            ip_address = ip_address,
+            user_agent = device_info.get("Version") if isinstance(device_info, dict) else None,
+        )
+        db.add(session)
+        db.commit()
+        db.refresh(user_record)
+
+        user_response = UserResponse.from_orm(user_record)
+        user_response.accessToken = accessToken
+        user_response.refreshToken = refreshToken
+        return user_response
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"{str(e)}")

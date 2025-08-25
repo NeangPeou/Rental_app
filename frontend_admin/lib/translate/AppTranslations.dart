@@ -102,6 +102,12 @@ class AppTranslations extends Translations {
       'confirm_password': 'បញ្ជាក់ពាក្យសម្ងាត់',
       'enter_confirm_password': 'បញ្ចូលការបញ្ជាក់ពាក្យសម្ងាត់',
       'passwords_do_not_match': 'ពាក្យសម្ងាត់មិនត្រូវគ្នា',
+      'select_profile_photo': 'ជ្រើសរូបភាពប្រូហ្វាល់',
+      'camera': 'កាមេរ៉ា',
+      'gallery': 'រូបភាព',
+      'update_failed':'បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាព',
+      'name_already_exists':'ឈ្មោះមានរួចហើយ',
+      'updated_successfully': 'ធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ'
     },
     'en_US': {
       'english': 'English',
@@ -201,6 +207,12 @@ class AppTranslations extends Translations {
       'confirm_password': 'Confirm Password',
       'enter_confirm_password': 'Enter Confirm Password',
       'passwords_do_not_match': 'Passwords do not match',
+      'select_profile_photo': 'Select Profile Photo',
+      'camera': 'Camera',
+      'gallery': 'Gallery',
+      'update_failed':'Update failed',
+      'name_already_exists': 'Name already exists',
+      'updated_successfully': 'Updated successfully',
     },
     'es_ES': {
       'english': 'Inglés',

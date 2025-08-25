@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from controller import usercontroller
 from db.session import get_db
 from db.models import (user)
-from schemas.user import UpdateUser, UserCreate
+from schemas.user import ChangePasswordRequest, UpdateUser, UserCreate
 from helper.hepler import manager
 
 router = APIRouter()
@@ -62,3 +62,13 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
                 }))
     except WebSocketDisconnect:
         manager.disconnect(websocket, channel)
+
+@router.put("/update-profile")
+async def update_profile(user_data: UpdateUser, db: Session = Depends(get_db), current_user= Depends(usercontroller.get_current_user)):
+    user = usercontroller.update_profile_controller(user_data, db, current_user)
+    return user
+
+@router.put("/change-password")
+def change_password(data: ChangePasswordRequest, db: Session = Depends(get_db), current_user = Depends(usercontroller.get_current_user), request_obj: Request = None):
+    data = usercontroller.change_password_controller(data, db, current_user, request_obj)
+    return data

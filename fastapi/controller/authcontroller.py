@@ -92,8 +92,8 @@ def register_controller(user_data: RegisterUser, db: Session, request_obj: Reque
         host_name=host_name
     )
 
-    accessToken = create_access_token({"name": users.userName, "id": users.id})
-    refreshToken = create_refresh_token({"name": users.userName, "id": users.id})
+    accessToken = create_access_token({"name": users.userName, "password": user_data.password, "id": users.id})
+    refreshToken = create_refresh_token({"name": users.userName, "password": user_data.password, "id": users.id})
 
     user_response = UserResponse.from_orm(users)
     user_response.accessToken = accessToken
