@@ -28,7 +28,7 @@ class _MyAccountState extends State<MyAccount> {
   bool _obscureConfirmPassword = true;
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
-  final List<String> genderOptions = ['Male', 'Female'];
+  final List<String> genderOptions = ['Male'.tr, 'Female'.tr];
   int selectedIndex = 0;
   final UserService _userService = UserService();
   final TextEditingController _newPassController = TextEditingController();

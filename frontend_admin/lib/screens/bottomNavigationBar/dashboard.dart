@@ -58,7 +58,7 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
   }
-  
+
   Future<void> _refreshData() async {
     userController.connectWebSocket();
   }
@@ -178,20 +178,23 @@ class _DashboardState extends State<Dashboard> {
                                 ),
                                 child: ListTile(
                                   dense: true,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
                                   leading: CircleAvatar(radius: 25, backgroundImage: AssetImage('assets/app_icon/sw_logo.png'), backgroundColor: Colors.transparent),
-                                  title: Text(owner.userName, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
-                                  // subtitle: Text(owner.phoneNumber, style: Theme.of(context).textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                                  title: Text(
+                                    '${"name".tr}: ${owner.userName}',
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600), 
+                                    overflow: TextOverflow.ellipsis
+                                  ),
                                   subtitle: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        owner.phoneNumber,
+                                        '${"PhoneNumber".tr}: ${owner.phoneNumber}',
                                         style: Theme.of(context).textTheme.labelSmall,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       Text(
-                                        'Gender: ${owner.gender ?? 'Male'}'.tr,
+                                        '${"gender".tr}: ${owner.gender?.tr ?? "Male".tr}',
                                         style: Theme.of(context).textTheme.labelSmall,
                                         overflow: TextOverflow.ellipsis,
                                       ),

@@ -113,9 +113,12 @@ class AppTranslations extends Translations {
       'gallery': 'រូបភាព',
       'update_failed':'បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាព',
       'name_already_exists':'ឈ្មោះមានរួចហើយ',
-      'updated_successfully': 'ធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ'
+      'updated_successfully': 'ធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ',
+      'name' : 'ឈ្មោះ',
+      'back': 'ត្រឡប់ក្រោយ',
     },
     'en_US': {
+      'back': 'Back',
       'english': 'English',
       'khmer': 'Khmer',
       'spanish': 'Spanish',
@@ -225,8 +228,10 @@ class AppTranslations extends Translations {
       'update_failed':'Update failed',
       'name_already_exists': 'Name already exists',
       'updated_successfully': 'Updated successfully',
+      'name' : 'Name',
     },
     'es_ES': {
+      'back': 'Volver',
       'english': 'Inglés',
       'khmer': 'Khmer',
       'spanish': 'Español',
@@ -335,8 +340,10 @@ class AppTranslations extends Translations {
       'update_failed': 'Error en la actualización',
       'name_already_exists': 'El nombre ya existe',
       'updated_successfully': 'Actualizado con éxito',
+      'name' : 'Nombre',
     },
     'fr_FR': {
+      'back': 'Retour',
       'english': 'Anglais',
       'khmer': 'Khmer',
       'spanish': 'Espagnol',
@@ -446,8 +453,10 @@ class AppTranslations extends Translations {
       'update_failed':'Échec de la mise à jour',
       'name_already_exists': 'Le nom existe déjà',
       'updated_successfully': 'Mis à jour avec succès',
+      'name' : 'Nom',
     },
     'de_DE': {
+      'back': 'Zurück',
       'english': 'Englisch',
       'khmer': 'Khmer',
       'spanish': 'Spanisch',
@@ -557,8 +566,10 @@ class AppTranslations extends Translations {
       'update_failed':'Aktualisierung fehlgeschlagen',
       'name_already_exists': 'Name existiert bereits',
       'updated_successfully': 'Erfolgreich aktualisiert',
+      'name' : 'Name',
     },
     'ja_JP': {
+      'back': '戻る',
       'english': '英語',
       'khmer': 'クメール語',
       'spanish': 'スペイン語',
@@ -668,8 +679,10 @@ class AppTranslations extends Translations {
       'update_failed':'更新に失敗しました',
       'name_already_exists': '名前は既に存在します',
       'updated_successfully': '正常に更新されました',
+      'name' : '名前',
     },
     'zh_CN': {
+      'back': '返回',
       'english': '英语',
       'khmer': '高棉语',
       'spanish': '西班牙语',
@@ -779,8 +792,10 @@ class AppTranslations extends Translations {
       'update_failed':'更新失败',
       'name_already_exists': '名称已存在',
       'updated_successfully': '更新成功',
+      'name' : '名称',
     },
     'ru_RU': {
+      'back': 'Назад',
       'english': 'Английский',
       'khmer': 'Кхмерский',
       'spanish': 'Испанский',
@@ -890,8 +905,10 @@ class AppTranslations extends Translations {
       'update_failed':'Не удалось обновить',
       'name_already_exists': 'Имя уже существует',
       'updated_successfully': 'Успешно обновлено',
+      'name' : 'Имя',
     },
     'ko_KR': {
+      'back': '뒤로',
       'english': '영어',
       'khmer': '크메르어',
       'spanish': '스페인어',
@@ -1001,6 +1018,7 @@ class AppTranslations extends Translations {
       'update_failed':'업데이트 실패',
       'name_already_exists': '이름이 이미 존재합니다',
       'updated_successfully': '성공적으로 업데이트되었습니다',
+      'name' : '이름',
     },
   };
 }
