@@ -10,13 +10,12 @@ class UserDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // Expect user data to be passed via Get.arguments
     final Map<String, dynamic> args = Get.arguments ?? {};
     final UserModel user = UserModel(
       id: args['id']?.toString(),
       userName: args['userName']?.toString() ?? '',
       userID: args['userID']?.toString(),
-      password: '', // Not displayed for security
+      password: '', 
       phoneNumber: args['phoneNumber']?.toString() ?? '',
       passport: args['passport']?.toString(),
       idCard: args['idCard']?.toString(),
@@ -25,7 +24,6 @@ class UserDetail extends StatelessWidget {
       status: args['status']?.toString(),
     );
 
-    // Map gender to icons for display
     final Map<String, IconData> genderIcons = {
       'Male': Icons.male,
       'Female': Icons.female,
@@ -41,13 +39,6 @@ class UserDetail extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ],
           border: Border.all(color: theme.dividerColor.withAlpha(100)),
         ),
         child: SingleChildScrollView(

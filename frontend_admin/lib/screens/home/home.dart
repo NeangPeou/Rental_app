@@ -22,6 +22,10 @@ class _HomeState extends State<Home> {
   double _bottomBarOpacity = 1.0;
   Offset _bottomBarOffset = Offset.zero;
 
+  //FAB draggable position
+  double posX = 0;
+  double posY = 0;
+
   @override
   void initState() {
     super.initState();
@@ -86,15 +90,28 @@ class _HomeState extends State<Home> {
       floatingActionButton: _controller.index == 0
           ? Container(
           decoration: BoxDecoration(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16), bottom: Radius.circular(16)),
-            border: Border.all(color: Theme.of(context).dividerColor.withAlpha(110)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(17), bottom: Radius.circular(17)),
+            border: Border.all(color: Theme.of(context).primaryColorDark.withAlpha(100)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
           ),
-          child: FloatingActionButton(
-            onPressed: () {
-              Get.to(const UserForm(),arguments: {'title': 'CreateOwner'.tr});
-            },
-            backgroundColor: Theme.of(context).cardColor,
-            child: const Icon(Icons.person_add_outlined),
+          child: Padding(
+            padding: const EdgeInsets.all(1.0),
+            child: FloatingActionButton(
+              onPressed: () {
+                Get.to(const UserForm(),arguments: {'title': 'CreateOwner'.tr});
+              },
+              backgroundColor: Theme.of(context).secondaryHeaderColor,
+              child: const Icon(
+                Icons.person_add_outlined,
+                color: Colors.white,
+              ),
+            ),
           ),
         ): null,
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,

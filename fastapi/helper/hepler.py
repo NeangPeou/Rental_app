@@ -5,6 +5,13 @@ from sqlalchemy.orm import Session
 from db.models import system_log
 from fastapi import WebSocket
 from typing import Dict, List
+from zoneinfo import ZoneInfo
+
+KHMER_TZ = ZoneInfo("Asia/Phnom_Penh")
+def format_datetime(dt):
+    if not dt:
+        return None
+    return dt.astimezone(KHMER_TZ).strftime("%d/%m/%Y %I:%M %p")
 
 def log_action(db: Session, user_id: int, action: str, log_type: str, message: str, host_name: str = None):
     hostname = host_name or socket.gethostname()
