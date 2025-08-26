@@ -1,18 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:frontend_rental/screens/bottomNavigationBar/setting_pages/my_account.dart';
 import 'package:frontend_rental/shared/constants.dart';
 import 'package:get/get.dart';
 
 class Helper {
-  static AppBar sampleAppBar(String title,BuildContext context, String? logoImg) {
+  static AppBar sampleAppBar(String title,BuildContext context, String? logoImg, {VoidCallback? onLogoTap}) {
     return AppBar(
       title: Text(title, style: Theme.of(context).textTheme.titleMedium),
-      leading: logoImg != null
-          ? Padding(
-              padding: const EdgeInsets.all(6),
-              child: ClipOval(child: Image.asset(logoImg)),
-            )
-          : null,
+      actions: [
+        if (logoImg != null)
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: GestureDetector(
+            onTap: onLogoTap ?? () {
+              Get.to(() => MyAccount(), arguments: {'title': 'my_account'.tr});
+            },
+            child: ClipOval(
+              child: Image.asset(
+                logoImg,
+                height: 36,
+                width: 36,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        )
+      ],
     );
   }
 
@@ -20,56 +34,139 @@ class Helper {
     required BuildContext context,
     required TextEditingController controller,
     required String labelText,
-    required String? Function(String?) validator,
+    String? Function(String?)? validator,
     bool obscureText = false,
     Widget? suffixIcon,
+    Widget? prefixIcon,
     TextInputType keyboardType = TextInputType.text,
     bool passwordType = false,
     void Function(String)? onChanged,
+    bool isRequired = false,
+    bool enabled = true,
   }) {
     final theme = Theme.of(context);
 
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: controller,
       builder: (context, value, child) {
-        final showClearIcon = !passwordType && value.text.isNotEmpty;
+        final showClearIcon = enabled && !passwordType && value.text.isNotEmpty;
 
         return TextFormField(
           controller: controller,
           obscureText: obscureText,
           keyboardType: keyboardType,
           decoration: InputDecoration(
-            labelText: labelText,
-            labelStyle: theme.textTheme.bodyMedium,
-            suffixIcon: showClearIcon ? IconButton(
-              icon: CircleAvatar(
-                backgroundColor: Get.theme.cardColor,
-                radius: 10,
-                child: const Icon(Icons.clear_rounded, size: 15),
+            contentPadding: EdgeInsets.only(left: 10, right: 10),
+            label: RichText(
+              text: TextSpan(
+                text: labelText,
+                style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
+                children: isRequired
+                    ? [
+                        const TextSpan(
+                          text: ' *',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ]
+                    : [],
               ),
-              onPressed: () {
-                controller.clear();
-                // Optionally call onChanged after clearing
-                if (onChanged != null) onChanged('');
-              },
-            ) : suffixIcon,
+            ),
+            suffixIcon: showClearIcon ?
+                IconButton(
+                    icon: CircleAvatar(backgroundColor: Get.theme.cardColor, radius: 10, child: const Icon(Icons.clear_rounded, size: 15)),
+                    onPressed: () {
+                      controller.clear();
+                      if (onChanged != null) onChanged('');
+                    },
+                  )
+                : suffixIcon,
+            prefixIcon: prefixIcon,
             border: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(15)),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
               borderSide: BorderSide(color: theme.colorScheme.outline),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(15)),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
               borderSide: BorderSide(color: theme.colorScheme.onSecondaryContainer),
             ),
           ),
           validator: validator,
           style: theme.textTheme.bodyLarge,
           onChanged: onChanged,
+          enabled: enabled,
         );
       },
+    );
+  }
+
+  static Widget sampleRadioGroup({
+    required BuildContext context,
+    required RxString selectedValue,
+    required List<String> options,
+    required String labelText,
+    String? Function(String?)? validator,
+    Icon? prefixIcon,
+  }) {
+    final theme = Theme.of(context);
+    final Map<String, IconData> genderIcons = {
+      'Male': Icons.male,
+      'Female': Icons.female,
+    };
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 5),
+        Obx(
+          () => Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: theme.colorScheme.outline),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    if (prefixIcon != null) ...[
+                      prefixIcon,
+                      const SizedBox(width: 8),
+                    ],
+                    Text(
+                      labelText.tr,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                ...options.map(
+                  (option) => RadioListTile<String>(
+                    title: Text(option.tr),
+                    value: option,
+                    groupValue: selectedValue.value,
+                    onChanged: (value) {
+                      if (value != null) {
+                        selectedValue.value = value;
+                      }
+                    },
+                    secondary: Icon(
+                      genderIcons[option],
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    dense: true,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 

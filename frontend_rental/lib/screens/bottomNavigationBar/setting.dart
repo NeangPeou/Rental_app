@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -97,12 +98,13 @@ class _SettingState extends State<Setting> {
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(10)
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
             ),
             child: Column(
               children: [
                 _buildSettingsTile(Icons.person, "my_account", onTap: () {
-                  Get.to(() => const MyAccount(), arguments: "my_account".tr);
+                  Get.to(() => const MyAccount(), arguments: {'title': 'my_account'.tr});
                 }),
                 Divider(height: 0),
                 _buildSettingsTile(Icons.security, "privacy_safety", onTap: () {}),
@@ -119,7 +121,8 @@ class _SettingState extends State<Setting> {
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
             ),
             child: Column(
               children: [
@@ -128,7 +131,7 @@ class _SettingState extends State<Setting> {
                 }),
                 Divider(height: 0),
                 Obx(() {
-                  return _buildSwitchTile(
+                  return _buildCupertinoSwitchTile(
                     Icons.dark_mode,
                     "dark_mode",
                     settingController.isDarkMode.value ?? false,
@@ -148,7 +151,8 @@ class _SettingState extends State<Setting> {
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
             ),
             child: Column(
               children: [
@@ -164,7 +168,8 @@ class _SettingState extends State<Setting> {
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
             ),
             child: ListTile(
               leading: const CircleAvatar(
@@ -172,7 +177,7 @@ class _SettingState extends State<Setting> {
                 radius: 18,
                 child: Icon(Icons.logout_sharp, color: Colors.red, size: 20),
               ),
-              title: Text('logout'.tr, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.red)),
+              title: Text('logout'.tr, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.red)),
               onTap: (){
                 Get.defaultDialog(
                   radius: 10,
@@ -209,7 +214,8 @@ class _SettingState extends State<Setting> {
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
             ),
             child: Column(
               children: [
@@ -229,6 +235,7 @@ class _SettingState extends State<Setting> {
                               topLeft: Radius.circular(20),
                               topRight: Radius.circular(20),
                             ),
+                            border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
                           ),
                           child: Wrap(
                             children: [
@@ -384,17 +391,9 @@ class _SettingState extends State<Setting> {
         headers: {'Authorization': 'Bearer $token'},
       );
       if (response.statusCode != 200) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Logout failed. Please try again.')),
-        );
         return;
       }
     } catch (e) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error during logout. Please try again.')),
-      );
       return;
     }
     // Clear token and navigate to login
@@ -423,14 +422,20 @@ class _SettingState extends State<Setting> {
     );
   }
 
-  Widget _buildSwitchTile(IconData? icon, String title, bool value, ValueChanged<bool> onChanged) {
-    return SwitchListTile(
-      contentPadding: EdgeInsets.only(left: 16, right: 16),
-      secondary: icon != null ? Icon(icon) : null,
-      title: Text(title.tr, style: Theme.of(context).textTheme.bodyMedium),
-      value: value,
-      onChanged: onChanged,
-      activeColor: settingController.selectedColor.value,
+  Widget _buildCupertinoSwitchTile(IconData? icon, String title, bool value, ValueChanged<bool> onChanged) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (icon != null) Icon(icon, size: 24),
+          if (icon != null) SizedBox(width: 12),
+          Expanded(
+            child: Text(title.tr, style: Get.textTheme.bodyMedium),
+          ),
+          CupertinoSwitch(value: value, onChanged: onChanged),
+        ],
+      ),
     );
   }
 
@@ -525,10 +530,9 @@ class _SettingState extends State<Setting> {
   }
 
   void showNotificationBottomSheet() {
-
     Get.bottomSheet(
       SafeArea(
-        bottom: true,
+        bottom: false,
         child: Container(
           height: Get.height * .5,
           padding: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 15),
@@ -559,7 +563,7 @@ class _SettingState extends State<Setting> {
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(10)
                 ),
-                child: _buildSwitchTile(
+                child: _buildCupertinoSwitchTile(
                   null,
                   "Get notifications within App.",
                   settingController.inAppNotifications.value,

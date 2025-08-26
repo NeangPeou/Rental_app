@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_rental/shared/constants.dart';
+import 'package:get/get.dart';
 
 class MessageDialog {
   static void showMessage(String title, String message, BuildContext context) {
@@ -61,7 +62,7 @@ class MessageDialog {
                     ),
                   ),
                   child: Text(
-                    'Cancel',
+                    'cancel'.tr,
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),

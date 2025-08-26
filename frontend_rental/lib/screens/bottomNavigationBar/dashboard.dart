@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_rental/controller/user_contoller.dart';
+import 'package:frontend_rental/screens/bottomNavigationBar/userForm/user_detail.dart';
+import 'package:frontend_rental/screens/bottomNavigationBar/userForm/user_form.dart';
+import 'package:frontend_rental/screens/systemLogs/system_logs.dart';
+import 'package:frontend_rental/services/user_service.dart';
+import 'package:get/get.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -8,57 +15,52 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  final List<Map<String, dynamic>> orders = [
-    {
-      "car": "Luxury Villa",
-      "user": "John Doe",
-      "date": "Aug 01 – Aug 05",
-      "status": "Completed",
-      "statusColor": Colors.green,
-      "image": "assets/images/house.png"
-    },
-    {
-      "car": "Beach Condo",
-      "user": "Jane Smith",
-      "date": "Aug 02 – Aug 06",
-      "status": "Ongoing",
-      "statusColor": Colors.blue,
-      "image": "assets/images/condo.png"
-    },
-    {
-      "car": "City Apartment",
-      "user": "Michael Brown",
-      "date": "Aug 03 – Aug 07",
-      "status": "Completed",
-      "statusColor": Colors.green,
-      "image": "assets/images/apartment.png"
-    },
-  ];
+  final UserController userController = Get.put(UserController());
+  final UserService _userService = UserService();
+  WebSocketChannel? channel;
+
+  @override
+  void initState() {
+    super.initState();
+    userController.connectWebSocket();
+  }
 
   Widget _buildStatCard(String title, String value, IconData icon) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, size: 28, color: Colors.blue),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            Text(title, style: Theme.of(context).textTheme.bodySmall),
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor, 
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Theme.of(context).dividerColor.withAlpha(40)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 2,
+            offset: Offset(0, 1),
+          ),
+        ],
+        
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 28),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
       ),
     );
+  }
+  
+  Future<void> _refreshData() async {
+    userController.connectWebSocket();
   }
 
   @override
@@ -66,99 +68,261 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Dashboard",
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-
-            // Stats Row
-            Row(
-              children: [
-                _buildStatCard("Properties", "15", Icons.home),
-                const SizedBox(width: 12),
-                _buildStatCard("Bookings", "03", Icons.calendar_month),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                _buildStatCard("Requests", "02", Icons.message),
-                const SizedBox(width: 12),
-                _buildStatCard("Users", "10", Icons.person),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-            Text("Recent Orders",
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-
-            ...orders.map((order) {
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: AssetImage(order['image']),
-                      radius: 22,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(order['car'],
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(fontWeight: FontWeight.w600)),
-                          Text(order['user'],
-                              style: Theme.of(context).textTheme.bodySmall),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(order['date'],
-                            style: Theme.of(context).textTheme.bodySmall),
-                        Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+            SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
                           decoration: BoxDecoration(
-                            color: order['statusColor'].withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Theme.of(context).dividerColor.withAlpha(100),
+                              width: 1
+                            ),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(
-                            order['status'],
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: order['statusColor'],
-                              fontWeight: FontWeight.w500,
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: InkWell(
+                              onTap: () {
+                                Get.to(() => const SystemLogs());
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: _buildStatCard("systemLog".tr, "tabviewlog".tr, Icons.system_security_update_good),
                             ),
                           ),
                         ),
-                      ],
-                    )
-                  ],
-                ),
-              );
-            }),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Theme.of(context).dividerColor.withAlpha(100),
+                              width: 1
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: Obx(() => _buildStatCard(
+                              "UsersOwner".tr,
+                              userController.ownerList.length.toString(),
+                              Icons.person,
+                            )),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("UsersOwnerList".tr, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 10),
+                  Obx(() {
+                    if (userController.isLoading.value) {
+                      return SizedBox(
+                        height: Get.height * .5,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    } else if (userController.ownerList.isEmpty) {
+                      return SizedBox(height: Get.height * .5, child: Center(child: Text("NoUser".tr)));
+                    }
+
+                    return RefreshIndicator(
+                      onRefresh: _refreshData,
+                      child: SizedBox(
+                        height: Get.height * .5,
+                        child: ListView.builder(
+                          itemCount: userController.ownerList.length,
+                          itemBuilder: (context, index) {
+                            final owner = userController.ownerList[index];
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 2),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Theme.of(context).dividerColor.withAlpha(100),
+                                  width: 1
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Card(
+                                elevation: 1,
+                                color: Theme.of(context).cardColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ListTile(
+                                  dense: true,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                  leading: CircleAvatar(radius: 25, backgroundImage: AssetImage('assets/app_icon/sw_logo.png'), backgroundColor: Colors.transparent),
+                                  title: Text(owner.userName, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+                                  // subtitle: Text(owner.phoneNumber, style: Theme.of(context).textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        owner.phoneNumber,
+                                        style: Theme.of(context).textTheme.labelSmall,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        'Gender: ${owner.gender ?? 'Male'}'.tr,
+                                        style: Theme.of(context).textTheme.labelSmall,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                  onTap: () {
+                                    // Show UserDetail dialog
+                                    Get.dialog(
+                                      UserDetail(),
+                                      arguments: {
+                                        'id': owner.id,
+                                        'userName': owner.userName,
+                                        'userID': owner.userID,
+                                        'phoneNumber': owner.phoneNumber,
+                                        'passport': owner.passport,
+                                        'idCard': owner.idCard,
+                                        'address': owner.address,
+                                        'gender': owner.gender,
+                                        'status': owner.status,
+                                      },
+                                    );
+                                  },
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green,
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Text(owner.status ?? '', style: Get.textTheme.bodySmall),
+                                      ),
+                                      // edit button
+                                      InkWell(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                          child: const Icon(Icons.edit, size: 18),
+                                        ),
+                                        onTap: () {
+                                          Get.to(() => UserForm(), arguments: {
+                                            'title': 'UpdateOwner'.tr,
+                                            'id': owner.id,
+                                            'userName': owner.userName,
+                                            'userID': owner.userID,
+                                            'phoneNumber': owner.phoneNumber,
+                                            'passport': owner.passport,
+                                            'idCard': owner.idCard,
+                                            'address': owner.address,
+                                            'gender': owner.gender,
+                                          });
+                                        },
+                                      ),
+                                      // delete button
+                                      InkWell(
+                                        child: const Icon(Icons.delete, size: 18, color: Colors.red),
+                                        onTap: () {
+                                          Get.dialog(
+                                            Dialog(
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(20),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Container(
+                                                      padding: const EdgeInsets.all(16),
+                                                      decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), shape: BoxShape.circle),
+                                                      child: const Icon(Icons.warning_rounded, color: Colors.red, size: 40),
+                                                    ),
+                                                    const SizedBox(height: 16),
+                                                    // Title
+                                                    Text('ConfirmDelete'.tr, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                                                    const SizedBox(height: 8),
+                                                    // Content
+                                                    Text('AreYouSureDelete'.tr.replaceFirst('{userName}', owner.userName), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
+                                                    const SizedBox(height: 20),
+                                                    // Buttons
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                      children: [
+                                                        // Cancel Button
+                                                        Expanded(
+                                                          child: OutlinedButton(
+                                                            style: OutlinedButton.styleFrom(
+                                                              padding: const EdgeInsets.symmetric(vertical: 12),
+                                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                            ),
+                                                            onPressed: () => Get.back(),
+                                                            child: Text('cancel'.tr),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(width: 12),
+                                                        // Delete Button
+                                                        Expanded(
+                                                          child: ElevatedButton(
+                                                            style: ElevatedButton.styleFrom(
+                                                              backgroundColor: Colors.red,
+                                                              padding: const EdgeInsets.symmetric(vertical: 12),
+                                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                            ),
+                                                            onPressed: () async{
+                                                              Get.back();
+                                                              userController.isLoading.value = true;
+                                                              await _userService.deleteOwner(context, owner.id.toString());
+                                                            },
+                                                            child: Text('delete'.tr, style: const TextStyle(color: Colors.white)),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
           ],
         ),
       ),

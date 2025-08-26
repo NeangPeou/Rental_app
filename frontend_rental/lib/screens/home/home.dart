@@ -17,10 +17,21 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final NotchBottomBarController _controller = NotchBottomBarController(index: 0);
+  late final NotchBottomBarController _controller;
 
   double _bottomBarOpacity = 1.0;
   Offset _bottomBarOffset = Offset.zero;
+
+  //FAB draggable position
+  double posX = 0;
+  double posY = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    final args = Get.arguments as Map<String, dynamic>?;
+    _controller = NotchBottomBarController(index: args?['index']?.toInt() ?? 0);
+  }
 
   void _handleScroll(ScrollNotification notification) {
     if (notification is UserScrollNotification) {
@@ -28,7 +39,7 @@ class _HomeState extends State<Home> {
         if (_bottomBarOpacity != 0.0) {
           setState(() {
             _bottomBarOpacity = 0.0;
-            _bottomBarOffset = const Offset(0, 1); 
+            _bottomBarOffset = const Offset(0, 1);
           });
         }
       } else if (notification.direction == ScrollDirection.forward) {
@@ -46,7 +57,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     const Color kActiveIconColor = Colors.white;
     const Color kInActiveIconColor = Colors.white70;
-    
+
     Icon buildIcon(IconData iconData, bool isActive) {
       return Icon(
         iconData,
@@ -55,19 +66,19 @@ class _HomeState extends State<Home> {
     }
 
     final List<Widget> pages = [
-      Dashboard(),
+      const Dashboard(),
       NotificationPage(),
-      Setting(),
+      const Setting(),
     ];
 
     final List<String> titles = [
-      'Home',
-      'Notifications',
-      'Setting',
+      'home'.tr,
+      'Messages'.tr,
+      'Setting'.tr,
     ];
 
     return Scaffold(
-      appBar: Helper.sampleAppBar(titles[_controller.index], context, null),
+      appBar: Helper.sampleAppBar(titles[_controller.index], context, 'assets/app_icon/sw_logo.png'),
       body: NotificationListener<ScrollNotification>(
         onNotification: (scroll) {
           _handleScroll(scroll);
@@ -76,18 +87,33 @@ class _HomeState extends State<Home> {
         child: pages[_controller.index],
       ),
       extendBody: true,
-      floatingActionButton: _controller.index == 0 
-      ? FloatingActionButton(
-          onPressed: () {
-              Get.to(
-                UserForm(),
-                arguments: 'Create Users'
-              );
-          },
-          backgroundColor: Theme.of(context).secondaryHeaderColor,
-          child: Icon(Icons.person_add_outlined),
-        )
-      : null,
+      floatingActionButton: _controller.index == 0
+          ? Container(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(17), bottom: Radius.circular(17)),
+            border: Border.all(color: Theme.of(context).primaryColorDark.withAlpha(100)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(1.0),
+            child: FloatingActionButton(
+              onPressed: () {
+                Get.to(const UserForm(),arguments: {'title': 'CreateOwner'.tr});
+              },
+              backgroundColor: Theme.of(context).secondaryHeaderColor,
+              child: const Icon(
+                Icons.person_add_outlined,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ): null,
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       bottomNavigationBar: AnimatedSlide(
         offset: _bottomBarOffset,
@@ -99,14 +125,14 @@ class _HomeState extends State<Home> {
           child: SafeArea(
             bottom: true,
             child: ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.08),
-                    borderRadius:BorderRadius.vertical(top: Radius.circular(16)),
-                    border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                    border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
                   ),
                   child: AnimatedNotchBottomBar(
                     notchBottomBarController: _controller,
@@ -127,17 +153,17 @@ class _HomeState extends State<Home> {
                       BottomBarItem(
                         inActiveItem: buildIcon(Icons.home, false),
                         activeItem: buildIcon(Icons.home, true),
-                        itemLabel: 'Home',
+                        itemLabel: 'home'.tr,
                       ),
                       BottomBarItem(
                         inActiveItem: buildIcon(Icons.notifications_active, false),
                         activeItem: buildIcon(Icons.notifications_active, true),
-                        itemLabel: 'Messages',
+                        itemLabel: 'Messages'.tr,
                       ),
                       BottomBarItem(
                         inActiveItem: buildIcon(Icons.settings, false),
                         activeItem: buildIcon(Icons.settings, true),
-                        itemLabel: 'Setting',
+                        itemLabel: 'Setting'.tr,
                       ),
                     ],
                     onTap: (index) {
@@ -153,5 +179,11 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+  }
+  
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }
