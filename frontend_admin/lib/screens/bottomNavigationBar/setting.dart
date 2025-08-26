@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -130,7 +131,7 @@ class _SettingState extends State<Setting> {
                 }),
                 Divider(height: 0),
                 Obx(() {
-                  return _buildSwitchTile(
+                  return _buildCupertinoSwitchTile(
                     Icons.dark_mode,
                     "dark_mode",
                     settingController.isDarkMode.value ?? false,
@@ -421,14 +422,20 @@ class _SettingState extends State<Setting> {
     );
   }
 
-  Widget _buildSwitchTile(IconData? icon, String title, bool value, ValueChanged<bool> onChanged) {
-    return SwitchListTile(
-      contentPadding: EdgeInsets.only(left: 16, right: 16),
-      secondary: icon != null ? Icon(icon) : null,
-      title: Text(title.tr, style: Theme.of(context).textTheme.bodyMedium),
-      value: value,
-      onChanged: onChanged,
-      activeColor: settingController.selectedColor.value,
+  Widget _buildCupertinoSwitchTile(IconData? icon, String title, bool value, ValueChanged<bool> onChanged) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (icon != null) Icon(icon, size: 24),
+          if (icon != null) SizedBox(width: 12),
+          Expanded(
+            child: Text(title.tr, style: Get.textTheme.bodyMedium),
+          ),
+          CupertinoSwitch(value: value, onChanged: onChanged),
+        ],
+      ),
     );
   }
 
@@ -556,7 +563,7 @@ class _SettingState extends State<Setting> {
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(10)
                 ),
-                child: _buildSwitchTile(
+                child: _buildCupertinoSwitchTile(
                   null,
                   "Get notifications within App.",
                   settingController.inAppNotifications.value,

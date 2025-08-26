@@ -30,7 +30,7 @@ def add_columns():
                 SELECT 1 FROM information_schema.columns
                 WHERE table_name = 't_users' AND column_name = 'gender'
             ) THEN
-                ALTER TABLE t_users ADD COLUMN gender VARCHAR(10) NOT NULL DEFAULT 'Unknown';
+                ALTER TABLE t_users ADD COLUMN gender VARCHAR(10) NOT NULL DEFAULT 'Male';
             END IF;
         END
         $$;

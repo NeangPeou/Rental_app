@@ -58,7 +58,33 @@ class _DashboardState extends State<Dashboard> {
     ),
   );
 }
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 28),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
 
+  Future<void> _refreshData() async {
+    userController.connectWebSocket();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,167 +176,170 @@ class _DashboardState extends State<Dashboard> {
                       return SizedBox(height: Get.height * .5, child: Center(child: Text("NoUser".tr)));
                     }
 
-                    return SizedBox(
-                      height: Get.height * .5,
-                      child: ListView.builder(
-                        itemCount: userController.ownerList.length,
-                        itemBuilder: (context, index) {
-                          final owner = userController.ownerList[index];
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 2),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Theme.of(context).dividerColor.withAlpha(100),
-                                width: 1
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Card(
-                              elevation: 1,
-                              color: Theme.of(context).cardColor,
-                              shape: RoundedRectangleBorder(
+                    return RefreshIndicator(
+                      onRefresh: _refreshData,
+                      child: SizedBox(
+                        height: Get.height * .5,
+                        child: ListView.builder(
+                          itemCount: userController.ownerList.length,
+                          itemBuilder: (context, index) {
+                            final owner = userController.ownerList[index];
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 2),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Theme.of(context).dividerColor.withAlpha(100),
+                                  width: 1
+                                ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: ListTile(
-                                dense: true,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                                leading: CircleAvatar(radius: 25, backgroundImage: AssetImage('assets/app_icon/sw_logo.png'), backgroundColor: Colors.transparent),
-                                title: Text(owner.userName, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
-                                // subtitle: Text(owner.phoneNumber, style: Theme.of(context).textTheme.labelSmall, overflow: TextOverflow.ellipsis),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      owner.phoneNumber,
-                                      style: Theme.of(context).textTheme.labelSmall,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      'Gender: ${owner.gender ?? 'Male'}'.tr,
-                                      style: Theme.of(context).textTheme.labelSmall,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
+                              child: Card(
+                                elevation: 1,
+                                color: Theme.of(context).cardColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                onTap: () {
-                                  // Show UserDetail dialog
-                                  Get.dialog(
-                                    UserDetail(),
-                                    arguments: {
-                                      'id': owner.id,
-                                      'userName': owner.userName,
-                                      'userID': owner.userID,
-                                      'phoneNumber': owner.phoneNumber,
-                                      'passport': owner.passport,
-                                      'idCard': owner.idCard,
-                                      'address': owner.address,
-                                      'gender': owner.gender,
-                                      'status': owner.status,
-                                    },
-                                  );
-                                },
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                                      decoration: BoxDecoration(
-                                        color: Colors.green,
-                                        borderRadius: BorderRadius.circular(6),
+                                child: ListTile(
+                                  dense: true,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                  leading: CircleAvatar(radius: 25, backgroundImage: AssetImage('assets/app_icon/sw_logo.png'), backgroundColor: Colors.transparent),
+                                  title: Text(owner.userName, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+                                  // subtitle: Text(owner.phoneNumber, style: Theme.of(context).textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        owner.phoneNumber,
+                                        style: Theme.of(context).textTheme.labelSmall,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      child: Text(owner.status ?? '', style: Get.textTheme.bodySmall),
-                                    ),
-                                    // edit button
-                                    InkWell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                                        child: const Icon(Icons.edit, size: 18),
+                                      Text(
+                                        'Gender: ${owner.gender ?? 'Male'}'.tr,
+                                        style: Theme.of(context).textTheme.labelSmall,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      onTap: () {
-                                        Get.to(() => UserForm(), arguments: {
-                                          'title': 'UpdateOwner'.tr,
-                                          'id': owner.id,
-                                          'userName': owner.userName,
-                                          'userID': owner.userID,
-                                          'phoneNumber': owner.phoneNumber,
-                                          'passport': owner.passport,
-                                          'idCard': owner.idCard,
-                                          'address': owner.address,
-                                          'gender': owner.gender,
-                                        });
+                                    ],
+                                  ),
+                                  onTap: () {
+                                    // Show UserDetail dialog
+                                    Get.dialog(
+                                      UserDetail(),
+                                      arguments: {
+                                        'id': owner.id,
+                                        'userName': owner.userName,
+                                        'userID': owner.userID,
+                                        'phoneNumber': owner.phoneNumber,
+                                        'passport': owner.passport,
+                                        'idCard': owner.idCard,
+                                        'address': owner.address,
+                                        'gender': owner.gender,
+                                        'status': owner.status,
                                       },
-                                    ),
-                                    // delete button
-                                    InkWell(
-                                      child: const Icon(Icons.delete, size: 18, color: Colors.red),
-                                      onTap: () {
-                                        Get.dialog(
-                                          Dialog(
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(20),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Container(
-                                                    padding: const EdgeInsets.all(16),
-                                                    decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), shape: BoxShape.circle),
-                                                    child: const Icon(Icons.warning_rounded, color: Colors.red, size: 40),
-                                                  ),
-                                                  const SizedBox(height: 16),
-                                                  // Title
-                                                  Text('ConfirmDelete'.tr, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                                                  const SizedBox(height: 8),
-                                                  // Content
-                                                  Text('AreYouSureDelete'.tr.replaceFirst('{userName}', owner.userName), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
-                                                  const SizedBox(height: 20),
-                                                  // Buttons
-                                                  Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                    children: [
-                                                      // Cancel Button
-                                                      Expanded(
-                                                        child: OutlinedButton(
-                                                          style: OutlinedButton.styleFrom(
-                                                            padding: const EdgeInsets.symmetric(vertical: 12),
-                                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    );
+                                  },
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green,
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Text(owner.status ?? '', style: Get.textTheme.bodySmall),
+                                      ),
+                                      // edit button
+                                      InkWell(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                          child: const Icon(Icons.edit, size: 18),
+                                        ),
+                                        onTap: () {
+                                          Get.to(() => UserForm(), arguments: {
+                                            'title': 'UpdateOwner'.tr,
+                                            'id': owner.id,
+                                            'userName': owner.userName,
+                                            'userID': owner.userID,
+                                            'phoneNumber': owner.phoneNumber,
+                                            'passport': owner.passport,
+                                            'idCard': owner.idCard,
+                                            'address': owner.address,
+                                            'gender': owner.gender,
+                                          });
+                                        },
+                                      ),
+                                      // delete button
+                                      InkWell(
+                                        child: const Icon(Icons.delete, size: 18, color: Colors.red),
+                                        onTap: () {
+                                          Get.dialog(
+                                            Dialog(
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(20),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Container(
+                                                      padding: const EdgeInsets.all(16),
+                                                      decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), shape: BoxShape.circle),
+                                                      child: const Icon(Icons.warning_rounded, color: Colors.red, size: 40),
+                                                    ),
+                                                    const SizedBox(height: 16),
+                                                    // Title
+                                                    Text('ConfirmDelete'.tr, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                                                    const SizedBox(height: 8),
+                                                    // Content
+                                                    Text('AreYouSureDelete'.tr.replaceFirst('{userName}', owner.userName), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
+                                                    const SizedBox(height: 20),
+                                                    // Buttons
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                      children: [
+                                                        // Cancel Button
+                                                        Expanded(
+                                                          child: OutlinedButton(
+                                                            style: OutlinedButton.styleFrom(
+                                                              padding: const EdgeInsets.symmetric(vertical: 12),
+                                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                            ),
+                                                            onPressed: () => Get.back(),
+                                                            child: Text('cancel'.tr),
                                                           ),
-                                                          onPressed: () => Get.back(),
-                                                          child: Text('cancel'.tr),
                                                         ),
-                                                      ),
-                                                      const SizedBox(width: 12),
-                                                      // Delete Button
-                                                      Expanded(
-                                                        child: ElevatedButton(
-                                                          style: ElevatedButton.styleFrom(
-                                                            backgroundColor: Colors.red,
-                                                            padding: const EdgeInsets.symmetric(vertical: 12),
-                                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                        const SizedBox(width: 12),
+                                                        // Delete Button
+                                                        Expanded(
+                                                          child: ElevatedButton(
+                                                            style: ElevatedButton.styleFrom(
+                                                              backgroundColor: Colors.red,
+                                                              padding: const EdgeInsets.symmetric(vertical: 12),
+                                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                            ),
+                                                            onPressed: () async{
+                                                              Get.back();
+                                                              userController.isLoading.value = true;
+                                                              await _userService.deleteOwner(context, owner.id.toString());
+                                                            },
+                                                            child: Text('delete'.tr, style: const TextStyle(color: Colors.white)),
                                                           ),
-                                                          onPressed: () async{
-                                                            Get.back();
-                                                            userController.isLoading.value = true;
-                                                            await _userService.deleteOwner(context, owner.id.toString());
-                                                          },
-                                                          child: Text('delete'.tr, style: const TextStyle(color: Colors.white)),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     );
                   }),
