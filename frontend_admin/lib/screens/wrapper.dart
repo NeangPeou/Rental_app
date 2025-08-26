@@ -37,8 +37,11 @@ class _WrapperState extends State<Wrapper> {
       prefs.setString('x-auth-token', '');
       token = '';
     }
-    isLoading = false;
-    setState(() {});
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
