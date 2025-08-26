@@ -236,6 +236,7 @@ def update_profile_controller(user_data: UpdateUser, db: Session, current_user):
         user_record.passport = user_data.passport
         user_record.idCard = user_data.idCard
         user_record.address = user_data.address
+        user_record.gender = user_data.gender
 
         db.commit()
         db.refresh(user_record)

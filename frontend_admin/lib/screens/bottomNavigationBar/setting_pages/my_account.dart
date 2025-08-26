@@ -28,6 +28,8 @@ class _MyAccountState extends State<MyAccount> {
   bool _obscureConfirmPassword = true;
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
+  final List<String> genderOptions = ['Male', 'Female'];
+  int selectedIndex = 0;
   final UserService _userService = UserService();
   final TextEditingController _newPassController = TextEditingController();
   final TextEditingController _confirmPassController = TextEditingController();
@@ -53,6 +55,8 @@ class _MyAccountState extends State<MyAccount> {
         passportCtrl.text = userInfo['passport'] ?? '';
         idCardCtrl.text = userInfo['idCard'] ?? '';
         addressCtrl.text = userInfo['address'] ?? '';
+        final gender = userInfo['gender']?.toString();
+        selectedIndex = (gender != null && genderOptions.contains(gender)) ? genderOptions.indexOf(gender) : 0;
       }
     }
   }
@@ -166,6 +170,35 @@ class _MyAccountState extends State<MyAccount> {
                         hintText: 'Address'.tr,
                         controller: addressCtrl,
                       ),
+                      const Divider(height: 0),
+                      CupertinoButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: _showGenderPicker,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 12),
+                                child: Text('gender'.tr, style: Get.textTheme.bodyMedium),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 15),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(genderOptions[selectedIndex], style: Get.textTheme.bodySmall),
+                                      const SizedBox(width: 22),
+                                      const Icon(CupertinoIcons.chevron_down, size: 15),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
 
                       const SizedBox(height: 10),
                       SizedBox(
@@ -187,6 +220,7 @@ class _MyAccountState extends State<MyAccount> {
                                 passport: passportCtrl.text,
                                 idCard: idCardCtrl.text,
                                 address: addressCtrl.text,
+                                gender: genderOptions[selectedIndex],
                               );
                               ErrorModel error = await _userService.updateProfile(context, userModel);
                               if(error.isError == true && error.message == 'name_already_exists') {
@@ -439,16 +473,50 @@ class _MyAccountState extends State<MyAccount> {
       isScrollControlled: false,
     );
   }
+
+  void _showGenderPicker() {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => Container(
+        height: 250,
+        color: Get.theme.cardColor,
+        child: Column(
+          children: [
+            Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor, width: 0.5)),
+              ),
+              child: CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: Text('Done'),
+                onPressed: () {
+                  Get.back();
+                },
+              ),
+            ),
+            Expanded(
+              child: CupertinoPicker(
+                itemExtent: 30,
+                scrollController:
+                FixedExtentScrollController(initialItem: selectedIndex),
+                onSelectedItemChanged: (int index) {
+                  setState(() {
+                    selectedIndex = index;
+                  });
+                },
+                children: genderOptions.map((gender) => Text(gender)).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-Widget buildLabeledInput({
-  required String label,
-  required String hintText,
-  required TextEditingController controller,
-  bool isRequired = false,
-  TextInputType keyboardType = TextInputType.text,
-  String? Function(String?)? validator,
-}) {
+Widget buildLabeledInput({required String label, required String hintText, required TextEditingController controller, bool isRequired = false, TextInputType keyboardType = TextInputType.text, String? Function(String?)? validator}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
