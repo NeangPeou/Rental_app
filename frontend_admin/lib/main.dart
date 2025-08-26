@@ -5,6 +5,7 @@ import 'package:frontend_admin/controller/setting_controller.dart';
 import 'package:frontend_admin/screens/authenticate/login.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/setting.dart';
 import 'package:frontend_admin/screens/home/home.dart';
+import 'package:frontend_admin/screens/splashScreen.dart';
 import 'package:frontend_admin/screens/wrapper.dart';
 import 'package:frontend_admin/services/inactivityService.dart';
 import 'package:frontend_admin/shared/constants.dart';
@@ -46,11 +47,12 @@ class MyApp extends StatelessWidget {
           translations: AppTranslations(),
           locale: selectedLocale,
           fallbackLocale: const Locale('en', 'US'),
-          initialRoute: '/',
+          initialRoute: '/splash',
           themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
           theme: lightTheme(selectedColor),
           darkTheme: darkTheme(selectedColor),
           getPages: [
+            GetPage(name: '/splash', page: () => const SplashScreen()),
             GetPage(name: '/', page: () => const Wrapper()),
             GetPage(name: '/login', page: () => const Login()),
             GetPage(name: '/home', page: () => const Home()),
