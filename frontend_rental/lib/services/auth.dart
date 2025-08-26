@@ -45,6 +45,7 @@ class AuthService {
       } else if(res.statusCode == 200){
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('x-auth-token', response!['accessToken']);
+        await prefs.setBool('isOwner', true);
 
         userController.setCurrentUser(response);
         return;

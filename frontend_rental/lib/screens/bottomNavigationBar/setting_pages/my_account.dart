@@ -6,10 +6,11 @@ import 'package:frontend_rental/models/error.dart';
 import 'package:frontend_rental/services/user_service.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../controller/user_contoller.dart';
-import '../../../models/user_model.dart';
-import '../../../shared/message_dialog.dart';
-import '../../../utils/helper.dart';
+
+import '../../../../../controller/user_contoller.dart';
+import '../../../../../models/user_model.dart';
+import '../../../../../shared/message_dialog.dart';
+import '../../../../../utils/helper.dart';
 
 class MyAccount extends StatefulWidget {
   const MyAccount({super.key});

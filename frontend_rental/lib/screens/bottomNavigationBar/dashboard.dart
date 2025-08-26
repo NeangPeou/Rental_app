@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_rental/controller/user_contoller.dart';
-import 'package:frontend_rental/screens/bottomNavigationBar/userForm/user_detail.dart';
-import 'package:frontend_rental/screens/bottomNavigationBar/userForm/user_form.dart';
-import 'package:frontend_rental/screens/systemLogs/system_logs.dart';
 import 'package:frontend_rental/services/user_service.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -96,7 +93,6 @@ class _DashboardState extends State<Dashboard> {
                             padding: const EdgeInsets.all(2.0),
                             child: InkWell(
                               onTap: () {
-                                Get.to(() => const SystemLogs());
                               },
                               borderRadius: BorderRadius.circular(12),
                               child: _buildStatCard("systemLog".tr, "tabviewlog".tr, Icons.system_security_update_good),
@@ -198,21 +194,6 @@ class _DashboardState extends State<Dashboard> {
                                     ],
                                   ),
                                   onTap: () {
-                                    // Show UserDetail dialog
-                                    Get.dialog(
-                                      UserDetail(),
-                                      arguments: {
-                                        'id': owner.id,
-                                        'userName': owner.userName,
-                                        'userID': owner.userID,
-                                        'phoneNumber': owner.phoneNumber,
-                                        'passport': owner.passport,
-                                        'idCard': owner.idCard,
-                                        'address': owner.address,
-                                        'gender': owner.gender,
-                                        'status': owner.status,
-                                      },
-                                    );
                                   },
                                   trailing: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -232,17 +213,6 @@ class _DashboardState extends State<Dashboard> {
                                           child: const Icon(Icons.edit, size: 18),
                                         ),
                                         onTap: () {
-                                          Get.to(() => UserForm(), arguments: {
-                                            'title': 'UpdateOwner'.tr,
-                                            'id': owner.id,
-                                            'userName': owner.userName,
-                                            'userID': owner.userID,
-                                            'phoneNumber': owner.phoneNumber,
-                                            'passport': owner.passport,
-                                            'idCard': owner.idCard,
-                                            'address': owner.address,
-                                            'gender': owner.gender,
-                                          });
                                         },
                                       ),
                                       // delete button

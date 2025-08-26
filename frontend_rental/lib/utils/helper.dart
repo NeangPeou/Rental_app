@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:frontend_rental/screens/bottomNavigationBar/setting_pages/my_account.dart';
 import 'package:frontend_rental/shared/constants.dart';
 import 'package:get/get.dart';
+
+import '../screens/bottomNavigationBar/setting_pages/my_account.dart';
 
 class Helper {
   static AppBar sampleAppBar(String title,BuildContext context, String? logoImg, {VoidCallback? onLogoTap}) {

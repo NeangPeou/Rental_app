@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:app_settings/app_settings.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_rental/controller/setting_controller.dart';
+import 'package:frontend_rental/screens/authenticate/login.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting_pages/appearance.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting_pages/my_account.dart';
+import 'package:frontend_rental/screens/page/owner/ownerPage.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -36,6 +37,8 @@ class Setting extends StatefulWidget {
 class _SettingState extends State<Setting> {
   SettingController settingController = Get.put(SettingController());
   final box = GetStorage();
+  String? token;
+  bool isOwner = false;
   Map<String, dynamic> deviceInfo = {};
 
   Future<void> getDeviceInfo() async {
@@ -81,10 +84,17 @@ class _SettingState extends State<Setting> {
     setState(() {});
   }
 
+  Future<void> getPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('x-auth-token');
+    isOwner = prefs.getBool('isOwner') ?? false;
+  }
+
   @override
   void initState() {
     super.initState();
     getDeviceInfo();
+    getPreferences();
   }
 
   @override
@@ -93,8 +103,43 @@ class _SettingState extends State<Setting> {
       body: ListView(
         children: [
           SizedBox(height: 10),
-          _buildSectionTitle('account_settings'),
           Container(
+            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
+            ),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+              leading: Container(
+                padding: EdgeInsets.all(5),
+                  margin: EdgeInsets.zero,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Get.theme.dividerColor.withAlpha(100),
+                        blurRadius: 2,
+                        offset: const Offset(0, 0),
+                      ),
+                    ],
+                  ),
+                  child: Icon(Icons.swap_horiz, size: 25)),
+              title: Text(!isOwner ? 'Switch to Owner'.tr : 'Switch to Renter'.tr, style: Get.textTheme.bodyMedium),
+              trailing: const Icon(Icons.arrow_circle_right_rounded, size: 25),
+              onTap: () {
+                if (isOwner == true && token != null && token!.isNotEmpty) {
+                  Get.offAll(() => const OwnerPage());
+                } else {
+                  Get.offAll(() => const Login());
+                }
+              },
+            ),
+          ),
+          if (isOwner) _buildSectionTitle('account_settings'),
+          if (isOwner) Container(
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
@@ -163,8 +208,8 @@ class _SettingState extends State<Setting> {
             ),
           ),
 
-          SizedBox(height: 20),
-          Container(
+          if (isOwner) SizedBox(height: 20),
+          if (isOwner) Container(
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,

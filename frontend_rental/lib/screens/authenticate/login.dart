@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_rental/controller/user_contoller.dart';
+import 'package:frontend_rental/screens/wrapper.dart';
 import 'package:frontend_rental/shared/message_dialog.dart';
 import 'package:frontend_rental/utils/helper.dart';
 import 'package:get/get.dart';
@@ -167,7 +168,7 @@ class _LoginState extends State<Login> {
                                 bool revalidate = false;
                                 try {
                                   await userController.login(context, _userController.text.trim(), _passController.text.trim());
-                                  Get.offAllNamed('/home');
+                                  Get.offAll(() => const Wrapper());
                                 } catch (e) {
                                   String errorMsg = e.toString();
 
