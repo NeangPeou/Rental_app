@@ -26,6 +26,38 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildStatCard(String title, String value, IconData icon) {
+  return Container(
+    padding: const EdgeInsets.symmetric(vertical: 16),
+    decoration: BoxDecoration(
+      color: Theme.of(context).cardColor, 
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: Theme.of(context).dividerColor.withAlpha(40)),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black12,
+          blurRadius: 2,
+          offset: Offset(0, 1),
+        ),
+      ],
+      
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 28),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ],
+    ),
+  );
+}
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
@@ -83,12 +115,15 @@ class _DashboardState extends State<Dashboard> {
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: InkWell(
-                            onTap: () {
-                              Get.to(() => const SystemLogs());
-                            },
-                            borderRadius: BorderRadius.circular(12),
-                            child: _buildStatCard("systemLog".tr, "tabviewlog".tr, Icons.system_security_update_good),
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: InkWell(
+                              onTap: () {
+                                Get.to(() => const SystemLogs());
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: _buildStatCard("systemLog".tr, "tabviewlog".tr, Icons.system_security_update_good),
+                            ),
                           ),
                         ),
                       ),
@@ -102,11 +137,14 @@ class _DashboardState extends State<Dashboard> {
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Obx(() => _buildStatCard(
-                            "UsersOwner".tr,
-                            userController.ownerList.length.toString(),
-                            Icons.person,
-                          )),
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: Obx(() => _buildStatCard(
+                              "UsersOwner".tr,
+                              userController.ownerList.length.toString(),
+                              Icons.person,
+                            )),
+                          ),
                         ),
                       ),
                     ],

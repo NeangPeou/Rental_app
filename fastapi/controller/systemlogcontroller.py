@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from db.models import system_log, user, role
 from sqlalchemy import desc, asc
 
+from helper.hepler import format_datetime
+
 
 def get_system_logs_controller(db: Session, current_user: user.User = None):
     try:
@@ -28,8 +30,8 @@ def get_system_logs_controller(db: Session, current_user: user.User = None):
                 'logType': log.logType,
                 'message': log.message,
                 'hostName': log.hostName,
-                'created_at': log.created_at.strftime("%d/%m/%Y %I:%M %p") if log.created_at else None,
-                'updated_at': log.updated_at.strftime("%d/%m/%Y %I:%M %p") if log.updated_at else None
+                'created_at': format_datetime(log.created_at),
+                'updated_at': format_datetime(log.updated_at),
             } for log in logs
         ]
     except Exception as e:
