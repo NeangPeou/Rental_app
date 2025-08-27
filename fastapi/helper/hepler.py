@@ -5,9 +5,15 @@ from sqlalchemy.orm import Session
 from db.models import system_log
 from fastapi import WebSocket
 from typing import Dict, List
-from zoneinfo import ZoneInfo
+from datetime import timezone, timedelta
+# from zoneinfo import ZoneInfo
+# KHMER_TZ = ZoneInfo("Asia/Phnom_Penh")
+# def format_datetime(dt):
+#     if not dt:
+#         return None
+#     return dt.astimezone(KHMER_TZ).strftime("%d/%m/%Y %I:%M %p")
 
-KHMER_TZ = ZoneInfo("Asia/Phnom_Penh")
+KHMER_TZ = timezone(timedelta(hours=7))
 def format_datetime(dt):
     if not dt:
         return None
