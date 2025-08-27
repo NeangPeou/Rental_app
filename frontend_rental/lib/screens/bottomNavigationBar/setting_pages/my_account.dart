@@ -482,26 +482,32 @@ class _MyAccountState extends State<MyAccount> {
         height: 250,
         color: Get.theme.scaffoldBackgroundColor,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               alignment: Alignment.centerRight,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor, width: 0.5)),
+                border: Border(
+                  bottom: BorderSide(
+                    color: Theme.of(context).dividerColor,
+                    width: 0.5,
+                  ),
+                ),
               ),
               child: CupertinoButton(
                 padding: EdgeInsets.zero,
-                child: Text('Done'),
+                child: const Text('Done'),
                 onPressed: () {
                   Get.back();
                 },
               ),
             ),
-            Expanded(
+            SizedBox(
+              height: genderOptions.length * 50.0,
               child: CupertinoPicker(
                 itemExtent: 30,
-                scrollController:
-                FixedExtentScrollController(initialItem: selectedIndex),
+                scrollController: FixedExtentScrollController(initialItem: selectedIndex),
                 onSelectedItemChanged: (int index) {
                   setState(() {
                     selectedIndex = index;
