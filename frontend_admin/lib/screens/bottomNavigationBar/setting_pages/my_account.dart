@@ -479,7 +479,7 @@ class _MyAccountState extends State<MyAccount> {
       context: context,
       builder: (_) => Container(
         height: 250,
-        color: Get.theme.cardColor,
+        color: Get.theme.scaffoldBackgroundColor,
         child: Column(
           children: [
             Container(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:frontend_admin/shared/constants.dart';
+import 'package:get/get.dart';
 
 class Loading extends StatelessWidget {
   const Loading({super.key});
@@ -8,7 +9,7 @@ class Loading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(color: Colors.white),
+      decoration: BoxDecoration(color: Get.theme.scaffoldBackgroundColor),
       child: const Center(
         child: SpinKitFadingCircle(color: firstMainThemeColor, size: 50.0),
       ),
