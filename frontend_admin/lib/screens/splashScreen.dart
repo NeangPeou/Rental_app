@@ -49,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen>
     )..repeat(reverse: true);
 
     // Navigate to home after 7 seconds (longer)
-    Future.delayed(const Duration(seconds: 7), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       Get.offAllNamed('/');
