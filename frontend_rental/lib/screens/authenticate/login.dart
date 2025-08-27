@@ -47,7 +47,7 @@ class _LoginState extends State<Login> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -60,7 +60,7 @@ class _LoginState extends State<Login> {
                     child: Column(
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(top: 15),
+                          padding: EdgeInsets.zero,
                           child: Stack(
                             alignment: Alignment.centerLeft,
                             children: [
