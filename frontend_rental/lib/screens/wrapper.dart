@@ -128,7 +128,7 @@ class _WrapperState extends State<Wrapper> {
       return Loading();
     }
     return Scaffold(
-      appBar: Helper.sampleAppBar(title, context, null),
+      appBar: Helper.sampleAppBar(title, context, isOwner ? 'assets/app_icon/sw_logo.png' : null),
       body: NotificationListener<ScrollNotification>(
         onNotification: _handleScroll,
         child: pages[_selectedIndex],
