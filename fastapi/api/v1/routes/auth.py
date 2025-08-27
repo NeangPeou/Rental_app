@@ -7,7 +7,7 @@ from db.session import get_db
 from db.models import (user, user_session)
 from core.security import ALGORITHM, SECRET_KEY
 from helper.hepler import ConnectionManager
-from schemas.user import LoginRequest, RegisterUser, TokenResponse, UserResponse
+from schemas.user import LoginRequest, RegisterUser, UserResponse
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
