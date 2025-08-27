@@ -6,7 +6,7 @@ from db.models import (user, role, system_log, user_session)
 from core.security import create_access_token, create_refresh_token, get_password_hash, verify_password, SECRET_KEY, ALGORITHM
 from sqlalchemy.orm import Session
 from helper.hepler import log_action
-from schemas.user import LoginRequest, RegisterUser, TokenResponse, UserResponse
+from schemas.user import LoginRequest, RegisterUser, UserResponse
 from jose import jwt
     
 def login_controller(request: LoginRequest, db: Session, request_obj: Request = None):
@@ -25,16 +25,34 @@ def login_controller(request: LoginRequest, db: Session, request_obj: Request = 
         raise HTTPException(status_code=404, detail="Invalid password")
     
     user_role = db.query(role.Role).filter(role.Role.id == users.role_id).first()
-    if not user_role or user_role.role.lower() != "admin":
+    if not user_role:
+        raise HTTPException(status_code=403, detail="User has no assigned role")
+
+    role_name = user_role.role.lower()
+    is_admin = request.isAdmin
+
+    # Check if the role matches the app context (admin vs owner)
+    if is_admin and role_name != "admin":
         log_action(
             db=db,
             user_id=users.id,
             action="LOGIN_ATTEMPT",
             log_type="ERROR",
-            message=f"Unauthorized login attempt by non-admin user: {users.userName}",
+            message=f"Non-admin user {users.userName} attempted to log in as admin",
             host_name=request.deviceName or 'unknown'
         )
-        raise HTTPException(status_code=403, detail="Only admins can log in")
+        raise HTTPException(status_code=403, detail="Only admins can log in to this app")
+
+    elif not is_admin and role_name != "owner":
+        log_action(
+            db=db,
+            user_id=users.id,
+            action="LOGIN_ATTEMPT",
+            log_type="ERROR",
+            message=f"Non-owner user {users.userName} attempted to log in as owner",
+            host_name=request.deviceName or 'unknown'
+        )
+        raise HTTPException(status_code=403, detail="Only owners can log in to this app")
 
     accessToken = create_access_token({"name": users.userName, "password": users.password, "id": users.id})
     refreshToken = create_refresh_token({"name": users.userName, "password": users.password, "id": users.id})

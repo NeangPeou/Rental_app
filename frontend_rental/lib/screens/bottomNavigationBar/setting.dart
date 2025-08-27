@@ -5,16 +5,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:frontend_rental/controller/setting_controller.dart';
 import 'package:frontend_rental/screens/authenticate/login.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting_pages/appearance.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting_pages/my_account.dart';
-import 'package:frontend_rental/screens/page/owner/ownerPage.dart';
+import 'package:frontend_rental/screens/wrapper.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flag/flag.dart';
+
+import '../../shared/constants.dart';
 
 class Setting extends StatefulWidget {
   const Setting({super.key});
@@ -39,6 +42,7 @@ class _SettingState extends State<Setting> {
   final box = GetStorage();
   String? token;
   bool isOwner = false;
+  bool isLoading = true;
   Map<String, dynamic> deviceInfo = {};
 
   Future<void> getDeviceInfo() async {
@@ -88,6 +92,9 @@ class _SettingState extends State<Setting> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString('x-auth-token');
     isOwner = prefs.getBool('isOwner') ?? false;
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -99,6 +106,11 @@ class _SettingState extends State<Setting> {
 
   @override
   Widget build(BuildContext context) {
+    if(isLoading){
+      return Center(
+        child: SpinKitFadingCircle(color: firstMainThemeColor, size: 50.0),
+      );
+    }
     return Scaffold(
       body: ListView(
         children: [
@@ -114,8 +126,8 @@ class _SettingState extends State<Setting> {
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
               leading: Container(
                 padding: EdgeInsets.all(5),
-                  margin: EdgeInsets.zero,
-                  decoration: BoxDecoration(
+                margin: EdgeInsets.zero,
+                decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(50),
                     boxShadow: [
@@ -126,14 +138,21 @@ class _SettingState extends State<Setting> {
                       ),
                     ],
                   ),
-                  child: Icon(Icons.swap_horiz, size: 25)),
-              title: Text(!isOwner ? 'Switch to Owner'.tr : 'Switch to Renter'.tr, style: Get.textTheme.bodyMedium),
+                child: Icon(Icons.swap_horiz, size: 25)),
+              title: Text(isOwner ? 'Switch to Renter'.tr : 'Switch to Owner'.tr, style: Get.textTheme.bodyMedium),
               trailing: const Icon(Icons.arrow_circle_right_rounded, size: 25),
-              onTap: () {
-                if (isOwner == true && token != null && token!.isNotEmpty) {
-                  Get.offAll(() => const OwnerPage());
+              onTap: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                if (token != null && token!.isNotEmpty) {
+                  if(isOwner){
+                    await prefs.setBool('isOwner', false);
+                    Get.offAll(() => Wrapper());
+                  }else{
+                    await prefs.setBool('isOwner', true);
+                    Get.offAll(() => Wrapper());
+                  }
                 } else {
-                  Get.offAll(() => const Login());
+                  Get.to(() => const Login());
                 }
               },
             ),
@@ -443,8 +462,9 @@ class _SettingState extends State<Setting> {
     }
     // Clear token and navigate to login
     await prefs.setString('x-auth-token', '');
+    await prefs.setBool('isOwner', false);
     if (context.mounted) {
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      Get.offAll(() => Wrapper());
     }
   }
 

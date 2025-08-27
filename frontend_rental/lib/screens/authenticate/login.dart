@@ -47,7 +47,7 @@ class _LoginState extends State<Login> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 25),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -59,8 +59,28 @@ class _LoginState extends State<Login> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        Center(
-                          child: Text("sign_in_account".tr, style: Get.textTheme.titleMedium?.copyWith(color: Theme.of(context).secondaryHeaderColor, fontWeight: FontWeight.bold)),
+                        Padding(
+                          padding: EdgeInsets.only(top: 15),
+                          child: Stack(
+                            alignment: Alignment.centerLeft,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.all(0),
+                                padding: EdgeInsets.zero,
+                                child: InkWell(
+                                  onTap: (){
+                                    Get.back();
+                                  },
+                                  child: Icon(Icons.keyboard_backspace_sharp, size: 20),
+                                ),
+                              ),
+                              Center(
+                                child: Text(
+                                  "sign_in_account".tr, style: Get.textTheme.titleMedium?.copyWith(color: Theme.of(context).secondaryHeaderColor, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
 
                         const SizedBox(height: 30),

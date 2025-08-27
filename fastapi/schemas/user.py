@@ -15,7 +15,7 @@ class LoginRequest(BaseModel):
     password: str
     deviceName: Optional[str] = Field(default=None, alias="device_name")
     userAgent: Optional[str] = Field(default=None, alias="user_agent")
-
+    isAdmin: Optional[bool] = False
     class Config:
         populate_by_name = True
 

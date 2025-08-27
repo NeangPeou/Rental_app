@@ -34,6 +34,7 @@ class AuthService {
           'password': password,
           'deviceName': deviceName,
           'userAgent': userAgent,
+          'isAdmin': false
         }),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8'

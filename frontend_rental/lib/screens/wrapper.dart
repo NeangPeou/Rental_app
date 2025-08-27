@@ -2,9 +2,11 @@ import 'dart:ui';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:frontend_rental/screens/authenticate/login.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting.dart';
 import 'package:frontend_rental/screens/page/owner/ownerPage.dart';
 import 'package:frontend_rental/screens/page/rental/rentalPage.dart';
+import 'package:frontend_rental/shared/loading.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/error.dart';
@@ -25,6 +27,7 @@ class _WrapperState extends State<Wrapper> {
   int _selectedIndex = 0;
   String? token;
   bool isOwner = false;
+  bool isLoading = true;
   final AuthService _auth = AuthService();
 
   Icon buildIcon(IconData iconData, bool isActive) {
@@ -91,33 +94,26 @@ class _WrapperState extends State<Wrapper> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getUserData();
-    });
+    getUserData();
   }
 
   Future<void> getUserData() async {
-    Helper.showLoadingDialog(context);
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString('x-auth-token');
     bool ownerStatus = prefs.getBool('isOwner') ?? false;
 
-    if (isOwner == true && token != null && token!.isNotEmpty) {
+    if (ownerStatus == true && token != null && token!.isNotEmpty) {
       ErrorModel errorModel = await _auth.getUserData(context);
       if (errorModel.isError) {
-        Helper.closeLoadingDialog(context);
-        Get.offAll(() => const RentalPage());
+        Get.offAll(() => const Login());
         return;
       }
-    } else {
-      prefs.setString('x-auth-token', '');
-      token = '';
     }
-
-    Helper.closeLoadingDialog(context);
     setState(() {
-      isOwner = ownerStatus;
+      if(ownerStatus && token != null && token!.isNotEmpty){
+        isOwner = ownerStatus;
+      }
+      isLoading = false;
     });
   }
 
@@ -128,6 +124,9 @@ class _WrapperState extends State<Wrapper> {
     final appBarTitles = getAppBarTitles(isOwner);
     final title = appBarTitles[_selectedIndex];
 
+    if (isLoading) {
+      return Loading();
+    }
     return Scaffold(
       appBar: Helper.sampleAppBar(title, context, null),
       body: NotificationListener<ScrollNotification>(
