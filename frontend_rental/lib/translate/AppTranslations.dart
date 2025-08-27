@@ -113,7 +113,9 @@ class AppTranslations extends Translations {
       'gallery': 'រូបភាព',
       'update_failed':'បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាព',
       'name_already_exists':'ឈ្មោះមានរួចហើយ',
-      'updated_successfully': 'ធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ'
+      'updated_successfully': 'ធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ',
+      'switch_owner': 'ប្ដូរទៅម្ចាស់ផ្ទះ',
+      'switch_renter': 'ប្ដូរទៅអ្នកជួល'
     },
     'en_US': {
       'english': 'English',
@@ -225,6 +227,8 @@ class AppTranslations extends Translations {
       'update_failed':'Update failed',
       'name_already_exists': 'Name already exists',
       'updated_successfully': 'Updated successfully',
+      'switch_owner': 'Switch to Owner',
+      'switch_renter': 'Switch to Renter'
     },
     'es_ES': {
       'english': 'Inglés',

@@ -139,7 +139,7 @@ class _SettingState extends State<Setting> {
                     ],
                   ),
                 child: Icon(Icons.swap_horiz, size: 25)),
-              title: Text(isOwner ? 'Switch to Renter'.tr : 'Switch to Owner'.tr, style: Get.textTheme.bodyMedium),
+              title: Text(isOwner ? 'switch_renter'.tr : 'switch_owner'.tr, style: Get.textTheme.bodyMedium),
               trailing: const Icon(Icons.arrow_circle_right_rounded, size: 25),
               onTap: () async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
