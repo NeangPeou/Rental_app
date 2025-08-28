@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_admin/controller/type_controller.dart';
 import 'package:frontend_admin/controller/user_contoller.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/userForm/user_detail.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/userForm/user_form.dart';
+import 'package:frontend_admin/screens/buildingType/buildingType.dart';
 import 'package:frontend_admin/screens/systemLogs/system_logs.dart';
 import 'package:frontend_admin/services/user_service.dart';
 import 'package:get/get.dart';
@@ -16,6 +18,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final UserController userController = Get.put(UserController());
+  final TypeController typeController = Get.put(TypeController());
   final UserService _userService = UserService();
   WebSocketChannel? channel;
 
@@ -104,7 +107,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 5),
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
@@ -121,6 +124,28 @@ class _DashboardState extends State<Dashboard> {
                               userController.ownerList.length.toString(),
                               Icons.person,
                             )),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Theme.of(context).dividerColor.withAlpha(100),
+                                width: 1
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: InkWell(
+                              onTap: () {
+                                Get.to(() => const BuildingType());
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: _buildStatCard("property_type".tr, "tabviewlog".tr, Icons.add_home_work_rounded),
+                            ),
                           ),
                         ),
                       ),
