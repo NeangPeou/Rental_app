@@ -46,10 +46,7 @@ class _BuildingTypeState extends State<BuildingType> {
       controller.listTypes.assignAll(controller.allTypes);
     } else {
       controller.listTypes.assignAll(
-        controller.allTypes.where((type) =>
-        (type['type_code'] ?? '').toString().toLowerCase().contains(query.toLowerCase()) ||
-            (type['name'] ?? '').toString().toLowerCase().contains(query.toLowerCase())
-        ).toList(),
+        controller.allTypes.where((type) => (type['type_code'] ?? '').toString().toLowerCase().contains(query.toLowerCase()) || (type['name'] ?? '').toString().toLowerCase().contains(query.toLowerCase())).toList(),
       );
     }
   }

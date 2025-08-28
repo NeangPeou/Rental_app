@@ -25,7 +25,7 @@ class InactivityService with WidgetsBindingObserver {
   }
 
   void _onInactivityTimeout() {
-    userController.connectWebSocket();
+    // userController.connectWebSocket();
   }
 
   void userInteractionDetected() {
