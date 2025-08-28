@@ -6,6 +6,7 @@ import 'package:frontend_admin/screens/bottomNavigationBar/userForm/user_form.da
 import 'package:frontend_admin/screens/buildingType/buildingType.dart';
 import 'package:frontend_admin/screens/systemLogs/system_logs.dart';
 import 'package:frontend_admin/services/user_service.dart';
+import 'package:frontend_admin/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -20,6 +21,7 @@ class _DashboardState extends State<Dashboard> {
   final UserController userController = Get.put(UserController());
   final TypeController typeController = Get.put(TypeController());
   final UserService _userService = UserService();
+  final TextEditingController searchController = TextEditingController();
   WebSocketChannel? channel;
 
   @override
@@ -75,7 +77,7 @@ class _DashboardState extends State<Dashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10),
+            SizedBox(height: 5),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -154,7 +156,7 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 5),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
@@ -165,7 +167,17 @@ class _DashboardState extends State<Dashboard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("UsersOwnerList".tr, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                  SizedBox(height: 10),
+                  SizedBox(height: 5),
+                  Helper.sampleTextField(
+                    context: context,
+                    controller: searchController,
+                    labelText: 'search'.tr,
+                    onChanged: (value) {
+                      userController.filterUsers(value); // Call filterUsers on text change
+                    },
+                    prefixIcon: Icon(Icons.search),
+                  ),
+                  SizedBox(height: 5),
                   Obx(() {
                     if (userController.isLoading.value) {
                       return SizedBox(
@@ -183,9 +195,9 @@ class _DashboardState extends State<Dashboard> {
                       child: SizedBox(
                         height: Get.height * .5,
                         child: ListView.builder(
-                          itemCount: userController.ownerList.length,
+                          itemCount: userController.filteredOwnerList.length,
                           itemBuilder: (context, index) {
-                            final owner = userController.ownerList[index];
+                            final owner = userController.filteredOwnerList[index];
                             return Container(
                               margin: const EdgeInsets.only(bottom: 2),
                               decoration: BoxDecoration(

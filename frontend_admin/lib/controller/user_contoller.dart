@@ -10,6 +10,7 @@ import '../models/user_model.dart';
 class UserController extends GetxController {
   final RxList<Map<String, dynamic>> owners = <Map<String, dynamic>>[].obs;
   RxList<UserModel> ownerList = <UserModel>[].obs;
+  RxList<UserModel> filteredOwnerList = <UserModel>[].obs;
   WebSocketChannel? channel;
   RxBool isLoading = true.obs;
   RxMap<String, dynamic> currentUser = <String, dynamic>{}.obs;
@@ -79,6 +80,7 @@ class UserController extends GetxController {
   void handleInit(List<dynamic> ownerJsonList) {
     final owners = ownerJsonList.map((json) => UserModel.fromJson(json)).toList();
     ownerList.assignAll(owners);
+    filteredOwnerList.assignAll(owners);
     isLoading.value = false;
   }
 
@@ -86,6 +88,7 @@ class UserController extends GetxController {
     final newOwner = UserModel.fromJson(newOwnerJson);
     if (!ownerList.any((owner) => owner.id == newOwner.id)) {
       ownerList.insert(0, newOwner);
+      filteredOwnerList.insert(0, newOwner);
       isLoading.value = false;
     }
   }
@@ -94,18 +97,34 @@ class UserController extends GetxController {
     final index = ownerList.indexWhere((owner) => owner.id == id);
     if (index != -1) {
       ownerList[index] = UserModel.fromJson(updatedOwnerJson);
+      filteredOwnerList[index] = UserModel.fromJson(updatedOwnerJson);
       ownerList.refresh();
+      filteredOwnerList.refresh();
       isLoading.value = false;
     }
   }
 
   void handleDelete(String id) {
     ownerList.removeWhere((owner) => owner.id == id);
+    filteredOwnerList.removeWhere((owner) => owner.id == id);
     isLoading.value = false;
   }
 
   void reconnectWithDelay() async {
     await Future.delayed(const Duration(seconds: 3));
     connectWebSocket();
+  }
+
+  // New method to filter users
+  void filterUsers(String query) {
+    if (query.isEmpty) {
+      filteredOwnerList.assignAll(ownerList);
+    } else {
+      filteredOwnerList.assignAll(
+        ownerList.where((user) =>
+            (user.userName).toLowerCase().contains(query.toLowerCase()) ||
+            (user.phoneNumber).toLowerCase().contains(query.toLowerCase())).toList(),
+      );
+    }
   }
 }
