@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_rental/controller/setting_controller.dart';
 import 'package:frontend_rental/screens/authenticate/login.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting.dart';
-import 'package:frontend_rental/screens/page/owner/ownerPage.dart';
+import 'package:frontend_rental/screens/page/owner/propertyPage.dart';
 import 'package:frontend_rental/screens/page/rental/rentalPage.dart';
 import 'package:frontend_rental/screens/splashScreen.dart';
 import 'package:frontend_rental/screens/wrapper.dart';
@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
             GetPage(name: '/splash', page: () => const SplashScreen()),
             GetPage(name: '/', page: () => const Wrapper()),
             GetPage(name: '/login', page: () => const Login()),
-            GetPage(name: '/owner_page', page: () => const OwnerPage()),
+            GetPage(name: '/property_page', page: () => const PropertyPage()),
             GetPage(name: '/rental_page', page: () => const RentalPage()),
           ],
         ),
