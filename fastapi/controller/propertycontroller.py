@@ -10,10 +10,6 @@ def create_property(db: Session, data: PropertyCreate, current_user):
         if not type_exists:
             raise HTTPException(status_code=400, detail="Invalid type_id")
         
-        owner_exists = db.query(user.User).filter(user.User.id == data.owner_id).first()
-        if not owner_exists:
-            raise HTTPException(status_code=400, detail="Invalid owner_id")
-        
         new_property = Property.Property(
             name = data.name,
             address = data.address,
@@ -25,7 +21,7 @@ def create_property(db: Session, data: PropertyCreate, current_user):
             longitude = None if data.longitude == "" else data.longitude,
             description = data.description,
             type_id=int(data.type_id),
-            owner_id=int(data.owner_id)
+            owner_id=int(current_user.id)
         )
         db.add(new_property)
         db.commit()
@@ -45,7 +41,7 @@ def create_property(db: Session, data: PropertyCreate, current_user):
             "type_id": new_property.type_id,
             "type_name": type_exists.type_code,
             "owner_id": new_property.owner_id,
-            "owner_name": owner_exists.userName
+            "owner_name": current_user.userName
         }
     except SQLAlchemyError as e:
         db.rollback()
@@ -54,9 +50,9 @@ def create_property(db: Session, data: PropertyCreate, current_user):
 def get_all_properties(db: Session, current_user):
     try:
         properties = (
-            db.query(Property.Property, user.User, property_types.PropertyType)
-            .outerjoin(user.User, user.User.id == Property.Property.owner_id)
+            db.query(Property.Property, property_types.PropertyType)
             .outerjoin(property_types.PropertyType, property_types.PropertyType.id == Property.Property.type_id)
+            .filter(Property.Property.owner_id == current_user.id)
             .order_by(Property.Property.id.desc())
         ).all()
 
@@ -75,9 +71,9 @@ def get_all_properties(db: Session, current_user):
                 "type_id": p.type_id,
                 "type_name": prop_type.type_code if prop_type else None,
                 "owner_id": p.owner_id,
-                "owner_name": owner.userName if owner else None,
+                "owner_name": current_user.userName if current_user else None,
             }
-            for p, owner, prop_type in properties
+            for p, prop_type in properties
         ]
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=f"Error fetching properties: {str(e)}")
@@ -108,11 +104,11 @@ def update_property(db: Session, property_id: int, data: PropertyUpdate, current
             prop.description = data.description or None
         if data.type_id is not None:
             prop.type_id = int(data.type_id)
-        if data.owner_id is not None:
-            prop.owner_id = int(data.owner_id)
+        if current_user.id is not None:
+            prop.owner_id = int(current_user.id)
 
         if data.owner_id is not None:
-            owner = db.query(user.User).filter(user.User.id == data.owner_id).first()
+            owner = db.query(user.User).filter(user.User.id == current_user.id).first()
             if not owner:
                 raise HTTPException(status_code=404, detail="Owner not found")
 

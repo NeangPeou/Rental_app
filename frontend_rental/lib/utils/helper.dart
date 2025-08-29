@@ -1,3 +1,4 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:frontend_rental/shared/constants.dart';
@@ -102,6 +103,89 @@ class Helper {
           enabled: enabled,
         );
       },
+    );
+  }
+
+  static Widget sampleDropdownSearch({
+    required BuildContext context,
+    required List<Map<String, dynamic>> items,
+    required String labelText,
+    required TextEditingController controller,
+    required String displayKey,
+    required String idKey,
+    String? selectedId,
+    bool isRequired = false,
+    String? Function(Map<String, dynamic>?)? validator,
+    void Function(Map<String, dynamic>?)? onChanged,
+    String? hintText,
+    double? maxHeight
+  }) {
+    final theme = Theme.of(context);
+
+    return DropdownSearch<Map<String, dynamic>>(
+      items: (String filter, _) {
+        if (filter.isEmpty) return items.toList();
+        return items.where((item) => (item[displayKey] as String).toLowerCase().contains(filter.toLowerCase())).toList();
+      },
+      selectedItem: selectedId != null ? items.firstWhereOrNull((e) => e[idKey].toString() == selectedId) : null,
+      itemAsString: (item) => item[displayKey] ?? 'Unknown',
+      compareFn: (item1, item2) => item1[idKey] == item2[idKey],
+      onChanged: (selected) {
+        if (selected != null) {
+          controller.text = selected[idKey].toString();
+        }
+        if (onChanged != null) onChanged(selected);
+      },
+      validator: validator ?? (value) {
+        if (isRequired && value == null) {
+          return 'Please select $labelText';
+        }
+        return null;
+      },
+      decoratorProps: DropDownDecoratorProps(
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          label: RichText(
+            text: TextSpan(
+              text: labelText,
+              style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
+              children: isRequired ? [
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ] : [],
+            ),
+          ),
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            borderSide: BorderSide(color: theme.colorScheme.outline),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            borderSide: BorderSide(color: theme.colorScheme.onSecondaryContainer),
+          ),
+        ),
+      ),
+      popupProps: PopupProps.menu(
+        showSearchBox: true,
+        searchFieldProps: TextFieldProps(
+          decoration: InputDecoration(
+            hintText: hintText ?? 'Search...',
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            border: const OutlineInputBorder(),
+          ),
+        ),
+        constraints: BoxConstraints(maxHeight: (maxHeight ?? 250)),
+        showSelectedItems: true,
+        menuProps: MenuProps(
+          borderRadius: BorderRadius.circular(10),
+          clipBehavior: Clip.antiAlias,
+        ),
+      ),
     );
   }
 

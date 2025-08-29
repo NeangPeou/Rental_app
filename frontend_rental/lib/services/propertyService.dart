@@ -145,4 +145,37 @@ class PropertyService {
       return ErrorModel(isError: true, code: 'exception', message: e.toString());
     }
   }
+
+  /// READ all types
+  Future<ErrorModel> getAllTypes() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString('x-auth-token');
+
+      if (accessToken == null || accessToken.isEmpty) {
+        return ErrorModel(isError: true, code: 'information', message: 'Token not found');
+      }
+
+      final response = await http.get(
+        Uri.parse('${dotenv.env['API_URL']}/api/getalltype'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+      final List<dynamic>? body = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> types = List<Map<String, dynamic>>.from(body!);
+        final PropertyController typeController = Get.find<PropertyController>();
+        typeController.setListTypes(types);
+        return ErrorModel(isError: false, code: 'Success', message: 'Types fetched successfully');
+      } else {
+        final Map<String, dynamic> errorBody = jsonDecode(response.body);
+        final String errorMsg = errorBody['detail'] ?? 'Failed to fetch types';
+        throw Exception(errorMsg);
+      }
+    } catch (e) {
+      return ErrorModel(isError: true, code: 'information', message: e.toString());
+    }
+  }
 }

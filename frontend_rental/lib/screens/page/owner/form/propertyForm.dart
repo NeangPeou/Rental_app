@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../controller/property_controller.dart';
 import '../../../../models/error.dart';
 import '../../../../models/property_model.dart';
 import '../../../../services/propertyService.dart';
+import '../../../../shared/loading.dart';
 import '../../../../shared/message_dialog.dart';
 import '../../../../utils/helper.dart';
 import 'package:get/get.dart';
@@ -17,10 +20,13 @@ class PropertyForm extends StatefulWidget {
 
 class _PropertyFormState extends State<PropertyForm> {
   final _formKey = GlobalKey<FormState>();
+  final dropDownKey = GlobalKey<DropdownSearchState>();
   List<XFile>? _pickedImages;
   final ImagePicker _picker = ImagePicker();
   late Map<String, dynamic> arg;
   String? id;
+  bool isLoading = true;
+  final types = Get.find<PropertyController>().types;
   final PropertyService _propertyService = PropertyService();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
@@ -37,6 +43,7 @@ class _PropertyFormState extends State<PropertyForm> {
   @override
   void initState() {
     super.initState();
+    getTypes();
     arg = (Get.arguments as Map).cast<String, dynamic>();
     if (arg.isNotEmpty) {
       final property = arg;
@@ -143,6 +150,16 @@ class _PropertyFormState extends State<PropertyForm> {
     }
   }
 
+  Future<void> getTypes() async {
+    ErrorModel errorModel = await _propertyService.getAllTypes();
+    if(errorModel.isError == true){
+      Get.back();
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   String? validateCoordinate(String? value, {required bool isLatitude}) {
     if (value == null || value.trim().isEmpty) {
       return 'This field is required';
@@ -178,7 +195,7 @@ class _PropertyFormState extends State<PropertyForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return isLoading ? const Center(child: Loading()) : Scaffold(
       appBar: Helper.sampleAppBar('Property Form', context, null),
       body: SafeArea(
         child: Container(
@@ -298,33 +315,16 @@ class _PropertyFormState extends State<PropertyForm> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Helper.sampleTextField(
-                                  context: context,
-                                  controller: _typeIdController,
-                                  labelText: 'Type ID',
-                                  isRequired: true,
-                                  keyboardType: TextInputType.number,
-                                  validator: (value) => value == null || value.isEmpty ? 'Please enter type' : null,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Helper.sampleTextField(
-                                  context: context,
-                                  controller: _ownerIdController,
-                                  labelText: 'Owner ID',
-                                  isRequired: true,
-                                  keyboardType: TextInputType.number,
-                                  validator: (value) => value == null || value.isEmpty ? 'Please enter owner' : null,
-                                ),
-                              ),
-                            ],
-                          ),
+                          Obx(() => Helper.sampleDropdownSearch(
+                            context: context,
+                            items: Get.find<PropertyController>().types,
+                            labelText: 'Property Type',
+                            controller: _typeIdController,
+                            displayKey: 'typeCode',
+                            idKey: 'id',
+                            selectedId: _typeIdController.text,
+                            isRequired: true,
+                          )),
                           const SizedBox(height: 16),
                           Helper.sampleTextField(
                             context: context,
