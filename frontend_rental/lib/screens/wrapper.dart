@@ -155,7 +155,7 @@ class _WrapperState extends State<Wrapper> {
             },
             backgroundColor: Theme.of(context).secondaryHeaderColor,
             child: const Icon(
-              Icons.person_add_outlined,
+              Icons.add_home_work_rounded,
               color: Colors.white,
             ),
           ),

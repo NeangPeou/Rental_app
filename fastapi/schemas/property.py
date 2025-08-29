@@ -8,8 +8,8 @@ class PropertyBase(BaseModel):
     district: Optional[str] = None
     province: Optional[str] = None
     postal_code: Optional[str] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    latitude: Optional[str] = None
+    longitude: Optional[str] = None
     description: Optional[str] = None
     type_id: str
     owner_id: str

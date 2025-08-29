@@ -88,7 +88,6 @@ class AuthService {
         code: 'Information',
         message: e.toString(),
       );
-      // ignore: use_build_context_synchronously
       Helper.closeLoadingDialog(context);
       return errorModel;
     }

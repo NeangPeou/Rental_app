@@ -9,7 +9,7 @@ class PropertyController extends GetxController {
   }
 
   void addProperty(Map<String, dynamic> property) {
-    properties.add(property);
+    properties.insert(0, property);
   }
 
   void updateProperty(Map<String, dynamic> updatedProperty) {
@@ -20,6 +20,6 @@ class PropertyController extends GetxController {
   }
 
   void removeProperty(String id) {
-    properties.removeWhere((p) => p['id'] == id);
+    properties.removeWhere((p) => p['id'] == int.tryParse(id));
   }
 }

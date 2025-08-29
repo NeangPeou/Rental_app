@@ -1,4 +1,3 @@
-from sqlalchemy import desc
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from db.models import properties as Property, property_types, user
@@ -22,11 +21,11 @@ def create_property(db: Session, data: PropertyCreate, current_user):
             district = data.district,
             province = data.province,
             postal_code = data.postal_code,
-            latitude = data.latitude,
-            longitude = data.longitude,
+            latitude = None if data.latitude == "" else data.latitude,
+            longitude = None if data.longitude == "" else data.longitude,
             description = data.description,
-            type_id = data.type_id,
-            owner_id = data.owner_id
+            type_id=int(data.type_id),
+            owner_id=int(data.owner_id)
         )
         db.add(new_property)
         db.commit()
@@ -44,16 +43,23 @@ def create_property(db: Session, data: PropertyCreate, current_user):
             "longitude": new_property.longitude,
             "description": new_property.description,
             "type_id": new_property.type_id,
-            "owner_id": new_property.owner_id
+            "type_name": type_exists.type_code,
+            "owner_id": new_property.owner_id,
+            "owner_name": owner_exists.userName
         }
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating property: {str(e)}")
 
-def get_all_properties(db: Session, user):
+def get_all_properties(db: Session, current_user):
     try:
-        properties = db.query(Property.Property).order_by(desc(Property.Property.id)).all()
-        
+        properties = (
+            db.query(Property.Property, user.User, property_types.PropertyType)
+            .outerjoin(user.User, user.User.id == Property.Property.owner_id)
+            .outerjoin(property_types.PropertyType, property_types.PropertyType.id == Property.Property.type_id)
+            .order_by(Property.Property.id.desc())
+        ).all()
+
         return [
             {
                 "id": p.id,
@@ -67,20 +73,54 @@ def get_all_properties(db: Session, user):
                 "longitude": p.longitude,
                 "description": p.description,
                 "type_id": p.type_id,
-                "owner_id": p.owner_id
+                "type_name": prop_type.type_code if prop_type else None,
+                "owner_id": p.owner_id,
+                "owner_name": owner.userName if owner else None,
             }
-            for p in properties
+            for p, owner, prop_type in properties
         ]
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=f"Error fetching properties: {str(e)}")
 
-def update_property(db: Session, property_id: int, data: PropertyUpdate, user):
+def update_property(db: Session, property_id: int, data: PropertyUpdate, current_user):
     try:
         prop = db.query(Property.Property).filter(Property.Property.id == property_id).first()
         if not prop:
             raise HTTPException(status_code=404, detail="Property not found")
-        for key, value in data.dict(exclude_unset=True).items():
-            setattr(prop, key, value)
+        
+        if data.name is not None:
+            prop.name = data.name
+        if data.address is not None:
+            prop.address = data.address
+        if data.city is not None:
+            prop.city = data.city
+        if data.district is not None:
+            prop.district = data.district or None
+        if data.province is not None:
+            prop.province = data.province or None
+        if data.postal_code is not None:
+            prop.postal_code = data.postal_code or None
+        if data.latitude is not None:
+            prop.latitude = None if data.latitude == "" else float(data.latitude)
+        if data.longitude is not None:
+            prop.longitude = None if data.longitude == "" else float(data.longitude)
+        if data.description is not None:
+            prop.description = data.description or None
+        if data.type_id is not None:
+            prop.type_id = int(data.type_id)
+        if data.owner_id is not None:
+            prop.owner_id = int(data.owner_id)
+
+        if data.owner_id is not None:
+            owner = db.query(user.User).filter(user.User.id == data.owner_id).first()
+            if not owner:
+                raise HTTPException(status_code=404, detail="Owner not found")
+
+        if data.type_id is not None:
+            prop_type = db.query(property_types.PropertyType).filter(property_types.PropertyType.id == data.type_id).first()
+            if not prop_type:
+                raise HTTPException(status_code=404, detail="Property type not found")
+
         db.commit()
         db.refresh(prop)
 
@@ -92,23 +132,27 @@ def update_property(db: Session, property_id: int, data: PropertyUpdate, user):
             "district": prop.district,
             "province": prop.province,
             "postal_code": prop.postal_code,
-            "latitude": prop.latitude,
-            "longitude": prop.longitude,
+            "latitude": str(prop.latitude),
+            "longitude": str(prop.longitude),
             "description": prop.description,
-            "type_id": prop.type_id,
-            "owner_id": prop.owner_id
+            "type_id": str(prop.type_id),
+            "type_name": prop_type.type_code if prop_type else None,
+            "owner_id": str(prop.owner_id),
+            "owner_name": owner.userName if owner else None,
         }
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error updating property: {str(e)}")
 
-def delete_property(db: Session, property_id: int, user):
+def delete_property(db: Session, property_id: int, current_user):
     try:
         prop = db.query(Property.Property).filter(Property.Property.id == property_id).first()
         if not prop:
             raise HTTPException(status_code=404, detail="Property not found")
+        
         db.delete(prop)
         db.commit()
+
         return {"detail": "Property deleted"}
     except SQLAlchemyError as e:
         db.rollback()

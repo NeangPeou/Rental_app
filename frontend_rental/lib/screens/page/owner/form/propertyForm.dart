@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../models/error.dart';
-import '../../../../models/property.dart';
+import '../../../../models/property_model.dart';
 import '../../../../services/propertyService.dart';
 import '../../../../shared/message_dialog.dart';
 import '../../../../utils/helper.dart';
@@ -143,6 +143,39 @@ class _PropertyFormState extends State<PropertyForm> {
     }
   }
 
+  String? validateCoordinate(String? value, {required bool isLatitude}) {
+    if (value == null || value.trim().isEmpty) {
+      return 'This field is required';
+    }
+
+    final trimmed = value.trim();
+
+    if (!trimmed.contains('.')) {
+      return 'Must include decimal (e.g., 10.123456)';
+    }
+
+    final num? parsed = num.tryParse(trimmed);
+    if (parsed == null) return 'Invalid number';
+
+    final rangeValid = isLatitude
+        ? (parsed >= -90 && parsed <= 90)
+        : (parsed >= -180 && parsed <= 180);
+
+    if (!rangeValid) {
+      return isLatitude
+          ? 'Latitude must be between -90 and 90'
+          : 'Longitude must be between -180 and 180';
+    }
+
+    final decimalPart = trimmed.split('.')[1];
+    if (decimalPart.length > 6) {
+      return 'Max 6 decimal places allowed';
+    }
+
+    return null;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -246,7 +279,9 @@ class _PropertyFormState extends State<PropertyForm> {
                                   context: context,
                                   controller: _latitudeController,
                                   labelText: 'Latitude',
+                                  isRequired: true,
                                   keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                  validator: (value) => validateCoordinate(value, isLatitude: true),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -255,7 +290,9 @@ class _PropertyFormState extends State<PropertyForm> {
                                   context: context,
                                   controller: _longitudeController,
                                   labelText: 'Longitude',
+                                  isRequired: true,
                                   keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                  validator: (value) => validateCoordinate(value, isLatitude: false),
                                 ),
                               ),
                             ],
@@ -272,6 +309,7 @@ class _PropertyFormState extends State<PropertyForm> {
                                   labelText: 'Type ID',
                                   isRequired: true,
                                   keyboardType: TextInputType.number,
+                                  validator: (value) => value == null || value.isEmpty ? 'Please enter type' : null,
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -282,6 +320,7 @@ class _PropertyFormState extends State<PropertyForm> {
                                   labelText: 'Owner ID',
                                   isRequired: true,
                                   keyboardType: TextInputType.number,
+                                  validator: (value) => value == null || value.isEmpty ? 'Please enter owner' : null,
                                 ),
                               ),
                             ],
