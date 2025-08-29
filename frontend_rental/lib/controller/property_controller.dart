@@ -3,13 +3,17 @@ import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 class PropertyController extends GetxController {
   final RxList<Map<String, dynamic>> properties = <Map<String, dynamic>>[].obs;
+  final List<Map<String, dynamic>> allProperties = [];
   final RxList<Map<String, dynamic>> types = <Map<String, dynamic>>[].obs;
 
   void setListProperties(List<Map<String, dynamic>> data) {
+    allProperties.clear();
+    allProperties.addAll(data);
     properties.assignAll(data);
   }
 
   void addProperty(Map<String, dynamic> property) {
+    allProperties.insert(0, property);
     properties.insert(0, property);
   }
 
@@ -17,11 +21,13 @@ class PropertyController extends GetxController {
     final index = properties.indexWhere((p) => p['id'] == updatedProperty['id']);
     if (index != -1) {
       properties[index] = updatedProperty;
+      allProperties[index] = updatedProperty;
     }
   }
 
   void removeProperty(String id) {
     properties.removeWhere((p) => p['id'] == int.tryParse(id));
+    allProperties.removeWhere((p) => p['id'] == int.tryParse(id));
   }
 
   void setListTypes(List<Map<String, dynamic>> data) {

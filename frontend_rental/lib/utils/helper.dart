@@ -118,7 +118,11 @@ class Helper {
     String? Function(Map<String, dynamic>?)? validator,
     void Function(Map<String, dynamic>?)? onChanged,
     String? hintText,
-    double? maxHeight
+    double? maxHeight,
+    Widget? prefixIcon,
+    Widget? suffixIcon,
+    Widget? dropDownPrefixIcon,
+    Widget? dropDownSuffixIcon,
   }) {
     final theme = Theme.of(context);
 
@@ -144,6 +148,8 @@ class Helper {
       },
       decoratorProps: DropDownDecoratorProps(
         decoration: InputDecoration(
+          prefixIcon: dropDownPrefixIcon,
+          suffixIcon: dropDownSuffixIcon,
           contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           label: RichText(
             text: TextSpan(
@@ -173,10 +179,17 @@ class Helper {
       popupProps: PopupProps.menu(
         showSearchBox: true,
         searchFieldProps: TextFieldProps(
+          style: Get.textTheme.bodySmall,
           decoration: InputDecoration(
             hintText: hintText ?? 'Search...',
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            border: const OutlineInputBorder(),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+            isDense: true,
+            prefixIcon: prefixIcon,
+            suffixIcon: suffixIcon,
+            border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+            ),
+
           ),
         ),
         constraints: BoxConstraints(maxHeight: (maxHeight ?? 250)),
