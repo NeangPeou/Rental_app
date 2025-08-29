@@ -116,7 +116,8 @@ class AppTranslations extends Translations {
       'updated_successfully': 'ធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ',
       'switch_owner': 'ប្ដូរទៅម្ចាស់ផ្ទះ',
       'switch_renter': 'ប្ដូរទៅអ្នកជួល',
-      'create_renter': 'បង្កើតអ្នកជួល'
+      'create_renter': 'បង្កើតអ្នកជួល',
+      'listings': 'បញ្ជី'
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -230,7 +231,8 @@ class AppTranslations extends Translations {
       'name_already_exists': 'Name already exists',
       'updated_successfully': 'Updated successfully',
       'switch_owner': 'Switch to Owner',
-      'switch_renter': 'Switch to Renter'
+      'switch_renter': 'Switch to Renter',
+      'listings': 'Listings'
     },
     'es_ES': {
       'english': 'Inglés',

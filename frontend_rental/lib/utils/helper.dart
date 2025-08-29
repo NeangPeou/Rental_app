@@ -44,6 +44,7 @@ class Helper {
     void Function(String)? onChanged,
     bool isRequired = false,
     bool enabled = true,
+    int maxLines = 1,
   }) {
     final theme = Theme.of(context);
 
@@ -56,6 +57,7 @@ class Helper {
           controller: controller,
           obscureText: obscureText,
           keyboardType: keyboardType,
+          maxLines: maxLines,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.only(left: 10, right: 10),
             label: RichText(

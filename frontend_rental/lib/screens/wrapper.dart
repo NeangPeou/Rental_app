@@ -2,9 +2,9 @@ import 'dart:ui';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:frontend_rental/screens/authenticate/login.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting.dart';
-import 'package:frontend_rental/screens/page/owner/ownerPage.dart';
+import 'package:frontend_rental/screens/page/owner/form/propertyForm.dart';
+import 'package:frontend_rental/screens/page/owner/propertyPage.dart';
 import 'package:frontend_rental/screens/page/rental/rentalPage.dart';
 import 'package:frontend_rental/shared/loading.dart';
 import 'package:get/get.dart';
@@ -58,7 +58,7 @@ class _WrapperState extends State<Wrapper> {
         BottomBarItem(
           inActiveItem: buildIcon(Icons.settings, false),
           activeItem: buildIcon(Icons.settings, true),
-          itemLabel: 'settings'.tr,
+          itemLabel: 'Setting'.tr,
         ),
       ];
     } else {
@@ -81,7 +81,7 @@ class _WrapperState extends State<Wrapper> {
         BottomBarItem(
           inActiveItem: buildIcon(Icons.settings, false),
           activeItem: buildIcon(Icons.settings, true),
-          itemLabel: 'settings'.tr,
+          itemLabel: 'Setting'.tr,
         ),
       ];
     }
@@ -105,7 +105,7 @@ class _WrapperState extends State<Wrapper> {
     if (ownerStatus == true && token != null && token!.isNotEmpty) {
       ErrorModel errorModel = await _auth.getUserData(context);
       if (errorModel.isError) {
-        Get.offAll(() => const Login());
+        // Get.offAll(() => const Login());
         return;
       }
     }
@@ -119,7 +119,7 @@ class _WrapperState extends State<Wrapper> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = isOwner ? const [OwnerPage(), Scaffold(body: Center(child: Text('Calendar'))), Scaffold(body: Center(child: Text('Inbox'))), Setting()] : const [RentalPage(), Scaffold(body: Center(child: Text('Saved'))), Scaffold(body: Center(child: Text('Inbox'))), Setting()];
+    final pages = isOwner ? const [PropertyPage(), Scaffold(body: Center(child: Text('Calendar'))), Scaffold(body: Center(child: Text('Inbox'))), Setting()] : const [RentalPage(), Scaffold(body: Center(child: Text('Saved'))), Scaffold(body: Center(child: Text('Inbox'))), Setting()];
     final bottomBarItems = getBottomBarItems(isOwner);
     final appBarTitles = getAppBarTitles(isOwner);
     final title = appBarTitles[_selectedIndex];
@@ -134,6 +134,33 @@ class _WrapperState extends State<Wrapper> {
         child: pages[_selectedIndex],
       ),
       extendBody: true,
+      floatingActionButton: _controller.index == 0 && isOwner ?
+      Container(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(17), bottom: Radius.circular(17)),
+          border: Border.all(color: Theme.of(context).primaryColorDark.withAlpha(100)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(1.0),
+          child: FloatingActionButton(
+            onPressed: () {
+              Get.to(PropertyForm(), arguments: {});
+            },
+            backgroundColor: Theme.of(context).secondaryHeaderColor,
+            child: const Icon(
+              Icons.person_add_outlined,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ): null,
       bottomNavigationBar: AnimatedSlide(
         offset: _bottomBarOffset,
         duration: const Duration(milliseconds: 250),
