@@ -15,6 +15,49 @@ import '../utils/helper.dart';
 
 class UserService{
 
+  Future<void> createRenter(BuildContext context, UserModel userModel) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString('x-auth-token');
+
+      if (accessToken == null || accessToken.isEmpty) {
+        return;
+      }
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      String deviceName = '';
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        deviceName = androidInfo.model;
+      } else if (Platform.isIOS) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        deviceName = iosInfo.model;
+      }
+
+      final payload = {
+        'username': userModel.userName,
+        'password': userModel.password,
+        'phoneNumber': userModel.phoneNumber,
+        'passport': userModel.passport,
+        'idCard': userModel.idCard,
+        'address': userModel.address,
+        'gender': userModel.gender,
+        'deviceName': deviceName,
+      };
+      final response = await http.post(
+        Uri.parse('${dotenv.env['API_URL']}/api/create-renter'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+      }
+    } catch (e) {
+      MessageDialog.showMessage('information'.tr, e.toString(), context);
+    }
+  }
   Future<List<UserModel>> fetchOwners(BuildContext context) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();

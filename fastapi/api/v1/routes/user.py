@@ -14,6 +14,11 @@ router = APIRouter()
 def get_owners(db: Session = Depends(get_db), current_user: user.User = Depends(usercontroller.get_current_user)):
     return usercontroller.get_owners_controller(db, current_user)
 
+@router.post("/create-renter")
+async def create_renter(user_data: UserCreate, request_obj: Request = None, db: Session = Depends(get_db), current_user: user.User = Depends(usercontroller.get_current_user)):
+    renter = await usercontroller.create_renter_controller(user_data, db, current_user, request_obj)
+    return renter
+
 @router.post("/create-owner")
 async def create_owner(user_data: UserCreate, request_obj: Request = None, db: Session = Depends(get_db), current_user: user.User = Depends(usercontroller.get_current_user)):
     owner = await usercontroller.create_owner_controller(user_data, db, current_user, request_obj)

@@ -291,3 +291,61 @@ def change_password_controller(user_data: ChangePasswordRequest, db: Session, cu
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"{str(e)}")
+    
+async def create_renter_controller(user_data: UserCreate, db: Session, current_user: user.User = Depends(get_current_user), request_obj: Request = None):
+    try:
+        # Verify the current user is an Owner
+        owner_role = db.query(role.Role).filter(role.Role.role == "Owner").first()
+        if not owner_role or current_user.role_id != owner_role.id:
+            raise HTTPException(status_code=403, detail="Only owners can create renters")
+
+        existing_user = db.query(user.User).filter(user.User.userName == user_data.username).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Username already exists")
+
+        renter_role = db.query(role.Role).filter(role.Role.role == "Renter").first()
+        if not renter_role:
+            renter_role = role.Role(role="Renter", description="Property renter role")
+            db.add(renter_role)
+            db.commit()
+            db.refresh(renter_role)
+
+        gender = user_data.gender or 'Male'
+        if gender not in VALID_GENDERS:
+            raise HTTPException(status_code=400, detail=f"Invalid gender. Must be one of: {', '.join(VALID_GENDERS)}")
+        # Hash the password
+        hashed_password = get_password_hash(user_data.password)
+        # Create renter user
+        renter = user.User(
+            userName=user_data.username,
+            password=hashed_password,
+            role_id=renter_role.id,
+            phoneNumber=user_data.phoneNumber,
+            passport=user_data.passport,
+            idCard=user_data.idCard,
+            address=user_data.address,
+            gender=gender
+        )
+        db.add(renter)
+        db.commit()
+        db.refresh(renter)
+        # Update username with ID
+        data = update_username(renter.id, f"{renter.userName}{renter.id}", db)
+        # Log the action
+        ip_address = request_obj.client.host if request_obj else 'unknown'
+        host_name = user_data.deviceName if hasattr(user_data, 'deviceName') else ip_address or 'unknown'
+        log_action(
+            db=db,
+            user_id=renter.id,
+            action="CREATE_RENTER",
+            log_type="INFO",
+            message=f"Renter {renter.userName} created by owner {current_user.userName}",
+            host_name=host_name
+        )
+        # Prepare response
+        user_response = UserResponse.from_orm(data)
+        user_response.userID = user_data.username
+        return user_response
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to create renter: {str(e)}")

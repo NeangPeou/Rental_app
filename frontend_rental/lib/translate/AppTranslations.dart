@@ -115,9 +115,11 @@ class AppTranslations extends Translations {
       'name_already_exists':'ឈ្មោះមានរួចហើយ',
       'updated_successfully': 'ធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ',
       'switch_owner': 'ប្ដូរទៅម្ចាស់ផ្ទះ',
-      'switch_renter': 'ប្ដូរទៅអ្នកជួល'
+      'switch_renter': 'ប្ដូរទៅអ្នកជួល',
+      'create_renter': 'បង្កើតអ្នកជួល'
     },
     'en_US': {
+      'create_renter': 'Create renter',
       'english': 'English',
       'khmer': 'Khmer',
       'spanish': 'Spanish',

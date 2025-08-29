@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 class UserController extends GetxController {
   RxMap<String, dynamic> currentUser = <String, dynamic>{}.obs;
+  RxBool isLoading = true.obs;
 
   Future<void> login(BuildContext context, String username, String password) async {
     try {
