@@ -1,0 +1,249 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:frontend_rental/controller/property_controller.dart';
+import 'package:frontend_rental/models/lease_model.dart';
+import 'package:frontend_rental/services/lease_service.dart';
+import 'package:frontend_rental/services/propertyService.dart';
+import 'package:frontend_rental/utils/helper.dart';
+import 'package:get/get.dart';
+
+import '../../../../models/error.dart';
+import '../../../../shared/message_dialog.dart';
+
+class LeaseForm extends StatefulWidget {
+  const LeaseForm({super.key});
+
+  @override
+  State<LeaseForm> createState() => _LeaseFormState();
+}
+
+class _LeaseFormState extends State<LeaseForm> {
+  final _formKey = GlobalKey<FormState>();
+  final propertiesController = Get.find<PropertyController>();
+  final PropertyService propertyService = PropertyService();
+  final LeaseService leaseService = LeaseService();
+  String? id;
+  late Map<String, dynamic> arg;
+  final TextEditingController unitController = TextEditingController();
+  final TextEditingController renterController = TextEditingController();
+  final TextEditingController startDateController = TextEditingController();
+  final TextEditingController endDateController = TextEditingController();
+  final TextEditingController rentAmountController = TextEditingController();
+  final TextEditingController depositAmountController = TextEditingController();
+  String status = 'active';
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (propertiesController.units.isEmpty) {
+          propertyService.getAllUnits();
+      }else{
+        leaseService.getAllRenters();
+      }
+      // if (propertiesController.renters.isEmpty) {
+          
+      // }
+    });
+    arg = (Get.arguments as Map).cast<String, dynamic>();
+    if (arg.isNotEmpty) {
+      final lease = arg;
+      id = lease['id'].toString();
+      unitController.text = lease['unit_id'].toString();
+      renterController.text = lease['renter_id'].toString();
+      startDateController.text = lease['start_date']?.toString() ?? '';
+      endDateController.text = lease['end_date']?.toString() ?? '';
+      rentAmountController.text = lease['rent_amount']?.toString() ?? '';
+      depositAmountController.text = lease['deposit_amount']?.toString() ?? '';
+      status = lease['status']?.toString() ?? 'active';
+    }
+  }
+
+  
+
+  @override
+  void dispose() {
+    super.dispose();
+    unitController.dispose();
+    renterController.dispose();
+    startDateController.dispose();
+    endDateController.dispose();
+    rentAmountController.dispose();
+    depositAmountController.dispose();
+  }
+
+  void _saveLease() async {
+    if (_formKey.currentState!.validate()) {
+      Helper.showLoadingDialog(context);
+      ErrorModel errorModel;
+      LeaseModel leaseModel = LeaseModel(
+        unitId: int.parse(unitController.text),
+        renterId: int.parse(renterController.text),
+        startDate: startDateController.text,
+        endDate: endDateController.text,
+        rentAmount: double.parse(rentAmountController.text),
+        depositAmount: depositAmountController.text.isEmpty ? null : double.parse(depositAmountController.text),
+        status: status,
+      );
+
+      if (id == null) {
+        errorModel = await leaseService.createLease(leaseModel);
+      } else {
+        errorModel = await leaseService.updateLease(id!, leaseModel);
+      }
+      Helper.closeLoadingDialog(context);
+      if (errorModel.isError == false) {
+        Get.back();
+        Get.showSnackbar(
+          GetSnackBar(
+            messageText: const SizedBox.shrink(),
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Get.theme.scaffoldBackgroundColor,
+            snackStyle: SnackStyle.FLOATING,
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 5),
+            borderRadius: 8,
+            duration: const Duration(seconds: 3),
+            isDismissible: true,
+            titleText: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.save, size: 25, color: Colors.grey),
+                const SizedBox(width: 8),
+                Text(id == null ? 'created_successfully'.tr : 'updated_successfully'.tr, style: Get.textTheme.titleMedium),
+              ],
+            ),
+          ),
+        );
+      } else {
+        errorModel.message!.toLowerCase();
+        MessageDialog.showMessage('information'.tr, id == null ? 'create_failed'.tr : 'update_failed'.tr, context);
+      }
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      controller.text = Helper.formatDate(picked);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: Helper.sampleAppBar('Lease', context, null),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              Obx(() {
+                return Helper.sampleDropdownSearch(
+                  context: context,
+                  items: propertiesController.units.isEmpty ? [] : propertiesController.units.where((u) => u['is_available'] == true).toList(),
+                  labelText: "Select Unit",
+                  controller: unitController,
+                  selectedId: unitController.text,
+                  displayKey: "unit_number",
+                  idKey: "id",
+                  isRequired: true,
+                  dropDownPrefixIcon: Icon(Icons.apartment_rounded),
+                );
+              }),
+              const SizedBox(height: 16),
+              Obx(() {
+                return Helper.sampleDropdownSearch(
+                  context: context,
+                  items: propertiesController.renters,
+                  labelText: "Select Renter",
+                  controller: renterController,
+                  selectedId: renterController.text,
+                  displayKey: "username",
+                  idKey: "id",
+                  isRequired: true,
+                  dropDownPrefixIcon: Icon(Icons.person),
+                );
+              }),
+              const SizedBox(height: 16),
+              Helper.sampleTextField(
+                context: context,
+                controller: startDateController,
+                labelText: "Start Date",
+                readOnly: true,
+                onTap: () => _selectDate(context, startDateController),
+                isRequired: true,
+                prefixIcon: Icon(Icons.calendar_today),
+                validator: (value) => value!.isEmpty ? 'Please select a start date' : null,
+              ),
+              const SizedBox(height: 16),
+              Helper.sampleTextField(
+                context: context,
+                controller: endDateController,
+                labelText: "End Date",
+                readOnly: true,
+                onTap: () => _selectDate(context, endDateController),
+                isRequired: true,
+                prefixIcon: Icon(Icons.calendar_today),
+                validator: (value) => value!.isEmpty ? 'Please select an end date' : null,
+              ),
+              const SizedBox(height: 16),
+              Helper.sampleTextField(
+                context: context,
+                controller: rentAmountController,
+                labelText: "Rent Amount (\$)",
+                keyboardType: TextInputType.number,
+                isRequired: true,
+                prefixIcon: Icon(Icons.attach_money_rounded),
+                validator: (value) => value!.isEmpty ? 'Please enter rent amount' : null,
+              ),
+              const SizedBox(height: 16),
+              Helper.sampleTextField(
+                context: context,
+                controller: depositAmountController,
+                labelText: "Deposit Amount (\$)",
+                keyboardType: TextInputType.number,
+                prefixIcon: Icon(Icons.attach_money_rounded),
+              ),
+              const SizedBox(height: 16),
+              Helper.sampleDropdownSearch(
+                context: context,
+                items: [
+                  {'id': 'active', 'status': 'Active'},
+                  {'id': 'terminated', 'status': 'Terminated'},
+                  {'id': 'expired', 'status': 'Expired'},
+                ],
+                labelText: "Status",
+                controller: TextEditingController(text: status),
+                selectedId: status,
+                displayKey: "status",
+                idKey: "id",
+                isRequired: true,
+                onChanged: (selected) {
+                  if (selected != null) {
+                    status = selected['id'];
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _saveLease,
+                  child: Text(id == null ? 'save'.tr : 'update'.tr),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

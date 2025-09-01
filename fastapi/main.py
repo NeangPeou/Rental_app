@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from api.v1.routes import auth, user, systemlog, type, property, units
-from db.models import (user as users, role, user_session, system_log, property_types, properties, units as unittb, renters, leases, payments, maintenance_requests, documents, messages)
+from api.v1.routes import auth, user, systemlog, type, property, units, leases, renters
+from db.models import (user as users, role, user_session, system_log, property_types, properties, units as unittb, renters as renterstb, leases as leasestb, payments, maintenance_requests, documents, messages)
 from db.session import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 # from middleware.convert_snake_to_camel import ConvertSnakeToCamelMiddleware
@@ -77,3 +77,5 @@ app.include_router(systemlog.router, prefix="/api", tags=["SystemLog"])
 app.include_router(type.router, prefix="/api", tags=["Type"])
 app.include_router(property.router, prefix="/api", tags=["Property"])
 app.include_router(units.router, prefix="/api", tags=["Units"])
+app.include_router(leases.router, prefix="/api", tags=["Leases"])
+app.include_router(renters.router, prefix="/api", tags=["Renters"])

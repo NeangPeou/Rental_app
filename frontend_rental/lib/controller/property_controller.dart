@@ -7,6 +7,10 @@ class PropertyController extends GetxController {
   final RxList<Map<String, dynamic>> types = <Map<String, dynamic>>[].obs;
   final RxList<Map<String, dynamic>> units = <Map<String, dynamic>>[].obs;
   final List<Map<String, dynamic>> allUnits = [];
+  final RxList<Map<String, dynamic>> leases = <Map<String, dynamic>>[].obs;
+  final List<Map<String, dynamic>> allLeases = [];
+  final RxList<Map<String, dynamic>> renters = <Map<String, dynamic>>[].obs;
+  final List<Map<String, dynamic>> allRenters = []; // ✅ keep backup like others
 
   void setListProperties(List<Map<String, dynamic>> data) {
     allProperties.clear();
@@ -65,5 +69,43 @@ class PropertyController extends GetxController {
       units.removeWhere((u) => u['id'] == parsedId);
       allUnits.removeWhere((u) => u['id'] == parsedId);
     }
+  }
+
+  void setLeases(List<Map<String, dynamic>> data) {
+    allLeases.clear();
+    allLeases.addAll(data);
+    leases.assignAll(data);
+  }
+
+  void addLease(Map<String, dynamic> lease) {
+    allLeases.insert(0, lease);
+    leases.insert(0, lease);
+  }
+
+  void updateLease(Map<String, dynamic> updatedLease) {
+    final index = leases.indexWhere((l) => l['id'] == updatedLease['id']);
+    if (index != -1) {
+      leases[index] = updatedLease;
+      allLeases[index] = updatedLease;
+    }
+  }
+
+  void removeLease(String id) {
+    int? parsedId = int.tryParse(id);
+    if (parsedId != null) {
+      leases.removeWhere((l) => l['id'] == parsedId);
+      allLeases.removeWhere((l) => l['id'] == parsedId);
+    }
+  }
+
+  void setRenters(List<Map<String, dynamic>> data) {
+    allRenters.clear(); 
+    allRenters.addAll(data);
+    renters.assignAll(data);
+  }
+
+  void addRenters(Map<String, dynamic> datas) {
+    allRenters.insert(0, datas);
+    renters.insert(0, datas);
   }
 }

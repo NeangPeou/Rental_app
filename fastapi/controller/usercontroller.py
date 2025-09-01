@@ -5,7 +5,7 @@ import re
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from db.models import (user, role, system_log, user_session)
+from db.models import (renters, user, role, system_log, user_session)
 from core.security import create_access_token, create_refresh_token, get_password_hash, SECRET_KEY, ALGORITHM, verify_password
 from helper.hepler import log_action
 from schemas.user import ChangePasswordRequest, UpdateUser, UserCreate, UserResponse
@@ -329,6 +329,15 @@ async def create_renter_controller(user_data: UserCreate, db: Session, current_u
         db.add(renter)
         db.commit()
         db.refresh(renter)
+
+        # Insert into t_renters
+        renter_extra = renters.Renter(
+            user_id=renter.id,
+            id_document=user_data.idCard or user_data.passport
+        )
+        db.add(renter_extra)
+        db.commit()
+        db.refresh(renter_extra)
         # Update username with ID
         data = update_username(renter.id, f"{renter.userName}{renter.id}", db)
         # Log the action
