@@ -131,7 +131,9 @@ class AppTranslations extends Translations {
       "edit_property_type": "កែប្រែប្រភេទអចលនទ្រព្យ",
       "add_property_type_description": "បញ្ចូលកូដ និងឈ្មោះប្រភេទ ដើម្បីបង្កើតប្រភេទអចលនទ្រព្យថ្មី។",
       "edit_property_type_description": "ធ្វើបច្ចុប្បន្នភាពកូដ ឬឈ្មោះសម្រាប់ប្រភេទអចលនទ្រព្យនេះ។",
-      "created_successfully": "បង្កើតបានជោគជ័យ"
+      "created_successfully": "បង្កើតបានជោគជ័យ",
+      'landlord': 'ម្ចាស់ផ្ទះ',
+      'tenant': 'អ្នកជួល',
     },
     'en_US': {
       'khawinadmin': 'Khawin Admin',
@@ -260,7 +262,9 @@ class AppTranslations extends Translations {
       "edit_property_type": "Edit Property Type",
       "add_property_type_description": "Fill in the type code and name to create a new property type.",
       "edit_property_type_description": "Update the type code or name for this existing property type.",
-      "created_successfully": "Created Successfully"
+      "created_successfully": "Created Successfully",
+      'landlord': 'Landlord',
+      'tenant': 'Tenant',
     },
     'es_ES': {
       'welcome': 'Bienvenido',
@@ -388,7 +392,9 @@ class AppTranslations extends Translations {
       "edit_property_type": "Editar tipo de propiedad",
       "add_property_type_description": "Complete el código y el nombre para crear un nuevo tipo de propiedad.",
       "edit_property_type_description": "Actualice el código o nombre de este tipo de propiedad existente.",
-      "created_successfully": "Creado con éxito"
+      "created_successfully": "Creado con éxito",
+      'landlord': 'Arrendador',
+      'tenant': 'Inquilino',
     },
     'fr_FR': {
       'welcome': 'Bienvenue',
@@ -517,7 +523,9 @@ class AppTranslations extends Translations {
       "edit_property_type": "Modifier le type de propriété",
       "add_property_type_description": "Saisissez le code et le nom pour créer un nouveau type de propriété.",
       "edit_property_type_description": "Mettez à jour le code ou le nom de ce type de propriété existant.",
-      "created_successfully": "Créé avec succès"
+      "created_successfully": "Créé avec succès",
+      'landlord': 'Propriétaire',
+      'tenant': 'Locataire',
     },
     'de_DE': {
       'welcome': 'Willkommen',
@@ -646,7 +654,9 @@ class AppTranslations extends Translations {
       "edit_property_type": "Immobilienart bearbeiten",
       "add_property_type_description": "Geben Sie Typcode und Name ein, um eine neue Immobilienart zu erstellen.",
       "edit_property_type_description": "Aktualisieren Sie den Typcode oder Namen für diese bestehende Immobilienart.",
-      "created_successfully": "Erfolgreich erstellt"
+      "created_successfully": "Erfolgreich erstellt",
+      'landlord': 'Vermieter',
+      'tenant': 'Mieter',
     },
     'ja_JP': {
       'welcome': 'ようこそ',
@@ -775,7 +785,9 @@ class AppTranslations extends Translations {
       "edit_property_type": "物件の種類を編集",
       "add_property_type_description": "新しい物件の種類を作成するには、コードと名前を入力してください。",
       "edit_property_type_description": "既存の物件の種類のコードまたは名前を更新します。",
-      "created_successfully": "作成に成功しました"
+      "created_successfully": "作成に成功しました",
+      'landlord': '家主',
+      'tenant': 'テナント',
     },
     'zh_CN': {
       'welcome': '欢迎',
@@ -904,7 +916,9 @@ class AppTranslations extends Translations {
       "edit_property_type": "编辑物业类型",
       "add_property_type_description": "填写类型代码和名称以创建新的物业类型。",
       "edit_property_type_description": "更新此现有物业类型的代码或名称。",
-      "created_successfully": "创建成功"
+      "created_successfully": "创建成功",
+      'landlord': '房东',
+      'tenant': '租户',
     },
     'ru_RU': {
       'welcome': 'Добро пожаловать',
@@ -1033,7 +1047,9 @@ class AppTranslations extends Translations {
       "edit_property_type": "Редактировать тип недвижимости",
       "add_property_type_description": "Введите код и название типа, чтобы создать новый тип недвижимости.",
       "edit_property_type_description": "Обновите код или название этого существующего типа недвижимости.",
-      "created_successfully": "Успешно создано"
+      "created_successfully": "Успешно создано",
+      'landlord': 'Арендодатель',
+      'tenant': 'Арендатор',
     },
     'ko_KR': {
       'welcome': '환영합니다',
@@ -1162,7 +1178,9 @@ class AppTranslations extends Translations {
       "edit_property_type": "자산 유형 수정",
       "add_property_type_description": "새 자산 유형을 생성하려면 코드와 이름을 입력하세요.",
       "edit_property_type_description": "기존 자산 유형의 코드 또는 이름을 수정하세요.",
-      "created_successfully": "성공적으로 생성되었습니다"
+      "created_successfully": "성공적으로 생성되었습니다",
+      'landlord': '집주인',
+      'tenant': '세입자',
     },
   };
 }

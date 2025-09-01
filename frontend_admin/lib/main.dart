@@ -9,6 +9,7 @@ import 'package:frontend_admin/screens/splashScreen.dart';
 import 'package:frontend_admin/screens/wrapper.dart';
 import 'package:frontend_admin/services/inactivityService.dart';
 import 'package:frontend_admin/shared/constants.dart';
+import 'package:frontend_admin/utils/navigatorObserver.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'controller/user_contoller.dart';
@@ -30,6 +31,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
   final SettingController _settingController = Get.find();
+  final RouteObserver<PageRoute> routeObserver = MyRouteObserver();
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,7 @@ class MyApp extends StatelessWidget {
         behavior: HitTestBehavior.translucent,
         onPointerDown: (_) => InactivityService().userInteractionDetected(),
         child: GetMaterialApp(
+          navigatorObservers: [routeObserver],
           debugShowCheckedModeBanner: false,
           translations: AppTranslations(),
           locale: selectedLocale,

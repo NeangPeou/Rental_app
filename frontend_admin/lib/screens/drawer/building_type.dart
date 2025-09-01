@@ -55,152 +55,154 @@ class _BuildingTypeState extends State<BuildingType> {
   Widget build(BuildContext context) {
     return isLoading ? Scaffold(body: Center(child: Loading())) : Scaffold(
       appBar: Helper.sampleAppBar("property_type".tr, context, null),
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        margin: EdgeInsets.only(top: 10, left: 10, right: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
-        ),
-        child: Column(
-          children: [
-            Helper.sampleTextField(
-              context: context,
-              controller: searchController,
-              labelText: 'search'.tr,
-              onChanged: (value) {
-                filterTypes(value);
-              },
-              prefixIcon: Icon(Icons.search),
-            ),
-            SizedBox(height: 10),
-            Expanded(
-              child: RefreshIndicator(
-              onRefresh: _refreshData,
-              child: Obx(() {
-                if (types.isEmpty) {
-                  return Center(child: Text('no_types_found'.tr));
-                }
-
-                return ListView.builder(
-                  itemCount: types.length,
-                  itemBuilder: (context, index) {
-                    final type = types[index];
-
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 6),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100), width: 1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Card(
-                        elevation: 1,
-                        color: Theme.of(context).cardColor,
-                        shape: RoundedRectangleBorder(
+      body: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          margin: EdgeInsets.only(top: 10, left: 10, right: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
+          ),
+          child: Column(
+            children: [
+              Helper.sampleTextField(
+                context: context,
+                controller: searchController,
+                labelText: 'search'.tr,
+                onChanged: (value) {
+                  filterTypes(value);
+                },
+                prefixIcon: Icon(Icons.search),
+              ),
+              SizedBox(height: 10),
+              Expanded(
+                child: RefreshIndicator(
+                onRefresh: _refreshData,
+                child: Obx(() {
+                  if (types.isEmpty) {
+                    return Center(child: Text('no_types_found'.tr));
+                  }
+        
+                  return ListView.builder(
+                    itemCount: types.length,
+                    itemBuilder: (context, index) {
+                      final type = types[index];
+        
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 6),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100), width: 1),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: ListTile(
-                          dense: true,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          leading: const Icon(Icons.apartment_rounded, size: 35, color: Colors.blueAccent),
-                          title: Text(
-                            '${"type_name".tr}: ${type['name'] ?? ''}',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                        child: Card(
+                          elevation: 1,
+                          color: Theme.of(context).cardColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          subtitle: Text(
-                            '${"type_code".tr}: ${type['typeCode'] ?? ''}',
-                            style: Theme.of(context).textTheme.labelSmall,
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Edit button
-                              IconButton(
-                                icon: const Icon(Icons.edit, size: 20),
-                                onPressed: () {
-                                  showBottomSheet(type['id'], type['typeCode'], type['name']);
-                                },
-                              ),
-                              // Delete button
-                              IconButton(
-                                icon: const Icon(Icons.delete, size: 20, color: Colors.red),
-                                onPressed: () async{
-                                  Get.dialog(
-                                    Dialog(
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Container(
-                                              padding: const EdgeInsets.all(16),
-                                              decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), shape: BoxShape.circle),
-                                              child: const Icon(Icons.warning_rounded, color: Colors.red, size: 40),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            // Title
-                                            Text('ConfirmDelete'.tr, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                                            const SizedBox(height: 8),
-                                            // Content
-                                            Text('AreYouSureDelete'.tr.replaceFirst('{userName}', type['typeCode']), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
-                                            const SizedBox(height: 20),
-                                            // Buttons
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                // Cancel Button
-                                                Expanded(
-                                                  child: OutlinedButton(
-                                                    style: OutlinedButton.styleFrom(
-                                                      padding: const EdgeInsets.symmetric(vertical: 12),
-                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          child: ListTile(
+                            dense: true,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            leading: const Icon(Icons.apartment_rounded, size: 35, color: Colors.blueAccent),
+                            title: Text(
+                              '${"type_name".tr}: ${type['name'] ?? ''}',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            subtitle: Text(
+                              '${"type_code".tr}: ${type['typeCode'] ?? ''}',
+                              style: Theme.of(context).textTheme.labelSmall,
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Edit button
+                                IconButton(
+                                  icon: const Icon(Icons.edit, size: 20),
+                                  onPressed: () {
+                                    showBottomSheet(type['id'], type['typeCode'], type['name']);
+                                  },
+                                ),
+                                // Delete button
+                                IconButton(
+                                  icon: const Icon(Icons.delete, size: 20, color: Colors.red),
+                                  onPressed: () async{
+                                    Get.dialog(
+                                      Dialog(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.all(16),
+                                                decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), shape: BoxShape.circle),
+                                                child: const Icon(Icons.warning_rounded, color: Colors.red, size: 40),
+                                              ),
+                                              const SizedBox(height: 16),
+                                              // Title
+                                              Text('ConfirmDelete'.tr, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                                              const SizedBox(height: 8),
+                                              // Content
+                                              Text('AreYouSureDelete'.tr.replaceFirst('{userName}', type['typeCode']), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
+                                              const SizedBox(height: 20),
+                                              // Buttons
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                children: [
+                                                  // Cancel Button
+                                                  Expanded(
+                                                    child: OutlinedButton(
+                                                      style: OutlinedButton.styleFrom(
+                                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                      ),
+                                                      onPressed: () => Get.back(),
+                                                      child: Text('cancel'.tr),
                                                     ),
-                                                    onPressed: () => Get.back(),
-                                                    child: Text('cancel'.tr),
                                                   ),
-                                                ),
-                                                const SizedBox(width: 12),
-                                                // Delete Button
-                                                Expanded(
-                                                  child: ElevatedButton(
-                                                    style: ElevatedButton.styleFrom(
-                                                      backgroundColor: Colors.red,
-                                                      padding: const EdgeInsets.symmetric(vertical: 12),
-                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                  const SizedBox(width: 12),
+                                                  // Delete Button
+                                                  Expanded(
+                                                    child: ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor: Colors.red,
+                                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                      ),
+                                                      onPressed: () async{
+                                                        Get.back();
+                                                        Helper.showLoadingDialog(context);
+                                                        ErrorModel errorModel = await _typeService.deleteType(type['id']);
+                                                        Helper.closeLoadingDialog(context);
+                                                        if(errorModel.isError){
+                                                          MessageDialog.showMessage('information'.tr, 'delete_failed', context);
+                                                        }
+                                                      },
+                                                      child: Text('delete'.tr, style: const TextStyle(color: Colors.white)),
                                                     ),
-                                                    onPressed: () async{
-                                                      Get.back();
-                                                      Helper.showLoadingDialog(context);
-                                                      ErrorModel errorModel = await _typeService.deleteType(type['id']);
-                                                      Helper.closeLoadingDialog(context);
-                                                      if(errorModel.isError){
-                                                        MessageDialog.showMessage('information'.tr, 'delete_failed', context);
-                                                      }
-                                                    },
-                                                    child: Text('delete'.tr, style: const TextStyle(color: Colors.white)),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              }),
-                  ),
-            ),
-          ],
+                      );
+                    },
+                  );
+                }),
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
     floatingActionButton: Container(

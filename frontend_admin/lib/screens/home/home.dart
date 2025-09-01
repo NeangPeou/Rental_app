@@ -4,10 +4,15 @@ import 'package:flutter/rendering.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/dashboard.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/notification_page.dart';
 import 'package:frontend_admin/screens/bottomNavigationBar/setting.dart';
-import 'package:frontend_admin/screens/bottomNavigationBar/userForm/user_form.dart';
+import 'package:frontend_admin/screens/drawer/landlord.dart';
 import 'package:frontend_admin/utils/helper.dart';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:get/get.dart';
+import 'package:sidebarx/sidebarx.dart';
+import '../../controller/setting_controller.dart';
+import '../../controller/type_controller.dart';
+import '../drawer/building_type.dart';
+import '../drawer/system_logs.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -18,19 +23,22 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late final NotchBottomBarController _controller;
-
+  final SettingController _settingController = Get.find();
+  final _sidebarController = SidebarXController(selectedIndex: 0, extended: true);
   double _bottomBarOpacity = 1.0;
   Offset _bottomBarOffset = Offset.zero;
-
-  //FAB draggable position
   double posX = 0;
   double posY = 0;
 
   @override
   void initState() {
     super.initState();
+    Get.put(TypeController());
     final args = Get.arguments as Map<String, dynamic>?;
     _controller = NotchBottomBarController(index: args?['index']?.toInt() ?? 0);
+    ever<int>(_settingController.selectedIndex, (index) {
+      _sidebarController.selectIndex(index);
+    });
   }
 
   void _handleScroll(ScrollNotification notification) {
@@ -87,33 +95,6 @@ class _HomeState extends State<Home> {
         child: pages[_controller.index],
       ),
       extendBody: true,
-      floatingActionButton: _controller.index == 0
-          ? Container(
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(17), bottom: Radius.circular(17)),
-            border: Border.all(color: Theme.of(context).primaryColorDark.withAlpha(100)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 8,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(1.0),
-            child: FloatingActionButton(
-              onPressed: () {
-                Get.to(const UserForm(),arguments: {'title': 'CreateOwner'.tr});
-              },
-              backgroundColor: Theme.of(context).secondaryHeaderColor,
-              child: const Icon(
-                Icons.person_add_outlined,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ): null,
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       bottomNavigationBar: AnimatedSlide(
         offset: _bottomBarOffset,
@@ -178,6 +159,72 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
+      drawer: AnimatedBuilder(
+          animation: _sidebarController,
+          builder: (context, _) {
+            return Drawer(
+                width: _sidebarController.extended ? 300 : 70,
+                child: SafeArea(
+                  bottom: true,
+                  top: false,
+                  child: SidebarX(
+                    controller: _sidebarController,
+                    animationDuration: Duration(milliseconds: 400),
+                    showToggleButton: true,
+                    theme: SidebarXTheme(
+                      decoration: BoxDecoration(
+                        color: Get.theme.scaffoldBackgroundColor,
+                        borderRadius: BorderRadius.only(topRight: Radius.circular(0), bottomRight: Radius.circular(0)),
+                      ),
+                      hoverColor: Get.theme.primaryColor.withOpacity(0.1),
+                      itemTextPadding: const EdgeInsets.only(left: 20),
+                      selectedItemTextPadding: const EdgeInsets.only(left: 20),
+                      selectedTextStyle: Get.textTheme.bodyMedium,
+                      selectedItemDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.teal,
+                        ),
+                        color: Colors.teal,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.teal.withAlpha(100),
+                            blurRadius: 5,
+                            offset: Offset(0, 0),
+                          ),
+                        ],
+                      ),
+                      iconTheme: IconThemeData(
+                        size: 20,
+                      ),
+                      selectedIconTheme: IconThemeData(
+                        size: 20,
+                      ),
+                    ),
+                    headerBuilder: (context, extended) {
+                      return SizedBox(
+                        height: 150,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Image.asset('assets/app_icon/sw_logo.png'),
+                        ),
+                      );
+                    },
+                    footerDivider: Divider(),
+                    headerDivider: Divider(),
+                    items: [
+                      SidebarXItem(icon: Icons.dashboard, label: 'Dashboard'.tr, onTap: () => Get.to(()=>Home())),
+                      SidebarXItem(icon: Icons.person, label: 'landlord'.tr, onTap: () => Get.to(()=>Landlord())),
+                      SidebarXItem(icon: Icons.people, label: 'tenant'.tr),
+                      SidebarXItem(icon: Icons.info, label: 'systemLog'.tr, onTap: () => Get.to(()=>SystemLogs())),
+                      SidebarXItem(icon: Icons.home_work, label: 'property_type'.tr, onTap: () => Get.to(()=>BuildingType())),
+                      SidebarXItem(icon: Icons.logout, label: 'logout'.tr),
+                    ],
+                  ),
+                ),
+              );
+          }
+      )
     );
   }
   
