@@ -18,6 +18,7 @@ class SettingController extends GetxController {
   RxDouble fontSize = 1.0.obs;
   RxString selectedLanguage = 'English'.obs;
   RxBool inAppNotifications = true.obs;
+  RxInt selectedIndex = 0.obs;
 
   @override
   void onInit() {

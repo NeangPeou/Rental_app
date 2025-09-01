@@ -15,6 +15,7 @@ import '../../models/error.dart';
 import '../../services/auth.dart';
 import '../../utils/helper.dart';
 import '../controller/property_controller.dart';
+import '../controller/setting_controller.dart';
 
 class Wrapper extends StatefulWidget {
   const Wrapper({super.key});
@@ -25,6 +26,7 @@ class Wrapper extends StatefulWidget {
 
 class _WrapperState extends State<Wrapper> {
   final NotchBottomBarController _controller = NotchBottomBarController(index: 0);
+  final SettingController _settingController = Get.find();
   final _sidebarController = SidebarXController(selectedIndex: 0, extended: true);
   final _key = GlobalKey<ScaffoldState>();
   double _bottomBarOpacity = 1.0;
@@ -101,6 +103,9 @@ class _WrapperState extends State<Wrapper> {
     super.initState();
     Get.put(PropertyController());
     getUserData();
+    ever<int>(_settingController.selectedIndex, (index) {
+      _sidebarController.selectIndex(index);
+    });
   }
 
   Future<void> getUserData() async {
@@ -206,7 +211,7 @@ class _WrapperState extends State<Wrapper> {
                 theme: SidebarXTheme(
                   decoration: BoxDecoration(
                     color: Get.theme.scaffoldBackgroundColor,
-                    borderRadius: BorderRadius.only(topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
+                    borderRadius: BorderRadius.only(topRight: Radius.circular(0), bottomRight: Radius.circular(0)),
                   ),
                   hoverColor: Get.theme.primaryColor.withOpacity(0.1),
                   itemTextPadding: const EdgeInsets.only(left: 20),
