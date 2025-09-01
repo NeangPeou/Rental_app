@@ -151,10 +151,13 @@ class _PropertyFormState extends State<PropertyForm> {
   }
 
   Future<void> getTypes() async {
-    ErrorModel errorModel = await _propertyService.getAllTypes();
-    if(errorModel.isError == true){
-      Get.back();
+    if(types.isEmpty){
+      ErrorModel errorModel = await _propertyService.getAllTypes();
+      if(errorModel.isError == true){
+        Get.back();
+      }
     }
+
     setState(() {
       isLoading = false;
     });
@@ -174,14 +177,10 @@ class _PropertyFormState extends State<PropertyForm> {
     final num? parsed = num.tryParse(trimmed);
     if (parsed == null) return 'Invalid number';
 
-    final rangeValid = isLatitude
-        ? (parsed >= -90 && parsed <= 90)
-        : (parsed >= -180 && parsed <= 180);
+    final rangeValid = isLatitude ? (parsed >= -90 && parsed <= 90) : (parsed >= -180 && parsed <= 180);
 
     if (!rangeValid) {
-      return isLatitude
-          ? 'Latitude must be between -90 and 90'
-          : 'Longitude must be between -180 and 180';
+      return isLatitude ? 'Latitude must be between -90 and 90' : 'Longitude must be between -180 and 180';
     }
 
     final decimalPart = trimmed.split('.')[1];
@@ -196,6 +195,7 @@ class _PropertyFormState extends State<PropertyForm> {
   @override
   Widget build(BuildContext context) {
     return isLoading ? const Center(child: Loading()) : Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: Helper.sampleAppBar('Property Form', context, null),
       body: SafeArea(
         child: Container(
@@ -332,7 +332,6 @@ class _PropertyFormState extends State<PropertyForm> {
                             idKey: 'id',
                             selectedId: _typeIdController.text,
                             isRequired: true,
-                            prefixIcon: const Icon(Icons.search_rounded),
                             dropDownPrefixIcon: const Icon(Icons.apartment),
                           )),
                           const SizedBox(height: 16),

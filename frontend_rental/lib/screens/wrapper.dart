@@ -3,15 +3,18 @@ import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_not
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting.dart';
-import 'package:frontend_rental/screens/page/owner/form/propertyForm.dart';
+import 'package:frontend_rental/screens/page/owner/dashboard.dart';
 import 'package:frontend_rental/screens/page/owner/propertyPage.dart';
+import 'package:frontend_rental/screens/page/owner/propertyUnit.dart';
 import 'package:frontend_rental/screens/page/rental/rentalPage.dart';
 import 'package:frontend_rental/shared/loading.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sidebarx/sidebarx.dart';
 import '../../models/error.dart';
 import '../../services/auth.dart';
 import '../../utils/helper.dart';
+import '../controller/property_controller.dart';
 
 class Wrapper extends StatefulWidget {
   const Wrapper({super.key});
@@ -22,6 +25,8 @@ class Wrapper extends StatefulWidget {
 
 class _WrapperState extends State<Wrapper> {
   final NotchBottomBarController _controller = NotchBottomBarController(index: 0);
+  final _sidebarController = SidebarXController(selectedIndex: 0, extended: true);
+  final _key = GlobalKey<ScaffoldState>();
   double _bottomBarOpacity = 1.0;
   Offset _bottomBarOffset = Offset.zero;
   int _selectedIndex = 0;
@@ -94,6 +99,7 @@ class _WrapperState extends State<Wrapper> {
   @override
   void initState() {
     super.initState();
+    Get.put(PropertyController());
     getUserData();
   }
 
@@ -105,8 +111,10 @@ class _WrapperState extends State<Wrapper> {
     if (ownerStatus == true && token != null && token!.isNotEmpty) {
       ErrorModel errorModel = await _auth.getUserData(context);
       if (errorModel.isError) {
-        // Get.offAll(() => const Login());
-        return;
+        await prefs.setBool('isOwner', false);
+        await prefs.setString('x-auth-token', '');
+        token = prefs.getString('x-auth-token');
+        ownerStatus = prefs.getBool('isOwner') ?? false;
       }
     }
     setState(() {
@@ -119,7 +127,7 @@ class _WrapperState extends State<Wrapper> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = isOwner ? const [PropertyPage(), Scaffold(body: Center(child: Text('Calendar'))), Scaffold(body: Center(child: Text('Inbox'))), Setting()] : const [RentalPage(), Scaffold(body: Center(child: Text('Saved'))), Scaffold(body: Center(child: Text('Inbox'))), Setting()];
+    final pages = isOwner ? const [Dashboard(), Scaffold(body: Center(child: Text('Calendar'))), Scaffold(body: Center(child: Text('Inbox'))), Setting()] : const [RentalPage(), Scaffold(body: Center(child: Text('Saved'))), Scaffold(body: Center(child: Text('Inbox'))), Setting()];
     final bottomBarItems = getBottomBarItems(isOwner);
     final appBarTitles = getAppBarTitles(isOwner);
     final title = appBarTitles[_selectedIndex];
@@ -128,39 +136,13 @@ class _WrapperState extends State<Wrapper> {
       return Loading();
     }
     return Scaffold(
+      key: _key,
       appBar: Helper.sampleAppBar(title, context, isOwner ? 'assets/app_icon/sw_logo.png' : null),
       body: NotificationListener<ScrollNotification>(
         onNotification: _handleScroll,
         child: pages[_selectedIndex],
       ),
       extendBody: true,
-      floatingActionButton: _controller.index == 0 && isOwner ?
-      Container(
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(17), bottom: Radius.circular(17)),
-          border: Border.all(color: Theme.of(context).primaryColorDark.withAlpha(100)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(1.0),
-          child: FloatingActionButton(
-            onPressed: () {
-              Get.to(PropertyForm(), arguments: {});
-            },
-            backgroundColor: Theme.of(context).secondaryHeaderColor,
-            child: const Icon(
-              Icons.add_home_work_rounded,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ): null,
       bottomNavigationBar: AnimatedSlide(
         offset: _bottomBarOffset,
         duration: const Duration(milliseconds: 250),
@@ -209,6 +191,76 @@ class _WrapperState extends State<Wrapper> {
           ),
         ),
       ),
+      drawer: isOwner? AnimatedBuilder(
+          animation: _sidebarController,
+          builder: (context, _) {
+          return Drawer(
+            width: _sidebarController.extended ? 300 : 70,
+            child: SafeArea(
+              bottom: true,
+              top: false,
+              child: SidebarX(
+                controller: _sidebarController,
+                animationDuration: Duration(milliseconds: 400),
+                showToggleButton: true,
+                theme: SidebarXTheme(
+                  decoration: BoxDecoration(
+                    color: Get.theme.scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.only(topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
+                  ),
+                  hoverColor: Get.theme.primaryColor.withOpacity(0.1),
+                  itemTextPadding: const EdgeInsets.only(left: 20),
+                  selectedItemTextPadding: const EdgeInsets.only(left: 20),
+                  selectedTextStyle: Get.textTheme.bodyMedium,
+                  selectedItemDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.teal,
+                    ),
+                    color: Colors.teal,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.teal.withAlpha(100),
+                        blurRadius: 5,
+                        offset: Offset(0, 0),
+                      ),
+                    ],
+                  ),
+                  iconTheme: IconThemeData(
+                    size: 20,
+                  ),
+                  selectedIconTheme: IconThemeData(
+                    size: 20,
+                  ),
+                ),
+                headerBuilder: (context, extended) {
+                  return SizedBox(
+                    height: 150,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Image.asset('assets/app_icon/sw_logo.png'),
+                    ),
+                  );
+                },
+                footerDivider: Divider(),
+                headerDivider: Divider(),
+                items: [
+                  SidebarXItem(icon: Icons.dashboard, label: 'Dashboard', onTap: () => Get.to(()=>Wrapper())),
+                  SidebarXItem(icon: Icons.home, label: 'Properties', onTap: () => Get.to(()=>PropertyPage())),
+                  SidebarXItem(icon: Icons.add_home_work_rounded, label: 'Properties Units', onTap: () => Get.to(()=>PropertyUnit())),
+                  SidebarXItem(icon: Icons.people, label: 'Tenants'),
+                  SidebarXItem(icon: Icons.assignment, label: 'Lease'),
+                  SidebarXItem(icon: Icons.payment, label: 'Payments'),
+                  SidebarXItem(icon: Icons.assignment_turned_in, label: 'Applications'),
+                  SidebarXItem(icon: Icons.build, label: 'Maintenance Request'),
+                  SidebarXItem(icon: Icons.settings, label: 'Settings'),
+                  SidebarXItem(icon: Icons.logout, label: 'Logout'),
+                ],
+              ),
+            ),
+          );
+        }
+      ) : null
     );
   }
 

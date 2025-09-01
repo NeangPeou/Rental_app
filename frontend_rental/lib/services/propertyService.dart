@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../controller/property_controller.dart';
 import '../models/error.dart';
+import '../models/propertyunit_model.dart';
 
 class PropertyService {
   final String baseUrl = dotenv.env['API_URL']!;
@@ -176,6 +177,131 @@ class PropertyService {
       }
     } catch (e) {
       return ErrorModel(isError: true, code: 'information', message: e.toString());
+    }
+  }
+
+  /// CREATE unit
+  Future<ErrorModel> createPropertyUnit(PropertyUnitModel unitData) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('x-auth-token');
+
+      if (token == null || token.isEmpty) {
+        return ErrorModel(
+          isError: true,
+          code: 'unauthorized',
+          message: 'Access token not found',
+        );
+      }
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/create-unit'),
+        body: jsonEncode(unitData.toJson()),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Get.find<PropertyController>().addUnit(jsonResponse);
+        return ErrorModel(isError: false, code: 'Success', message: 'Unit created successfully');
+      } else {
+        throw Exception(jsonResponse['detail'] ?? 'Failed to create unit');
+      }
+    } catch (e) {
+      return ErrorModel(isError: true, code: 'exception', message: e.toString());
+    }
+  }
+
+  /// READ all units
+  Future<ErrorModel> getAllUnits() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('x-auth-token');
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/get-all-units'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = jsonDecode(response.body);
+        List<Map<String, dynamic>> units = List<Map<String, dynamic>>.from(jsonList);
+        Get.find<PropertyController>().setUnits(units);
+        return ErrorModel(isError: false, code: 'Success', message: 'Units fetched');
+      } else {
+        throw Exception('Failed to fetch units');
+      }
+    } catch (e) {
+      return ErrorModel(isError: true, code: 'exception', message: e.toString());
+    }
+  }
+
+  /// UPDATE unit
+  Future<ErrorModel> updatePropertyUnit(String id, PropertyUnitModel unitData) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('x-auth-token');
+
+      if (token == null || token.isEmpty) {
+        return ErrorModel(isError: true, code: 'unauthorized', message: 'Access token not found');
+      }
+
+      final response = await http.put(
+        Uri.parse('$baseUrl/api/update-unit/$id'),
+        body: jsonEncode(unitData.toJson()),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        Get.find<PropertyController>().updateUnit(jsonResponse);
+        return ErrorModel(isError: false, code: 'Success', message: 'Unit updated');
+      } else {
+        throw Exception(jsonResponse['detail'] ?? 'Failed to update unit');
+      }
+    } catch (e) {
+      return ErrorModel(isError: true, code: 'exception', message: e.toString());
+    }
+  }
+
+  /// DELETE unit
+  Future<ErrorModel> deletePropertyUnit(String id) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('x-auth-token');
+
+      if (token == null || token.isEmpty) {
+        return ErrorModel(isError: true, code: 'unauthorized', message: 'Access token not found');
+      }
+
+      final response = await http.delete(
+        Uri.parse('$baseUrl/api/delete-unit/$id'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        Get.find<PropertyController>().removeUnit(id);
+        return ErrorModel(isError: false, code: 'Success', message: 'Unit deleted');
+      } else {
+        final json = jsonDecode(response.body);
+        throw Exception(json['detail'] ?? 'Failed to delete unit');
+      }
+    } catch (e) {
+      return ErrorModel(isError: true, code: 'exception', message: e.toString());
     }
   }
 }

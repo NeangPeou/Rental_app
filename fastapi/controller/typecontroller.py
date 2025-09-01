@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 from db.models import property_types
-from schemas.type import TypeOut, TypeCreate, TypeUpdate
+from schemas.type import TypeCreate, TypeUpdate
 
 def create_type(db: Session, data: TypeCreate):
     try:

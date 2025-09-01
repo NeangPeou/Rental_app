@@ -1,68 +1,63 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_rental/screens/page/owner/form/propertyForm.dart';
+import 'package:frontend_rental/screens/page/owner/form/propertyUnitForm.dart';
+import 'package:frontend_rental/utils/helper.dart';
 import 'package:get/get.dart';
-import 'package:frontend_rental/controller/property_controller.dart';
-import 'package:frontend_rental/services/propertyService.dart';
-import 'package:frontend_rental/shared/loading.dart';
-import '../../../utils/helper.dart';
+import '../../../controller/property_controller.dart';
+import '../../../services/propertyService.dart';
+import '../../../shared/loading.dart';
 
-class PropertyPage extends StatefulWidget {
-  const PropertyPage({super.key});
+class PropertyUnit extends StatefulWidget {
+  const PropertyUnit({super.key});
 
   @override
-  State<PropertyPage> createState() => _PropertyPageState();
+  State<PropertyUnit> createState() => _PropertyUnitState();
 }
 
-class _PropertyPageState extends State<PropertyPage> {
+class _PropertyUnitState extends State<PropertyUnit> {
   final PropertyService _propertyService = PropertyService();
+  final TextEditingController searchController = TextEditingController();
   final PropertyController propertyController = Get.put(PropertyController());
   bool isLoading = true;
-  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchProperties();
-  }
-
-  Future<void> fetchProperties() async {
-    await _propertyService.getAllProperties();
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  Future<void> _refreshData() async {
-    fetchProperties();
+    _refreshData();
   }
 
   void filter(String query) {
     final PropertyController controller = Get.find<PropertyController>();
 
     if (query.isEmpty) {
-      controller.properties.assignAll(controller.allProperties);
+      controller.units.assignAll(controller.allUnits);
     } else {
-      controller.properties.assignAll(
-        controller.allProperties.where((property) {
+      controller.units.assignAll(
+        controller.allUnits.where((property) {
           final queryLower = query.toLowerCase();
 
           return (
-              (property['id'] ?? '').toString().toLowerCase().contains(queryLower)) ||
-              (property['name'] ?? '').toString().toLowerCase().contains(queryLower) ||
-              (property['address'] ?? '').toString().toLowerCase().contains(queryLower) ||
-              (property['type_name'] ?? '').toString().toLowerCase().contains(queryLower) ||
-              (property['owner_name'] ?? '').toString().toLowerCase().contains(queryLower);
+              (property['unit_number'] ?? '').toString().toLowerCase().contains(queryLower)) ||
+              (property['size'] ?? '').toString().toLowerCase().contains(queryLower) ||
+              (property['rent'] ?? '').toString().toLowerCase().contains(queryLower) ||
+              (property['is_available'] ?? '').toString().toLowerCase().contains(queryLower) ||
+              (property['property_name'] ?? '').toString().toLowerCase().contains(queryLower);
         }).toList(),
       );
     }
   }
 
+  Future<void> _refreshData() async {
+    await _propertyService.getAllUnits();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return isLoading ? Loading() :
-    Scaffold(
+    return  isLoading ? Loading() : Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: Helper.sampleAppBar('Property', context, null),
+      appBar: Helper.sampleAppBar('Property Unit', context, null),
       body: SafeArea(
         bottom: true,
         child: Container(
@@ -86,7 +81,7 @@ class _PropertyPageState extends State<PropertyPage> {
               SizedBox(height: 10),
               Expanded(
                 child: Obx(() {
-                  if (propertyController.properties.isEmpty) {
+                  if (propertyController.units.isEmpty) {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -109,9 +104,9 @@ class _PropertyPageState extends State<PropertyPage> {
                   return RefreshIndicator(
                     onRefresh: () => _refreshData(),
                     child: ListView.builder(
-                      itemCount: propertyController.properties.length,
+                      itemCount: propertyController.units.length,
                       itemBuilder: (context, index) {
-                        final property = propertyController.properties[index];
+                        final property = propertyController.units[index];
 
                         return Container(
                           margin: const EdgeInsets.only(bottom: 10),
@@ -130,7 +125,7 @@ class _PropertyPageState extends State<PropertyPage> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(12),
                             onTap: () {
-                              Get.to(PropertyForm(), arguments: property);
+                              Get.to(PropertyUnitForm(), arguments: property);
                             },
                             child: Row(
                               children: [
@@ -150,7 +145,7 @@ class _PropertyPageState extends State<PropertyPage> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(property['name'] ?? 'Unnamed Property', style: Get.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                                        Text(property['property_name'] ?? 'Unnamed Property', style: Get.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
                                         const SizedBox(height: 4),
 
                                         Row(
@@ -158,7 +153,7 @@ class _PropertyPageState extends State<PropertyPage> {
                                             const Icon(Icons.location_on, size: 14, color: Colors.grey),
                                             const SizedBox(width: 4),
                                             Expanded(
-                                              child: Text(property['address'] ?? 'No address', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                              child: Text(property['unit_number'].toString(), style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
                                             ),
                                           ],
                                         ),
@@ -186,7 +181,7 @@ class _PropertyPageState extends State<PropertyPage> {
                                                         maxWidth: Get.width * 0.22,
                                                       ),
                                                       child: Text(
-                                                        property['type_name'] ?? 'N/A',
+                                                        property['floor'].toString(),
                                                         style: Get.textTheme.bodySmall?.copyWith(color: Colors.blue[800]),
                                                         overflow: TextOverflow.ellipsis,
                                                       ),
@@ -215,7 +210,7 @@ class _PropertyPageState extends State<PropertyPage> {
                                                         maxWidth: Get.width * 0.22,
                                                       ),
                                                       child: Text(
-                                                        property['owner_name'] ?? 'N/A',
+                                                        property['is_available'].toString(),
                                                         style: Get.textTheme.bodySmall?.copyWith(color: Colors.green[800]),
                                                         overflow: TextOverflow.ellipsis,
                                                       ),
@@ -259,7 +254,7 @@ class _PropertyPageState extends State<PropertyPage> {
           padding: const EdgeInsets.all(1.0),
           child: FloatingActionButton(
             onPressed: () {
-              Get.to(PropertyForm(), arguments: {});
+              Get.to(PropertyUnitForm(), arguments: {});
             },
             backgroundColor: Theme.of(context).secondaryHeaderColor,
             child: const Icon(

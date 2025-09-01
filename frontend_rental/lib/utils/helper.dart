@@ -182,7 +182,7 @@ class Helper {
           style: Get.textTheme.bodySmall,
           decoration: InputDecoration(
             hintText: hintText ?? 'Search...',
-            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             isDense: true,
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
