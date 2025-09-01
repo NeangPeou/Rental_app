@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting.dart';
 import 'package:frontend_rental/screens/page/owner/dashboard.dart';
+import 'package:frontend_rental/screens/page/owner/leasePage.dart';
 import 'package:frontend_rental/screens/page/owner/propertyPage.dart';
 import 'package:frontend_rental/screens/page/owner/propertyUnit.dart';
 import 'package:frontend_rental/screens/page/rental/rentalPage.dart';
@@ -254,7 +255,7 @@ class _WrapperState extends State<Wrapper> {
                   SidebarXItem(icon: Icons.home, label: 'Properties', onTap: () => Get.to(()=>PropertyPage())),
                   SidebarXItem(icon: Icons.add_home_work_rounded, label: 'Properties Units', onTap: () => Get.to(()=>PropertyUnit())),
                   SidebarXItem(icon: Icons.people, label: 'Tenants'),
-                  SidebarXItem(icon: Icons.assignment, label: 'Lease'),
+                  SidebarXItem(icon: Icons.assignment, label: 'Lease', onTap: () => Get.to(() => LeasePage())),
                   SidebarXItem(icon: Icons.payment, label: 'Payments'),
                   SidebarXItem(icon: Icons.assignment_turned_in, label: 'Applications'),
                   SidebarXItem(icon: Icons.build, label: 'Maintenance Request'),

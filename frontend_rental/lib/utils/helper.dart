@@ -3,10 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:frontend_rental/shared/constants.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../screens/bottomNavigationBar/setting_pages/my_account.dart';
 
 class Helper {
+   static String defaultDateFormat = 'yyyy-MM-dd'; // Default format, can be changed
+
+  // Format a DateTime object to a string using the specified or default format
+  static String formatDate(DateTime date, {String? format}) {
+    final formatter = DateFormat(format ?? defaultDateFormat);
+    return formatter.format(date);
+  }
+
+  // Parse a date string to a DateTime object using the specified or default format
+  static DateTime parseDate(String dateString, {String? format}) {
+    final formatter = DateFormat(format ?? defaultDateFormat);
+    return formatter.parse(dateString);
+  }
   static AppBar sampleAppBar(String title,BuildContext context, String? logoImg, {VoidCallback? onLogoTap}) {
     return AppBar(
       title: Text(title, style: Theme.of(context).textTheme.titleMedium),
@@ -36,6 +50,8 @@ class Helper {
     required BuildContext context,
     required TextEditingController controller,
     required String labelText,
+    bool readOnly = false,
+    Function()? onTap,
     String? Function(String?)? validator,
     bool obscureText = false,
     Widget? suffixIcon,
@@ -101,6 +117,8 @@ class Helper {
           style: theme.textTheme.bodyLarge,
           onChanged: onChanged,
           enabled: enabled,
+          onTap: onTap,
+          readOnly: readOnly,
         );
       },
     );
