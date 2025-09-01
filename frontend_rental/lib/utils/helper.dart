@@ -4,7 +4,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:frontend_rental/shared/constants.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
 import '../screens/bottomNavigationBar/setting_pages/my_account.dart';
 
 class Helper {
@@ -207,7 +206,6 @@ class Helper {
             border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
-
           ),
         ),
         constraints: BoxConstraints(maxHeight: (maxHeight ?? 250)),
@@ -216,6 +214,20 @@ class Helper {
           borderRadius: BorderRadius.circular(10),
           clipBehavior: Clip.antiAlias,
         ),
+        itemBuilder: (context, item, isDisabled, isSelected) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            color: isSelected ? Colors.teal.withOpacity(0.2) : Colors.transparent,
+            child: Text(
+              item[displayKey],
+              style: TextStyle(
+                fontSize: Get.textTheme.bodyMedium?.fontSize,
+                fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                color: isDisabled ? Colors.grey : (isSelected ? Colors.teal : Get.textTheme.bodyMedium?.color),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

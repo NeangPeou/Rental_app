@@ -5,7 +5,6 @@ import 'package:frontend_rental/models/propertyunit_model.dart';
 import 'package:frontend_rental/services/propertyService.dart';
 import 'package:frontend_rental/utils/helper.dart';
 import 'package:get/get.dart';
-
 import '../../../../models/error.dart';
 import '../../../../shared/message_dialog.dart';
 

@@ -52,6 +52,7 @@ dependencies:
   sidebarx: ^0.17.2
   fl_chart: ^0.69.0
   intl: ^0.20.2
+  file_picker: ^10.3.2
 
 flutter_icons:
   android: "launcher_icon"

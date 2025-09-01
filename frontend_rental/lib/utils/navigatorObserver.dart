@@ -7,7 +7,7 @@ class MyRouteObserver extends RouteObserver<PageRoute<dynamic>> {
   final SettingController _settingController = Get.find();
   void _sendScreenView(PageRoute<dynamic> route) {
     final screenName = route.settings.name;
-    if(screenName == '/') {
+    if(screenName == '/' || screenName == '/Dashboard') {
       _settingController.selectedIndex.value = 0;
     } else if(screenName == '/PropertyPage') {
       _settingController.selectedIndex.value = 1;
