@@ -300,6 +300,37 @@ class Helper {
     );
   }
 
+  static Widget smallSearchField({
+    required BuildContext context,
+    required TextEditingController controller,
+    required Function(String) onChanged,
+    String? hintText,
+  }) {
+    return Container(
+      height: 40, // compact height
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: Get.theme.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withAlpha(100),
+        ),
+      ),
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        style: Get.textTheme.bodySmall,
+        decoration: InputDecoration(
+          hintText: hintText ?? 'search'.tr,
+          border: InputBorder.none,
+          prefixIcon: Icon(Icons.search, size: 20, color: Colors.grey),
+          isDense: true, // makes it compact
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+        ),
+      ),
+    );
+  }
+
   static void showLoadingDialog(BuildContext context) {
     showDialog(
       context: context,

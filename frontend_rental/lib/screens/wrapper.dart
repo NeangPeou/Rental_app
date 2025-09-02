@@ -198,76 +198,225 @@ class _WrapperState extends State<Wrapper> {
           ),
         ),
       ),
-      drawer: isOwner? AnimatedBuilder(
+      // drawer: isOwner? AnimatedBuilder(
+      //     animation: _sidebarController,
+      //     builder: (context, _) {
+      //     return Drawer(
+      //       width: _sidebarController.extended ? 300 : 70,
+      //       child: SafeArea(
+      //         bottom: true,
+      //         top: false,
+      //         child: SidebarX(
+      //           controller: _sidebarController,
+      //           animationDuration: Duration(milliseconds: 400),
+      //           showToggleButton: true,
+      //           theme: SidebarXTheme(
+      //             decoration: BoxDecoration(
+      //               color: Get.theme.scaffoldBackgroundColor,
+      //               borderRadius: BorderRadius.only(topRight: Radius.circular(0), bottomRight: Radius.circular(0)),
+      //             ),
+      //             hoverColor: Get.theme.primaryColor.withOpacity(0.1),
+      //             itemTextPadding: const EdgeInsets.only(left: 20),
+      //             selectedItemTextPadding: const EdgeInsets.only(left: 20),
+      //             selectedTextStyle: Get.textTheme.bodyMedium,
+      //             selectedItemDecoration: BoxDecoration(
+      //               borderRadius: BorderRadius.circular(10),
+      //               border: Border.all(
+      //                 color: Colors.teal,
+      //               ),
+      //               color: Colors.teal,
+      //               boxShadow: [
+      //                 BoxShadow(
+      //                   color: Colors.teal.withAlpha(100),
+      //                   blurRadius: 5,
+      //                   offset: Offset(0, 0),
+      //                 ),
+      //               ],
+      //             ),
+      //             iconTheme: IconThemeData(
+      //               size: 20,
+      //             ),
+      //             selectedIconTheme: IconThemeData(
+      //               size: 20,
+      //             ),
+      //           ),
+      //           headerBuilder: (context, extended) {
+      //             return SizedBox(
+      //               height: 150,
+      //               child: Padding(
+      //                 padding: const EdgeInsets.all(16.0),
+      //                 child: Image.asset('assets/app_icon/sw_logo.png'),
+      //               ),
+      //             );
+      //           },
+      //           footerDivider: Divider(),
+      //           headerDivider: Divider(),
+      //           items: [
+      //             SidebarXItem(icon: Icons.dashboard, label: 'Dashboard', onTap: () => Get.to(()=>Wrapper())),
+      //             SidebarXItem(icon: Icons.home, label: 'Properties', onTap: () => Get.to(()=>PropertyPage())),
+      //             SidebarXItem(icon: Icons.add_home_work_rounded, label: 'Properties Units', onTap: () => Get.to(()=>PropertyUnit())),
+      //             SidebarXItem(icon: Icons.people, label: 'Tenants'),
+      //             SidebarXItem(icon: Icons.assignment, label: 'Lease', onTap: () => Get.to(() => LeasePage())),
+      //             SidebarXItem(icon: Icons.payment, label: 'Payments', onTap: () => Get.to(() => Payment())),
+      //             SidebarXItem(icon: Icons.assignment_turned_in, label: 'Applications'),
+      //             SidebarXItem(icon: Icons.build, label: 'Maintenance Request'),
+      //             SidebarXItem(icon: Icons.settings, label: 'Settings'),
+      //             SidebarXItem(icon: Icons.logout, label: 'Logout'),
+      //           ],
+      //         ),
+      //       ),
+      //     );
+      //   }
+      // ) : null
+      drawer: isOwner
+      ? AnimatedBuilder(
           animation: _sidebarController,
           builder: (context, _) {
-          return Drawer(
-            width: _sidebarController.extended ? 300 : 70,
-            child: SafeArea(
-              bottom: true,
-              top: false,
-              child: SidebarX(
-                controller: _sidebarController,
-                animationDuration: Duration(milliseconds: 400),
-                showToggleButton: true,
-                theme: SidebarXTheme(
+            return Drawer(
+              width: _sidebarController.extended ? 280 : 70,
+              child: SafeArea(
+                child: Container(
                   decoration: BoxDecoration(
                     color: Get.theme.scaffoldBackgroundColor,
-                    borderRadius: BorderRadius.only(topRight: Radius.circular(0), bottomRight: Radius.circular(0)),
-                  ),
-                  hoverColor: Get.theme.primaryColor.withOpacity(0.1),
-                  itemTextPadding: const EdgeInsets.only(left: 20),
-                  selectedItemTextPadding: const EdgeInsets.only(left: 20),
-                  selectedTextStyle: Get.textTheme.bodyMedium,
-                  selectedItemDecoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Colors.teal,
-                    ),
-                    color: Colors.teal,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.teal.withAlpha(100),
-                        blurRadius: 5,
-                        offset: Offset(0, 0),
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: Offset(3, 0),
                       ),
                     ],
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(16),
+                      bottomRight: Radius.circular(16),
+                    ),
+                    border: Border(
+                      bottom: BorderSide(color: Theme.of(context).dividerColor.withAlpha(120)),
+                      top: BorderSide(color: Theme.of(context).dividerColor.withAlpha(120)),
+                      right: BorderSide(color: Theme.of(context).dividerColor.withAlpha(120))
+                    ),
                   ),
-                  iconTheme: IconThemeData(
-                    size: 20,
-                  ),
-                  selectedIconTheme: IconThemeData(
-                    size: 20,
+                  child: SidebarX(
+                    controller: _sidebarController,
+                    animationDuration: Duration(milliseconds: 400),
+                    showToggleButton: true,
+                    theme: SidebarXTheme(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(16),
+                          bottomRight: Radius.circular(16),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: Offset(3, 0),
+                          ),
+                        ],
+                      ),
+                      hoverColor: Get.theme.primaryColor.withOpacity(0.1),
+                      itemTextPadding: const EdgeInsets.only(left: 20),
+                      selectedItemTextPadding: const EdgeInsets.only(left: 20),
+                      selectedTextStyle: Get.textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      selectedItemDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.teal,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.teal.withOpacity(0.3),
+                            blurRadius: 5,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      iconTheme: IconThemeData(
+                        size: 24,
+                        color: Colors.grey.shade600,
+                      ),
+                      selectedIconTheme: IconThemeData(
+                        size: 24,
+                      ),
+                    ),
+                    headerBuilder: (context, extended) {
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              width: extended ? 120 : 40,
+                              height: extended ? 120 : 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.teal.withOpacity(0.2),
+                              ),
+                              child: Container(
+                                 decoration: BoxDecoration(
+                                    border: Border.all(color: Theme.of(context).dividerColor),
+                                    borderRadius: BorderRadius.circular(60),
+                                  ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(60),
+                                  child: Image.asset('assets/app_icon/sw_logo.png', fit: BoxFit.contain),
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (extended) ...[
+                            SizedBox(height: 5),
+                            Text(
+                              "SW Rental",
+                              style: Get.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.teal,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              "Owner Panel",
+                              style: Get.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                            ),
+                          ],
+                          const Divider() 
+                        ],
+                      );
+                    },
+                    items: [
+                      SidebarXItem(
+                          icon: Icons.dashboard,
+                          label: 'Dashboard',
+                          onTap: () => Get.to(() => Wrapper())),
+                      SidebarXItem(
+                          icon: Icons.home,
+                          label: 'Properties',
+                          onTap: () => Get.to(() => PropertyPage())),
+                      SidebarXItem(
+                          icon: Icons.add_home_work_rounded,
+                          label: 'Property Units',
+                          onTap: () => Get.to(() => PropertyUnit())),
+                      SidebarXItem(icon: Icons.people, label: 'Tenants'),
+                      SidebarXItem(
+                          icon: Icons.assignment,
+                          label: 'Lease',
+                          onTap: () => Get.to(() => LeasePage())),
+                      SidebarXItem(
+                          icon: Icons.payment,
+                          label: 'Payments',
+                          onTap: () => Get.to(() => Payment())),
+                      SidebarXItem(icon: Icons.assignment_turned_in, label: 'Applications'),
+                      SidebarXItem(icon: Icons.build, label: 'Maintenance Requests'),
+                      SidebarXItem(icon: Icons.settings, label: 'Settings'),
+                      SidebarXItem(icon: Icons.logout, label: 'Logout'),
+                    ],
                   ),
                 ),
-                headerBuilder: (context, extended) {
-                  return SizedBox(
-                    height: 150,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Image.asset('assets/app_icon/sw_logo.png'),
-                    ),
-                  );
-                },
-                footerDivider: Divider(),
-                headerDivider: Divider(),
-                items: [
-                  SidebarXItem(icon: Icons.dashboard, label: 'Dashboard', onTap: () => Get.to(()=>Wrapper())),
-                  SidebarXItem(icon: Icons.home, label: 'Properties', onTap: () => Get.to(()=>PropertyPage())),
-                  SidebarXItem(icon: Icons.add_home_work_rounded, label: 'Properties Units', onTap: () => Get.to(()=>PropertyUnit())),
-                  SidebarXItem(icon: Icons.people, label: 'Tenants'),
-                  SidebarXItem(icon: Icons.assignment, label: 'Lease', onTap: () => Get.to(() => LeasePage())),
-                  SidebarXItem(icon: Icons.payment, label: 'Payments', onTap: () => Get.to(() => Payment())),
-                  SidebarXItem(icon: Icons.assignment_turned_in, label: 'Applications'),
-                  SidebarXItem(icon: Icons.build, label: 'Maintenance Request'),
-                  SidebarXItem(icon: Icons.settings, label: 'Settings'),
-                  SidebarXItem(icon: Icons.logout, label: 'Logout'),
-                ],
               ),
-            ),
-          );
-        }
-      ) : null
+            );
+          },
+        )
+      : null,
+
     );
   }
 

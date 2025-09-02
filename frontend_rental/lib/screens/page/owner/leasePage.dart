@@ -67,14 +67,11 @@ class _LeasePageState extends State<LeasePage> {
           ),
           child: Column(
             children: [
-              Helper.sampleTextField(
+              Helper.smallSearchField(
                 context: context,
                 controller: searchController,
-                labelText: 'search'.tr,
-                onChanged: (value) {
-                  filter(value);
-                },
-                prefixIcon: Icon(Icons.search),
+                onChanged: (value) => filter(value),
+                hintText: 'search'.tr,
               ),
               SizedBox(height: 10),
               Expanded(
@@ -112,6 +109,7 @@ class _LeasePageState extends State<LeasePage> {
                           decoration: BoxDecoration(
                             color: Get.theme.cardColor,
                             borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Theme.of(context).dividerColor.withAlpha(120)),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black12,
@@ -123,7 +121,7 @@ class _LeasePageState extends State<LeasePage> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(12),
                             onTap: () {
-                              Get.to(LeaseForm(), arguments: lease);
+                              Get.to(() => LeaseForm(), arguments: lease);
                             },
                             child: Row(
                               children: [
@@ -219,7 +217,7 @@ class _LeasePageState extends State<LeasePage> {
           padding: const EdgeInsets.all(1.0),
           child: FloatingActionButton(
             onPressed: () {
-              Get.to(LeaseForm(), arguments: {});
+              Get.to(() => LeaseForm(), arguments: {});
             },
             backgroundColor: Theme.of(context).secondaryHeaderColor,
             child: const Icon(
