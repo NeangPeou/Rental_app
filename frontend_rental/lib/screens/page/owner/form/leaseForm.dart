@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_rental/controller/property_controller.dart';
 import 'package:frontend_rental/models/lease_model.dart';
 import 'package:frontend_rental/services/lease_service.dart';
-import 'package:frontend_rental/services/propertyService.dart';
+import 'package:frontend_rental/services/property_service.dart';
 import 'package:frontend_rental/utils/helper.dart';
 import 'package:get/get.dart';
 

@@ -3,7 +3,7 @@ import 'package:frontend_rental/screens/page/owner/form/propertyUnitForm.dart';
 import 'package:frontend_rental/utils/helper.dart';
 import 'package:get/get.dart';
 import '../../../controller/property_controller.dart';
-import '../../../services/propertyService.dart';
+import '../../../services/property_service.dart';
 import '../../../shared/loading.dart';
 
 class PropertyUnit extends StatefulWidget {

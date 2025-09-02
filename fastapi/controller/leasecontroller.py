@@ -5,6 +5,7 @@ from db.models.leases import Lease
 from db.models.units import Unit
 from db.models.renters import Renter
 from db.models.user import User
+from db.models.properties import Property
 
 def create_lease(db: Session, data: LeaseCreate, current_user):
     try:
@@ -58,6 +59,19 @@ def get_all_leases(db: Session, current_user):
             join(Renter, Renter.id == Lease.renter_id).\
             join(User, User.id == Renter.user_id).\
             join(Unit, Unit.id == Lease.unit_id).all()
+        query = (
+            db.query(Lease, User.userName, Unit)
+            .join(Renter, Renter.id == Lease.renter_id)
+            .join(User, User.id == Renter.user_id)
+            .join(Unit, Unit.id == Lease.unit_id)
+            .join(Property, Property.id == Unit.property_id) 
+        )
+
+        query = query.filter(
+            (User.id == current_user.id) | (Property.owner_id == current_user.id) 
+        )
+
+        leases = query.all()
         return [
             LeaseOut(
                 id=lease.id,

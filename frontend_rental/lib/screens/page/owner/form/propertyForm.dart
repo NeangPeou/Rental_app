@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../controller/property_controller.dart';
 import '../../../../models/error.dart';
 import '../../../../models/property_model.dart';
-import '../../../../services/propertyService.dart';
+import '../../../../services/property_service.dart';
 import '../../../../shared/loading.dart';
 import '../../../../shared/message_dialog.dart';
 import '../../../../utils/helper.dart';

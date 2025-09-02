@@ -8,7 +8,7 @@ import 'package:frontend_rental/screens/page/owner/propertyPage.dart';
 import 'package:frontend_rental/screens/page/rental/rentalPage.dart';
 import 'package:frontend_rental/screens/splashScreen.dart';
 import 'package:frontend_rental/screens/wrapper.dart';
-import 'package:frontend_rental/services/inactivityService.dart';
+import 'package:frontend_rental/services/inactivity_service.dart';
 import 'package:frontend_rental/shared/constants.dart';
 import 'package:frontend_rental/utils/navigatorObserver.dart';
 import 'package:get/get.dart';
