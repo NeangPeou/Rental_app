@@ -25,6 +25,7 @@ class LeaseUpdate(LeaseBase):
 class LeaseOut(LeaseBase):
     id: int
     username: Optional[str] = None
+    unit_number: Optional[str] = None
 
     class Config:
         orm_mode = True

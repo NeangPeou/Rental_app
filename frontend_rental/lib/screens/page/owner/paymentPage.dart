@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_rental/controller/payment_controller.dart';
 import 'package:frontend_rental/screens/page/owner/form/paymentForm.dart';
 import 'package:get/get.dart';
 import '../../../shared/loading.dart';
@@ -12,6 +13,7 @@ class Payment extends StatefulWidget {
 
 class _PaymentState extends State<Payment> {
   bool isLoading = false;
+  final PaymentController propertyController = Get.put(PaymentController());
   final TextEditingController searchController = TextEditingController();
 
   void filter(String query) {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_rental/screens/page/owner/form/propertyForm.dart';
 import 'package:get/get.dart';
 import 'package:frontend_rental/controller/property_controller.dart';
-import 'package:frontend_rental/services/propertyService.dart';
+import 'package:frontend_rental/services/property_service.dart';
 import 'package:frontend_rental/shared/loading.dart';
 import '../../../utils/helper.dart';
 

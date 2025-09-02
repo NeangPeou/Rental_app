@@ -1,8 +1,13 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend_rental/services/lease_service.dart';
+import 'package:frontend_rental/services/payment_service.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../controller/property_controller.dart';
+import '../../../../models/error.dart';
+import '../../../../models/payment_model.dart';
 import '../../../../shared/loading.dart';
 import '../../../../utils/helper.dart';
 
@@ -23,6 +28,9 @@ class _PaymentFormState extends State<PaymentForm> {
   final TextEditingController _receiptUrlController = TextEditingController();
   final TextEditingController _paymentMethodController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
+  final LeaseService leaseService = LeaseService();
+  final propertiesController = Get.find<PropertyController>();
+  final PaymentService paymentService = PaymentService();
   final List<Map<String, dynamic>> _paymentMethodOptions = [
     {'id': 1, 'name': 'Bank Transfer'},
     {'id': 2, 'name': 'Cash'},
@@ -71,6 +79,11 @@ class _PaymentFormState extends State<PaymentForm> {
   @override
   void initState() {
     super.initState();
+    Future.microtask(() {
+      if(propertiesController.leases.isEmpty){
+        leaseService.getAllLeases();
+      }
+    });
   }
 
   @override
@@ -84,6 +97,22 @@ class _PaymentFormState extends State<PaymentForm> {
 
   void _savePayment() async {
     if (_formKey.currentState!.validate()) {
+      Helper.showLoadingDialog(context);
+      ErrorModel errorModel;
+      PaymentModel paymentModel = PaymentModel(
+        leaseId: _leaseIdController.text,
+        paymentDate: _paymentDateController.text,
+        amountPaid: double.parse(_amountPaidController.text),
+        receiptUrl: _receiptUrlController.text,
+        paymentMethodId: _paymentMethodController.text,
+      );
+
+      // if(id == null){
+      //   errorModel = await paymentService.createPropertyUnit(unitModel);
+      // }else{
+      //   errorModel = await paymentService.updatePropertyUnit(id!, unitModel);
+      // }
+      Helper.closeLoadingDialog(context);
     }
   }
 
@@ -98,14 +127,19 @@ class _PaymentFormState extends State<PaymentForm> {
           key: _formKey,
           child: Column(
             children: [
-              Helper.sampleTextField(
-                context: context,
-                controller: _leaseIdController,
-                labelText: "Lease ID",
-                prefixIcon: const Icon(Icons.receipt_long),
-                validator: (val) =>
-                val == null || val.isEmpty ? 'Lease ID is required' : null,
-              ),
+              Obx(() {
+                return Helper.sampleDropdownSearch(
+                  context: context,
+                  items: propertiesController.leases.isEmpty ? [] : propertiesController.leases,
+                  labelText: "Leases",
+                  controller: _leaseIdController,
+                  selectedId: _leaseIdController.text,
+                  displayKey: "unit_number",
+                  idKey: "id",
+                  isRequired: true,
+                  dropDownPrefixIcon: Icon(Icons.apartment_rounded),
+                );
+              }),
               const SizedBox(height: 16),
 
               GestureDetector(
@@ -117,6 +151,7 @@ class _PaymentFormState extends State<PaymentForm> {
                     context: context,
                     controller: _paymentDateController,
                     labelText: "Payment Date",
+                    isRequired: true,
                     prefixIcon: const Icon(Icons.calendar_today),
                     validator: (val) => val == null || val.isEmpty ? 'Select payment date' : null,
                   ),
@@ -130,8 +165,8 @@ class _PaymentFormState extends State<PaymentForm> {
                 labelText: "Amount Paid",
                 prefixIcon: const Icon(Icons.attach_money),
                 keyboardType: TextInputType.number,
-                validator: (val) =>
-                val == null || val.isEmpty ? 'Amount is required' : null,
+                isRequired: true,
+                validator: (val) => val == null || val.isEmpty ? 'Amount is required' : null,
               ),
               const SizedBox(height: 16),
 
@@ -156,6 +191,7 @@ class _PaymentFormState extends State<PaymentForm> {
                     context: context,
                     controller: _receiptUrlController,
                     labelText: "Receipt URL",
+                    isRequired: true,
                     prefixIcon: const Icon(Icons.link),
                     validator: (val) => val == null || val.isEmpty ? 'Receipt URL is required' : null,
                   ),

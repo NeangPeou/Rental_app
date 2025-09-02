@@ -219,7 +219,7 @@ class Helper {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             color: isSelected ? Colors.teal.withOpacity(0.2) : Colors.transparent,
             child: Text(
-              item[displayKey],
+              item[displayKey].toString(),
               style: TextStyle(
                 fontSize: Get.textTheme.bodyMedium?.fontSize,
                 fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
