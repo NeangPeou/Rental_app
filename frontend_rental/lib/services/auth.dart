@@ -88,7 +88,6 @@ class AuthService {
         code: 'Information',
         message: e.toString(),
       );
-      Helper.closeLoadingDialog(context);
       return errorModel;
     }
   }
