@@ -9,6 +9,7 @@ import '../../../../controller/property_controller.dart';
 import '../../../../models/error.dart';
 import '../../../../models/payment_model.dart';
 import '../../../../shared/loading.dart';
+import '../../../../shared/message_dialog.dart';
 import '../../../../utils/helper.dart';
 
 class PaymentForm extends StatefulWidget {
@@ -31,6 +32,7 @@ class _PaymentFormState extends State<PaymentForm> {
   final LeaseService leaseService = LeaseService();
   final propertiesController = Get.find<PropertyController>();
   final PaymentService paymentService = PaymentService();
+  late Map<String, dynamic> arg;
   final List<Map<String, dynamic>> _paymentMethodOptions = [
     {'id': 1, 'name': 'Bank Transfer'},
     {'id': 2, 'name': 'Cash'},
@@ -84,6 +86,16 @@ class _PaymentFormState extends State<PaymentForm> {
         leaseService.getAllLeases();
       }
     });
+    arg = (Get.arguments as Map).cast<String, dynamic>();
+    if (arg.isNotEmpty) {
+      final data = arg;
+      id = data['id'].toString();
+      _leaseIdController.text = data['lease_id'].toString();
+      _paymentDateController.text = data['payment_date'].toString();
+      _amountPaidController.text = data['amount_paid'].toString();
+      _receiptUrlController.text = data['receipt_url'].toString();
+      _paymentMethodController.text = data['payment_method_id'].toString();
+    }
   }
 
   @override
@@ -92,6 +104,7 @@ class _PaymentFormState extends State<PaymentForm> {
     _paymentDateController.dispose();
     _amountPaidController.dispose();
     _receiptUrlController.dispose();
+    _paymentMethodController.dispose();
     super.dispose();
   }
 
@@ -107,12 +120,45 @@ class _PaymentFormState extends State<PaymentForm> {
         paymentMethodId: _paymentMethodController.text,
       );
 
-      // if(id == null){
-      //   errorModel = await paymentService.createPropertyUnit(unitModel);
-      // }else{
-      //   errorModel = await paymentService.updatePropertyUnit(id!, unitModel);
-      // }
+      if(id == null){
+        errorModel = await paymentService.createPayment(paymentModel);
+      }else{
+        errorModel = await paymentService.updatePayment(id!, paymentModel);
+      }
       Helper.closeLoadingDialog(context);
+      if (errorModel.isError == false){
+        Get.back();
+        Get.showSnackbar(
+          GetSnackBar(
+            messageText: const SizedBox.shrink(),
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Get.theme.scaffoldBackgroundColor,
+            snackStyle: SnackStyle.FLOATING,
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 5),
+            borderRadius: 8,
+            duration: const Duration(seconds: 3),
+            isDismissible: true,
+            titleText: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.save, size: 25, color: Colors.grey),
+                const SizedBox(width: 8),
+                Text(id == null ? 'created_successfully'.tr : 'updated_successfully'.tr, style: Get.textTheme.titleMedium),
+              ],
+            ),
+          ),
+        );
+      }else {
+        String errorMessage = errorModel.message!.toLowerCase();
+
+        if (errorMessage.contains('already exists')) {
+          MessageDialog.showMessage('information'.tr, 'type_already_exists'.tr, context);
+        } else {
+          MessageDialog.showMessage('information'.tr, id == null ? 'create_failed'.tr : 'update_failed'.tr, context);
+        }
+      }
     }
   }
 
@@ -175,7 +221,7 @@ class _PaymentFormState extends State<PaymentForm> {
                 items: _paymentMethodOptions,
                 labelText: "Select Payment Method",
                 controller: _paymentMethodController,
-                selectedId: 'id',
+                selectedId: _paymentMethodController.text,
                 displayKey: "name",
                 idKey: "id",
                 isRequired: true,

@@ -25,12 +25,12 @@ class PaymentController extends GetxController {
     if (index != -1) payments[index] = updatedPayment;
     if (allIndex != -1) allPayments[allIndex] = updatedPayment;
 
-    payments.refresh(); // make sure UI is updated
+    payments.refresh();
   }
 
   /// Remove payment by ID
   void removePayment(String id) {
-    payments.removeWhere((p) => p['id'] == int.tryParse(id));
-    allPayments.removeWhere((p) => p['id'] == int.tryParse(id));
+    payments.removeWhere((p) => p['id'] == id);
+    allPayments.removeWhere((p) => p['id'] == id);
   }
 }

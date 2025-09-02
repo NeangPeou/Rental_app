@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_rental/controller/payment_controller.dart';
 import 'package:frontend_rental/screens/page/owner/form/paymentForm.dart';
+import 'package:frontend_rental/services/payment_service.dart';
 import 'package:get/get.dart';
 import '../../../shared/loading.dart';
 import '../../../utils/helper.dart';
@@ -12,36 +13,49 @@ class Payment extends StatefulWidget {
 }
 
 class _PaymentState extends State<Payment> {
-  bool isLoading = false;
-  final PaymentController propertyController = Get.put(PaymentController());
+  bool isLoading = true;
+  final PaymentController paymentController = Get.put(PaymentController());
   final TextEditingController searchController = TextEditingController();
+  final PaymentService paymentService = PaymentService();
 
   void filter(String query) {
-    // final PropertyController controller = Get.find<PropertyController>();
-    //
-    // if (query.isEmpty) {
-    //   controller.properties.assignAll(controller.allProperties);
-    // } else {
-    //   controller.properties.assignAll(
-    //     controller.allProperties.where((property) {
-    //       final queryLower = query.toLowerCase();
-    //
-    //       return (
-    //           (property['id'] ?? '').toString().toLowerCase().contains(queryLower)) ||
-    //           (property['name'] ?? '').toString().toLowerCase().contains(queryLower) ||
-    //           (property['address'] ?? '').toString().toLowerCase().contains(queryLower) ||
-    //           (property['type_name'] ?? '').toString().toLowerCase().contains(queryLower) ||
-    //           (property['owner_name'] ?? '').toString().toLowerCase().contains(queryLower);
-    //     }).toList(),
-    //   );
-    // }
+    final PaymentController controller = Get.find<PaymentController>();
+
+    if (query.isEmpty) {
+      controller.payments.assignAll(controller.allPayments);
+    } else {
+      controller.payments.assignAll(
+        controller.allPayments.where((property) {
+          final queryLower = query.toLowerCase();
+
+          return (
+              (property['payment_date'] ?? '').toString().toLowerCase().contains(queryLower)) ||
+              (property['amount_paid'] ?? '').toString().toLowerCase().contains(queryLower) ||
+              (property['payment_method_id'] ?? '').toString().toLowerCase().contains(queryLower) ||
+              (property['receipt_url'] ?? '').toString().toLowerCase().contains(queryLower);
+        }).toList(),
+      );
+    }
+  }
+
+  Future<void> _refreshData() async {
+    await paymentService.getAllPayments();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshData();
   }
 
   @override
   Widget build(BuildContext context) {
     return isLoading ? Loading() : Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: Helper.sampleAppBar('payment', context, null),
+      appBar: Helper.sampleAppBar('payment'.tr, context, null),
       body: SafeArea(
         bottom: true,
         child: Container(
@@ -64,16 +78,161 @@ class _PaymentState extends State<Payment> {
               ),
               SizedBox(height: 10),
               Expanded(
-                  child: ListView.builder(
-                    itemCount: 10,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text('Payment $index'),
-                        subtitle: Text('Payment $index'),
-                        trailing: Text('Payment $index'),
+                child: Obx(() {
+                 if (paymentController.payments.isEmpty) {
+                    return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/empty.gif',
+                              width: 200,
+                              height: 200,
+                              fit: BoxFit.contain,
+                            ),
+                            const SizedBox(height: 24),
+                            Text('No Properties Found', style: Get.textTheme.titleLarge),
+                            const SizedBox(height: 8),
+                            Text('Start by adding a new property.', style: Get.textTheme.bodySmall),
+                          ],
+                        ),
                       );
-                    },
-                  )
+                  }
+                  return RefreshIndicator(
+                    onRefresh: () => _refreshData(),
+                    child: ListView.builder(
+                      itemCount: paymentController.payments.length,
+                      itemBuilder: (context, index) {
+                        final property = paymentController.payments[index];
+
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Get.theme.cardColor,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 8,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () {
+                              Get.to(PaymentForm(), arguments: property);
+                            },
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.horizontal(left: Radius.circular(12), right: Radius.circular(12)),
+                                  child: Image.asset(
+                                    'assets/app_icon/sw_logo.png',
+                                    height: 90,
+                                    width: 90,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // IconButton(onPressed: (){
+                                        //   paymentService.deletePayment(property['id']);
+                                        // }, icon: Icon(Icons.delete_outline, color: Colors.red)),
+                                        Text(property['property_name'] ?? 'Unknown', style: Get.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                                        const SizedBox(height: 4),
+
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.category, size: 14, color: Colors.grey),
+                                            const SizedBox(width: 4),
+                                            Expanded(
+                                              child: Text(property['unit_number'].toString(), style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 4),
+
+                                        Text('Amount Paid: \$${property['amount_paid'] ?? 'N/A'}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue.shade100,
+                                                borderRadius: BorderRadius.circular(16),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(Icons.category, size: 12, color: Colors.blue),
+                                                  const SizedBox(width: 4),
+                                                  Flexible(
+                                                    child: ConstrainedBox(
+                                                      constraints: BoxConstraints(
+                                                        maxWidth: Get.width * 0.22,
+                                                      ),
+                                                      child: Text(
+                                                        property['payment_date'].toString(),
+                                                        style: Get.textTheme.bodySmall?.copyWith(color: Colors.blue[800]),
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+
+                                            const SizedBox(width: 6),
+
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.green.shade100,
+                                                borderRadius: BorderRadius.circular(16),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(Icons.person, size: 12, color: Colors.green),
+                                                  const SizedBox(width: 4),
+                                                  Flexible(
+                                                    child: ConstrainedBox(
+                                                      constraints: BoxConstraints(
+                                                        maxWidth: Get.width * 0.22,
+                                                      ),
+                                                      child: Text(
+                                                        property['renter_name'].toString(),
+                                                        style: Get.textTheme.bodySmall?.copyWith(color: Colors.green[800]),
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                })
               )
             ],
           ),
