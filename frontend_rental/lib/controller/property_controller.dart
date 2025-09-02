@@ -10,7 +10,7 @@ class PropertyController extends GetxController {
   final RxList<Map<String, dynamic>> leases = <Map<String, dynamic>>[].obs;
   final List<Map<String, dynamic>> allLeases = [];
   final RxList<Map<String, dynamic>> renters = <Map<String, dynamic>>[].obs;
-  final List<Map<String, dynamic>> allRenters = []; // ✅ keep backup like others
+  final List<Map<String, dynamic>> allRenters = [];
 
   void setListProperties(List<Map<String, dynamic>> data) {
     allProperties.clear();
@@ -91,7 +91,7 @@ class PropertyController extends GetxController {
   }
 
   void removeLease(String id) {
-    int? parsedId = int.tryParse(id);
+    final parsedId = int.tryParse(id);
     if (parsedId != null) {
       leases.removeWhere((l) => l['id'] == parsedId);
       allLeases.removeWhere((l) => l['id'] == parsedId);
@@ -99,13 +99,29 @@ class PropertyController extends GetxController {
   }
 
   void setRenters(List<Map<String, dynamic>> data) {
-    allRenters.clear(); 
+    allRenters.clear();
     allRenters.addAll(data);
     renters.assignAll(data);
   }
 
-  void addRenters(Map<String, dynamic> datas) {
-    allRenters.insert(0, datas);
-    renters.insert(0, datas);
+  void addRenter(Map<String, dynamic> data) {
+    allRenters.insert(0, data);
+    renters.insert(0, data);
+  }
+
+  void updateRenter(Map<String, dynamic> updatedRenter) {
+    final index = renters.indexWhere((r) => r['id'] == updatedRenter['id']);
+    if (index != -1) {
+      renters[index] = updatedRenter;
+      allRenters[index] = updatedRenter;
+    }
+  }
+
+  void removeRenter(String id) {
+    final parsedId = int.tryParse(id);
+    if (parsedId != null) {
+      renters.removeWhere((r) => r['id'] == parsedId);
+      allRenters.removeWhere((r) => r['id'] == parsedId);
+    }
   }
 }

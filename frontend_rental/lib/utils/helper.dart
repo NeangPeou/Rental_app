@@ -343,6 +343,67 @@ class Helper {
     );
   }
 
+  static Future<bool?> showDeleteConfirmationDialog(
+    BuildContext context, String itemId) {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // Prevent closing by tapping outside
+      builder: (BuildContext context) {
+        final theme = Theme.of(context);
+
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          titlePadding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          actionsPadding: const EdgeInsets.only(bottom: 15, right: 15, left: 15),
+          title: Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
+              const SizedBox(width: 10),
+              Text(
+                'confirm_delete'.tr,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            'are_you_sure_delete_lease'.tr,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              height: 1.4,
+            ),
+          ),
+          actions: [
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('cancel'.tr),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              ),
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text('delete'.tr),
+            ),
+          ],
+        );
+      },
+    );
+  }
   static void closeLoadingDialog(BuildContext context) {
     Navigator.of(context).pop();
   }

@@ -51,7 +51,6 @@ class UserService{
         },
         body: jsonEncode(payload),
       );
-
       if (response.statusCode == 200) {
       }
     } catch (e) {

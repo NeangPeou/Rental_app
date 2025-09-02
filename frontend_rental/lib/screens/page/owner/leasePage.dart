@@ -36,7 +36,7 @@ class _LeasePageState extends State<LeasePage> {
           final queryLower = query.toLowerCase();
           return (
               (lease['username'] ?? '').toString().toLowerCase().contains(queryLower) ||
-              (lease['unit_id'] ?? '').toString().toLowerCase().contains(queryLower) ||
+              (lease['unit_number'] ?? '').toString().toLowerCase().contains(queryLower) ||
               (lease['status'] ?? '').toString().toLowerCase().contains(queryLower)
           );
         }).toList(),
@@ -51,11 +51,17 @@ class _LeasePageState extends State<LeasePage> {
     });
   }
 
+   // Function to handle lease deletion
+  Future<void> _deleteLease(String leaseId) async {
+    await _leaseService.deleteLease(leaseId);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return isLoading ? Loading() : Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: Helper.sampleAppBar('Leases', context, null),
+      appBar: Helper.sampleAppBar('leases'.tr, context, null),
       body: SafeArea(
         bottom: true,
         child: Container(
@@ -103,92 +109,122 @@ class _LeasePageState extends State<LeasePage> {
                       itemBuilder: (context, index) {
                         final lease = propertyController.leases[index];
 
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          padding: EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Get.theme.cardColor,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Theme.of(context).dividerColor.withAlpha(120)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 8,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
+                        return Dismissible(
+                          key: Key(lease['id'].toString()),
+                          direction: DismissDirection.endToStart,
+                          confirmDismiss: (direction) async {
+                            return await Helper.showDeleteConfirmationDialog(context, lease['id'].toString());
+                          },
+                          onDismissed: (direction) async {
+                            await _deleteLease(lease['id'].toString());
+                          },
+                          background: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerRight,
+                            padding: EdgeInsets.only(right: 20),
+                            child: Icon(Icons.delete, color: Colors.white, size: 30),
                           ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: () {
-                              Get.to(() => LeaseForm(), arguments: lease);
-                            },
-                            child: Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.horizontal(left: Radius.circular(12), right: Radius.circular(12)),
-                                  child: Image.asset(
-                                    'assets/app_icon/sw_logo.png',
-                                    height: 90,
-                                    width: 90,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 8),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(lease['username'] ?? 'Unknown Renter', style: Get.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
-                                        const SizedBox(height: 4),
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.apartment_rounded, size: 14, color: Colors.grey),
-                                            const SizedBox(width: 4),
-                                            Expanded(
-                                              child: Text('Unit ID: ${lease['unit_id']}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text('Status: ${lease['status']}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
-                                        const SizedBox(height: 4),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                              decoration: BoxDecoration(
-                                                color: Colors.blue.shade100,
-                                                borderRadius: BorderRadius.circular(16),
-                                              ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const Icon(Icons.calendar_today, size: 12, color: Colors.blue),
-                                                  const SizedBox(width: 4),
-                                                  Flexible(
-                                                    child: ConstrainedBox(
-                                                      constraints: BoxConstraints(
-                                                        maxWidth: Get.width * 0.22,
-                                                      ),
-                                                      child: Text(
-                                                        lease['start_date'].toString(),
-                                                        style: Get.textTheme.bodySmall?.copyWith(color: Colors.blue[800]),
-                                                        overflow: TextOverflow.ellipsis,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            padding: EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Get.theme.cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Theme.of(context).dividerColor.withAlpha(120)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 8,
+                                  offset: Offset(0, 4),
                                 ),
                               ],
+                            ),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () {
+                                Get.to(() => LeaseForm(), arguments: lease);
+                              },
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.horizontal(left: Radius.circular(12), right: Radius.circular(12)),
+                                    child: Image.asset(
+                                      'assets/app_icon/sw_logo.png',
+                                      height: 90,
+                                      width: 90,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 8),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(lease['username'] ?? 'Unknown Renter', style: Get.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              const Icon(Icons.apartment_rounded, size: 14, color: Colors.grey),
+                                              const SizedBox(width: 4),
+                                              Expanded(
+                                                child: Text(
+                                                  'Unit: ${lease['unit_number'] ?? ''}',
+                                                  style: Get.textTheme.bodySmall,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text('Status: ${lease['status']}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.blue.shade100,
+                                                  borderRadius: BorderRadius.circular(16),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    const Icon(Icons.calendar_today, size: 12, color: Colors.blue),
+                                                    const SizedBox(width: 4),
+                                                    Flexible(
+                                                      child: ConstrainedBox(
+                                                        constraints: BoxConstraints(
+                                                          maxWidth: Get.width * 0.22,
+                                                        ),
+                                                        child: Text(
+                                                          lease['start_date'].toString(),
+                                                          style: Get.textTheme.bodySmall?.copyWith(color: Colors.blue[800]),
+                                                          overflow: TextOverflow.ellipsis,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  // Delete Icon Button
+                                  IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red, size: 24),
+                                    onPressed: () async {
+                                      final confirm = await Helper.showDeleteConfirmationDialog(context, lease['id'].toString());
+                                      if (confirm == true) {
+                                        await _deleteLease(lease['id'].toString());
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );
@@ -221,7 +257,7 @@ class _LeasePageState extends State<LeasePage> {
             },
             backgroundColor: Theme.of(context).secondaryHeaderColor,
             child: const Icon(
-              Icons.add_home_work_rounded,
+              Icons.edit_document,
               color: Colors.white,
             ),
           ),

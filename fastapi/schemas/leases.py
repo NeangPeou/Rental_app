@@ -10,6 +10,7 @@ class LeaseBase(BaseModel):
     rent_amount: float
     deposit_amount: Optional[float] = None
     status: str
+    unit_number: Optional[str] = None
 
 class LeaseCreate(LeaseBase):
     pass
@@ -21,10 +22,12 @@ class LeaseUpdate(LeaseBase):
     end_date: Optional[date] = None
     rent_amount: Optional[float] = None
     status: Optional[str] = None
+    unit_number: Optional[str] = None
 
 class LeaseOut(LeaseBase):
     id: int
     username: Optional[str] = None
+    unit_number: Optional[str] = None
 
     class Config:
         orm_mode = True

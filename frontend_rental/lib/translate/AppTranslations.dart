@@ -117,7 +117,12 @@ class AppTranslations extends Translations {
       'switch_owner': 'ប្ដូរទៅម្ចាស់ផ្ទះ',
       'switch_renter': 'ប្ដូរទៅអ្នកជួល',
       'create_renter': 'បង្កើតអ្នកជួល',
-      'listings': 'បញ្ជី'
+      'listings': 'បញ្ជី',
+      'confirm_delete': 'បញ្ជាក់ការលុប',
+      'are_you_sure_delete_lease': 'តើអ្នកប្រាកដថាចង់លុបកិច្ចសន្យាជួលនេះមែនទេ?',
+      'leases': 'កិច្ចសន្យាជួល',
+      'search':'ស្វែងរក',
+      'created_successfully': 'ការបង្កើតបានជោគជ័័យ'
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -232,7 +237,12 @@ class AppTranslations extends Translations {
       'updated_successfully': 'Updated successfully',
       'switch_owner': 'Switch to Owner',
       'switch_renter': 'Switch to Renter',
-      'listings': 'Listings'
+      'listings': 'Listings',
+      'confirm_delete': 'Confirm delete',
+      'are_you_sure_delete_lease': 'Are you sure you want to delete lease?',
+      'leases': 'Leases',
+      'search':'Search',
+      'created_successfully': 'Created successfully'
     },
     'es_ES': {
       'english': 'Inglés',

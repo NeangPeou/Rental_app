@@ -398,7 +398,7 @@ class _WrapperState extends State<Wrapper> {
                       SidebarXItem(icon: Icons.people, label: 'Tenants'),
                       SidebarXItem(
                           icon: Icons.assignment,
-                          label: 'Lease',
+                          label: 'leases'.tr,
                           onTap: () => Get.to(() => LeasePage())),
                       SidebarXItem(
                           icon: Icons.payment,
