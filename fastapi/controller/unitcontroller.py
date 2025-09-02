@@ -123,7 +123,7 @@ def update_property_unit(db: Session, unit_id: int, data: PropertyUnitUpdate, cu
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating unit: {str(e)}")
 
-def delete_property_unit(db: Session, unit_id: int):
+def delete_property_unit(db: Session, unit_id: int, current_user):
     try:
         unit = db.get(Unit, unit_id)
         if not unit:
