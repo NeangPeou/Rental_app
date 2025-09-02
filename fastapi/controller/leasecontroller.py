@@ -59,19 +59,7 @@ def get_all_leases(db: Session, current_user):
             join(Renter, Renter.id == Lease.renter_id).\
             join(User, User.id == Renter.user_id).\
             join(Unit, Unit.id == Lease.unit_id).all()
-        query = (
-            db.query(Lease, User.userName, Unit)
-            .join(Renter, Renter.id == Lease.renter_id)
-            .join(User, User.id == Renter.user_id)
-            .join(Unit, Unit.id == Lease.unit_id)
-            .join(Property, Property.id == Unit.property_id) 
-        )
-
-        query = query.filter(
-            (User.id == current_user.id) | (Property.owner_id == current_user.id) 
-        )
-
-        leases = query.all()
+        
         return [
             LeaseOut(
                 id=lease.id,
