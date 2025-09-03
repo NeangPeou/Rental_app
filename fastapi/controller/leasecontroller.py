@@ -27,6 +27,8 @@ def create_lease(db: Session, data: LeaseCreate, current_user):
             status=data.status,
         )
 
+        unit.is_available = False
+
         db.add(lease)
         db.commit()
         db.refresh(lease)
