@@ -191,11 +191,7 @@ class _LeaseFormState extends State<LeaseForm> {
                         Obx(() {
                           return Helper.sampleDropdownSearch(
                             context: context,
-                            items: propertiesController.units.isEmpty
-                                ? []
-                                : propertiesController.units
-                                    .where((u) => u['is_available'] == true)
-                                    .toList(),
+                            items: propertiesController.units.isEmpty ? [] : propertiesController.units,
                             labelText: "Select Unit",
                             controller: unitController,
                             selectedId: unitController.text,

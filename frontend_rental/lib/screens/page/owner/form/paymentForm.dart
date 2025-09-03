@@ -176,7 +176,7 @@ class _PaymentFormState extends State<PaymentForm> {
               Obx(() {
                 return Helper.sampleDropdownSearch(
                   context: context,
-                  items: propertiesController.leases.isEmpty ? [] : propertiesController.leases,
+                  items: propertiesController.leases.where((lease) => lease['status'].toString().toLowerCase() == "active").toList(),
                   labelText: "Leases",
                   controller: _leaseIdController,
                   selectedId: _leaseIdController.text,
