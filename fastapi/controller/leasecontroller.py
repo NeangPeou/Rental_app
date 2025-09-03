@@ -87,10 +87,16 @@ def update_lease(db: Session, lease_id: int, data: LeaseUpdate, current_user):
 
         # Handle unit update
         if data.unit_id is not None and data.unit_id != lease.unit_id:
+            old_unit = db.query(Unit).filter(Unit.id == lease.unit_id).first()
             new_unit = db.query(Unit).filter(Unit.id == data.unit_id).first()
             if not new_unit:
                 raise HTTPException(status_code=404, detail="Unit not found")
+            
+            if old_unit:
+                old_unit.is_available = True
+                
             lease.unit_id = data.unit_id
+            new_unit.is_available = False
 
         # Handle renter update
         if data.renter_id is not None:

@@ -8,6 +8,7 @@ import 'package:frontend_rental/models/user_model.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../controller/property_controller.dart';
 import '../controller/user_contoller.dart';
 import '../screens/authenticate/login.dart';
 import '../shared/message_dialog.dart';
@@ -51,7 +52,9 @@ class UserService{
         },
         body: jsonEncode(payload),
       );
+      final jsonResponse = jsonDecode(response.body);
       if (response.statusCode == 200) {
+        Get.find<PropertyController>().addRenter(jsonResponse);
       }
     } catch (e) {
       MessageDialog.showMessage('information'.tr, e.toString(), context);

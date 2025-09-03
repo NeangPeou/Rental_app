@@ -38,7 +38,8 @@ class _LeaseFormState extends State<LeaseForm> {
     Future.microtask(() {
       if (propertiesController.units.isEmpty) {
         propertyService.getAllUnits();
-      } else {
+      }
+      if(propertiesController.renters.isEmpty){
         leaseService.getAllRenters();
       }
     });
