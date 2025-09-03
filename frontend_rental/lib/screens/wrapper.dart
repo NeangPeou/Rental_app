@@ -198,78 +198,8 @@ class _WrapperState extends State<Wrapper> {
           ),
         ),
       ),
-      // drawer: isOwner? AnimatedBuilder(
-      //     animation: _sidebarController,
-      //     builder: (context, _) {
-      //     return Drawer(
-      //       width: _sidebarController.extended ? 300 : 70,
-      //       child: SafeArea(
-      //         bottom: true,
-      //         top: false,
-      //         child: SidebarX(
-      //           controller: _sidebarController,
-      //           animationDuration: Duration(milliseconds: 400),
-      //           showToggleButton: true,
-      //           theme: SidebarXTheme(
-      //             decoration: BoxDecoration(
-      //               color: Get.theme.scaffoldBackgroundColor,
-      //               borderRadius: BorderRadius.only(topRight: Radius.circular(0), bottomRight: Radius.circular(0)),
-      //             ),
-      //             hoverColor: Get.theme.primaryColor.withOpacity(0.1),
-      //             itemTextPadding: const EdgeInsets.only(left: 20),
-      //             selectedItemTextPadding: const EdgeInsets.only(left: 20),
-      //             selectedTextStyle: Get.textTheme.bodyMedium,
-      //             selectedItemDecoration: BoxDecoration(
-      //               borderRadius: BorderRadius.circular(10),
-      //               border: Border.all(
-      //                 color: Colors.teal,
-      //               ),
-      //               color: Colors.teal,
-      //               boxShadow: [
-      //                 BoxShadow(
-      //                   color: Colors.teal.withAlpha(100),
-      //                   blurRadius: 5,
-      //                   offset: Offset(0, 0),
-      //                 ),
-      //               ],
-      //             ),
-      //             iconTheme: IconThemeData(
-      //               size: 20,
-      //             ),
-      //             selectedIconTheme: IconThemeData(
-      //               size: 20,
-      //             ),
-      //           ),
-      //           headerBuilder: (context, extended) {
-      //             return SizedBox(
-      //               height: 150,
-      //               child: Padding(
-      //                 padding: const EdgeInsets.all(16.0),
-      //                 child: Image.asset('assets/app_icon/sw_logo.png'),
-      //               ),
-      //             );
-      //           },
-      //           footerDivider: Divider(),
-      //           headerDivider: Divider(),
-      //           items: [
-      //             SidebarXItem(icon: Icons.dashboard, label: 'Dashboard', onTap: () => Get.to(()=>Wrapper())),
-      //             SidebarXItem(icon: Icons.home, label: 'Properties', onTap: () => Get.to(()=>PropertyPage())),
-      //             SidebarXItem(icon: Icons.add_home_work_rounded, label: 'Properties Units', onTap: () => Get.to(()=>PropertyUnit())),
-      //             SidebarXItem(icon: Icons.people, label: 'Tenants'),
-      //             SidebarXItem(icon: Icons.assignment, label: 'Lease', onTap: () => Get.to(() => LeasePage())),
-      //             SidebarXItem(icon: Icons.payment, label: 'Payments', onTap: () => Get.to(() => Payment())),
-      //             SidebarXItem(icon: Icons.assignment_turned_in, label: 'Applications'),
-      //             SidebarXItem(icon: Icons.build, label: 'Maintenance Request'),
-      //             SidebarXItem(icon: Icons.settings, label: 'Settings'),
-      //             SidebarXItem(icon: Icons.logout, label: 'Logout'),
-      //           ],
-      //         ),
-      //       ),
-      //     );
-      //   }
-      // ) : null
-      drawer: isOwner
-      ? AnimatedBuilder(
+      drawer: isOwner ?
+        AnimatedBuilder(
           animation: _sidebarController,
           builder: (context, _) {
             return Drawer(
@@ -392,7 +322,7 @@ class _WrapperState extends State<Wrapper> {
                           label: 'Properties',
                           onTap: () => Get.to(() => PropertyPage())),
                       SidebarXItem(
-                          icon: Icons.add_home_work_rounded,
+                          icon: Icons.home_work,
                           label: 'Property Units',
                           onTap: () => Get.to(() => PropertyUnit())),
                       SidebarXItem(icon: Icons.people, label: 'Tenants'),

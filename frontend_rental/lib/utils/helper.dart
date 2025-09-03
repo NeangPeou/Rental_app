@@ -159,7 +159,7 @@ class Helper {
       },
       validator: validator ?? (value) {
         if (isRequired && value == null) {
-          return 'Please select $labelText';
+          return labelText;
         }
         return null;
       },
@@ -211,6 +211,7 @@ class Helper {
         constraints: BoxConstraints(maxHeight: (maxHeight ?? 250)),
         showSelectedItems: true,
         menuProps: MenuProps(
+          backgroundColor: Get.theme.scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(10),
           clipBehavior: Clip.antiAlias,
         ),
@@ -407,4 +408,46 @@ class Helper {
   static void closeLoadingDialog(BuildContext context) {
     Navigator.of(context).pop();
   }
+
+   static void showSnackbar({
+     required String title,
+     required String message,
+     SnackPosition position = SnackPosition.BOTTOM,
+     Color backgroundColor = Colors.black87,
+     Color textColor = Colors.white,
+     IconData? icon,
+     Duration duration = const Duration(seconds: 3),
+     EdgeInsets margin = const EdgeInsets.all(10),
+     double borderRadius = 8.0,
+   }) {
+     Get.snackbar(
+       title,
+       message,
+       snackPosition: position,
+       backgroundColor: backgroundColor,
+       colorText: textColor,
+       icon: icon != null ? Icon(icon, color: textColor) : null,
+       duration: duration,
+       margin: margin,
+       borderRadius: borderRadius,
+     );
+   }
+
+   static void successSnackbar(String message) {
+     showSnackbar(
+       title: "Success",
+       message: message,
+       backgroundColor: Colors.green,
+       icon: Icons.check_circle,
+     );
+   }
+
+   static void errorSnackbar(String message) {
+     showSnackbar(
+       title: "Error",
+       message: message,
+       backgroundColor: Colors.red,
+       icon: Icons.error,
+     );
+   }
 }

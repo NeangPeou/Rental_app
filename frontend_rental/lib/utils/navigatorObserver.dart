@@ -15,6 +15,8 @@ class MyRouteObserver extends RouteObserver<PageRoute<dynamic>> {
       _settingController.selectedIndex.value = 2;
     } else if(screenName == '/LeasePage') {
       _settingController.selectedIndex.value = 4;
+    } else if(screenName == '/setting') {
+      _settingController.selectedIndex.value = 8;
     }
   }
 

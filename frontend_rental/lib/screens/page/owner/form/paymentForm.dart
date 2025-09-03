@@ -128,35 +128,14 @@ class _PaymentFormState extends State<PaymentForm> {
       Helper.closeLoadingDialog(context);
       if (errorModel.isError == false){
         Get.back();
-        Get.showSnackbar(
-          GetSnackBar(
-            messageText: const SizedBox.shrink(),
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Get.theme.scaffoldBackgroundColor,
-            snackStyle: SnackStyle.FLOATING,
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 5),
-            borderRadius: 8,
-            duration: const Duration(seconds: 3),
-            isDismissible: true,
-            titleText: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.save, size: 25, color: Colors.grey),
-                const SizedBox(width: 8),
-                Text(id == null ? 'created_successfully'.tr : 'updated_successfully'.tr, style: Get.textTheme.titleMedium),
-              ],
-            ),
-          ),
-        );
+        Helper.successSnackbar(id == null ? 'created_successfully'.tr : 'updated_successfully'.tr);
       }else {
         String errorMessage = errorModel.message!.toLowerCase();
 
         if (errorMessage.contains('already exists')) {
           MessageDialog.showMessage('information'.tr, 'type_already_exists'.tr, context);
         } else {
-          MessageDialog.showMessage('information'.tr, id == null ? 'create_failed'.tr : 'update_failed'.tr, context);
+          Helper.errorSnackbar(id == null ? 'create_failed'.tr : 'update_failed'.tr);
         }
       }
     }
