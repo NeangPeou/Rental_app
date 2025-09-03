@@ -5,6 +5,7 @@ import 'package:frontend_rental/services/payment_service.dart';
 import 'package:get/get.dart';
 import '../../../shared/loading.dart';
 import '../../../utils/helper.dart';
+
 class Payment extends StatefulWidget {
   const Payment({super.key});
 

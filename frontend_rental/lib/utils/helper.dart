@@ -229,6 +229,17 @@ class Helper {
             ),
           );
         },
+        loadingBuilder: (context, _) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: SpinKitFadingCircle(
+                color: firstMainThemeColor,
+                size: 40.0,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
