@@ -28,7 +28,9 @@ def create_payment(db: Session, data: PaymentCreate, current_user):
 
         unit = db.query(Unit).filter(Unit.id == lease.unit_id).first()
         property = db.query(Property).filter(Property.id == unit.property_id).first() if unit else None
-        renter = db.query(User).filter(User.id == lease.renter_id).first()
+        renter = db.query(Renter).filter(Renter.id == lease.renter_id).first()
+        if renter:
+            renter = db.query(User).filter(User.id == renter.user_id).first()
         owner = db.query(User).filter(User.id == property.owner_id).first() if property else None
 
         db.add(payment)
@@ -109,7 +111,9 @@ def update_payment(db: Session, payment_id: int, data: PaymentUpdate, current_us
         lease = db.query(Lease).filter(Lease.id == payment.lease_id).first()
         unit = db.query(Unit).filter(Unit.id == lease.unit_id).first() if lease else None
         property = db.query(Property).filter(Property.id == unit.property_id).first() if unit else None
-        renter = db.query(User).filter(User.id == lease.renter_id).first() if lease else None
+        renter = db.query(Renter).filter(Renter.id == lease.renter_id).first()
+        if renter:
+            renter = db.query(User).filter(User.id == renter.user_id).first()
         owner = db.query(User).filter(User.id == property.owner_id).first() if property else None
 
         db.commit()

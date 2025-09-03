@@ -57,6 +57,7 @@ def get_all_units(db: Session, current_user):
         units = (
             db.query(Property, Unit)
             .outerjoin(Property, Property.id == Unit.property_id)
+            .filter(Property.owner_id == current_user.id)
             .order_by(desc(Unit.id)).all()
         )
 
