@@ -5,10 +5,14 @@ from db.models.leases import Lease
 from db.models.units import Unit
 from db.models.renters import Renter
 from db.models.user import User
-from db.models.properties import Property
 
 def create_lease(db: Session, data: LeaseCreate, current_user):
     try:
+        existing_lease = db.query(Lease).filter(Lease.unit_id == data.unit_id, Lease.status.in_(["active", "pending"])).first()
+
+        if existing_lease:
+            raise HTTPException(status_code=400, detail="A lease already exists for this unit with active or pending status.")
+        
         unit = db.query(Unit).filter(Unit.id == data.unit_id).first()
         if not unit:
             raise HTTPException(status_code=404, detail="Unit not found")
@@ -84,6 +88,12 @@ def update_lease(db: Session, lease_id: int, data: LeaseUpdate, current_user):
         lease = db.get(Lease, lease_id)
         if not lease:
             raise HTTPException(status_code=404, detail="Lease not found")
+        
+        unit_id_to_check = data.unit_id if data.unit_id is not None else lease.unit_id
+
+        duplicate_lease = db.query(Lease).filter(Lease.unit_id == unit_id_to_check, Lease.id != lease_id, Lease.status.in_(["active", "pending"])).first()
+        if duplicate_lease:
+            raise HTTPException(status_code=400, detail="Another active lease already exists for this unit.")
 
         # Handle unit update
         if data.unit_id is not None and data.unit_id != lease.unit_id:

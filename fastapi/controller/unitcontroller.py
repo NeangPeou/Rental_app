@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from sqlalchemy.orm import Session
 from schemas.units import PropertyUnitCreate, PropertyUnitUpdate
 from db.models.units import Unit
@@ -13,7 +13,7 @@ def create_property_unit(db: Session, data: PropertyUnitCreate, current_user):
         
         duplicate = db.query(Unit).filter(
             Unit.property_id == data.property_id,
-            Unit.unit_number == data.unit_number,
+            func.lower(Unit.unit_number) == func.lower(data.unit_number),
             Unit.floor == data.floor
         ).first()
 
@@ -81,6 +81,20 @@ def update_property_unit(db: Session, unit_id: int, data: PropertyUnitUpdate, cu
         unit = db.get(Unit, unit_id)
         if not unit:
             raise HTTPException(status_code=404, detail="Unit not found")
+        
+        property_id_to_check = data.property_id if data.property_id is not None else unit.property_id
+        unit_number_to_check = data.unit_number if data.unit_number is not None else unit.unit_number
+        floor_to_check = data.floor if data.floor is not None else unit.floor
+        
+        duplicate = db.query(Unit).filter(
+            Unit.property_id == property_id_to_check,
+            func.lower(Unit.unit_number) == func.lower(unit_number_to_check),
+            Unit.floor == floor_to_check,
+            Unit.id != unit_id
+        ).first()
+
+        if duplicate:
+            raise HTTPException(status_code=400, detail="Another unit with the same unit number and floor already exists for this property.")
 
         if data.unit_number is not None:
             unit.unit_number = data.unit_number

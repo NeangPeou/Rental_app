@@ -6,7 +6,6 @@ import 'package:frontend_rental/services/property_service.dart';
 import 'package:frontend_rental/utils/helper.dart';
 import 'package:get/get.dart';
 import '../../../../models/error.dart';
-import '../../../../shared/message_dialog.dart';
 
 class PropertyUnitForm extends StatefulWidget {
   const PropertyUnitForm({super.key});
@@ -93,7 +92,7 @@ class _PropertyUnitFormState extends State<PropertyUnitForm> {
         String errorMessage = errorModel.message!.toLowerCase();
 
         if (errorMessage.contains('already exists')) {
-          MessageDialog.showMessage('information'.tr, 'type_already_exists'.tr, context);
+          Helper.errorSnackbar('data_already_exists'.tr);
         } else {
           Helper.errorSnackbar(id == null ? 'create_failed'.tr : 'update_failed'.tr);
         }

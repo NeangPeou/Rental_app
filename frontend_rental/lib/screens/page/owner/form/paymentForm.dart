@@ -9,7 +9,6 @@ import '../../../../controller/property_controller.dart';
 import '../../../../models/error.dart';
 import '../../../../models/payment_model.dart';
 import '../../../../shared/loading.dart';
-import '../../../../shared/message_dialog.dart';
 import '../../../../utils/helper.dart';
 
 class PaymentForm extends StatefulWidget {
@@ -133,7 +132,7 @@ class _PaymentFormState extends State<PaymentForm> {
         String errorMessage = errorModel.message!.toLowerCase();
 
         if (errorMessage.contains('already exists')) {
-          MessageDialog.showMessage('information'.tr, 'type_already_exists'.tr, context);
+          Helper.errorSnackbar('data_already_exists'.tr);
         } else {
           Helper.errorSnackbar(id == null ? 'create_failed'.tr : 'update_failed'.tr);
         }

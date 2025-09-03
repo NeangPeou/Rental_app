@@ -7,7 +7,6 @@ import '../../../../models/error.dart';
 import '../../../../models/property_model.dart';
 import '../../../../services/property_service.dart';
 import '../../../../shared/loading.dart';
-import '../../../../shared/message_dialog.dart';
 import '../../../../utils/helper.dart';
 import 'package:get/get.dart';
 
@@ -108,7 +107,7 @@ class _PropertyFormState extends State<PropertyForm> {
         String errorMessage = errorModel.message!.toLowerCase();
 
         if (errorMessage.contains('already exists')) {
-          MessageDialog.showMessage('information'.tr, 'type_already_exists'.tr, context);
+          Helper.errorSnackbar('data_already_exists'.tr);
         } else {
           Helper.errorSnackbar(id == null ? 'create_failed'.tr : 'update_failed'.tr);
         }

@@ -95,7 +95,13 @@ class _LeaseFormState extends State<LeaseForm> {
         Get.back();
         Helper.successSnackbar(id == null ? 'created_successfully'.tr : 'updated_successfully'.tr);
       } else {
-        Helper.errorSnackbar(id == null ? 'create_failed'.tr : 'update_failed'.tr);
+        String errorMessage = errorModel.message!.toLowerCase();
+
+        if (errorMessage.contains('already exists')) {
+          Helper.errorSnackbar('data_already_exists'.tr);
+        } else {
+          Helper.errorSnackbar(id == null ? 'create_failed'.tr : 'update_failed'.tr);
+        }
       }
     }
   }

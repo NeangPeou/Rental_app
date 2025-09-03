@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from db.models import properties as Property, property_types, user
@@ -9,6 +10,11 @@ def create_property(db: Session, data: PropertyCreate, current_user):
         type_exists = db.query(property_types.PropertyType).filter(property_types.PropertyType.id == data.type_id).first()
         if not type_exists:
             raise HTTPException(status_code=400, detail="Invalid type_id")
+        
+        duplicate_property = db.query(Property.Property).filter(func.lower(Property.Property.name) == func.lower(data.name), func.lower(Property.Property.address) == func.lower(data.address)).first()
+
+        if duplicate_property:
+            raise HTTPException(status_code=400, detail="A property with the same name and address already exists.")
         
         new_property = Property.Property(
             name = data.name,
@@ -83,6 +89,11 @@ def update_property(db: Session, property_id: int, data: PropertyUpdate, current
         prop = db.query(Property.Property).filter(Property.Property.id == property_id).first()
         if not prop:
             raise HTTPException(status_code=404, detail="Property not found")
+        
+        if data.name is not None and data.address is not None:
+            duplicate = db.query(Property.Property).filter(func.lower(Property.Property.name) == func.lower(data.name), func.lower(Property.Property.address) == func.lower(data.address), Property.Property.id != property_id).first()
+            if duplicate:
+                raise HTTPException(status_code=400, detail="Another property with the same name and address already exists.")
         
         if data.name is not None:
             prop.name = data.name

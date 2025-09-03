@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting.dart';
 import 'package:frontend_rental/screens/page/owner/dashboard.dart';
 import 'package:frontend_rental/screens/page/owner/leasePage.dart';
@@ -11,6 +12,7 @@ import 'package:frontend_rental/screens/page/owner/propertyUnit.dart';
 import 'package:frontend_rental/screens/page/rental/rentalPage.dart';
 import 'package:frontend_rental/shared/loading.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sidebarx/sidebarx.dart';
 import '../../models/error.dart';
@@ -335,7 +337,18 @@ class _WrapperState extends State<Wrapper> {
                           label: 'payments'.tr,
                           onTap: () => Get.to(() => Payment())),
                       SidebarXItem(icon: Icons.build, label: 'maintenance_requests'.tr),
-                      SidebarXItem(icon: Icons.logout, label: 'logout'.tr),
+                      SidebarXItem(
+                        iconBuilder: (selected, hovered) {
+                          return Row(
+                            children: [
+                              Icon(Icons.logout, color: Colors.red.withOpacity(0.8)),
+                              SizedBox(width: 20),
+                              Text('logout'.tr, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                            ],
+                          );
+                        },
+                        onTap: () => _logout(context),
+                      ),
                     ],
                   ),
                 ),
@@ -363,5 +376,29 @@ class _WrapperState extends State<Wrapper> {
       }
     }
     return false;
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    Helper.showLoadingDialog(context);
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('x-auth-token') ?? '';
+    try {
+      final response = await http.post(
+        Uri.parse('${dotenv.env['API_URL']}/api/logout'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (response.statusCode != 200) {
+        Helper.errorSnackbar('Something went wrong. Please try again later.');
+      }
+    } catch (e) {
+      return;
+    }finally {
+      Helper.closeLoadingDialog(context);
+    }
+    await prefs.setString('x-auth-token', '');
+    await prefs.setBool('isOwner', false);
+    if (context.mounted) {
+      Get.offAll(() => Wrapper());
+    }
   }
 }

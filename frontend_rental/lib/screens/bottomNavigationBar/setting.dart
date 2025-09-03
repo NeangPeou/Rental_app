@@ -12,6 +12,7 @@ import 'package:frontend_rental/screens/bottomNavigationBar/renterForm/renter_fo
 import 'package:frontend_rental/screens/bottomNavigationBar/setting_pages/appearance.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting_pages/my_account.dart';
 import 'package:frontend_rental/screens/wrapper.dart';
+import 'package:frontend_rental/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -464,6 +465,7 @@ class _SettingState extends State<Setting> {
   }
   // logout function
   Future<void> _logout(BuildContext context) async {
+    Helper.showLoadingDialog(context);
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('x-auth-token') ?? '';
     try {
@@ -472,10 +474,12 @@ class _SettingState extends State<Setting> {
         headers: {'Authorization': 'Bearer $token'},
       );
       if (response.statusCode != 200) {
-        return;
+        Helper.errorSnackbar('Something went wrong. Please try again later.');
       }
     } catch (e) {
       return;
+    }finally {
+      Helper.closeLoadingDialog(context);
     }
     // Clear token and navigate to login
     await prefs.setString('x-auth-token', '');

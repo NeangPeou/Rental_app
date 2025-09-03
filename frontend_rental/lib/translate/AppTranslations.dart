@@ -171,6 +171,7 @@ class AppTranslations extends Translations {
       'property_id': 'លេខសម្គាល់អចលនទ្រព្យ',
       'failed': 'បរាជ័យ',
       'success': 'ជោគជ័យ',
+      'data_already_exists': 'ទិន្នន័យមានរួចហើយ',
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -339,6 +340,7 @@ class AppTranslations extends Translations {
       'property_id': 'Property ID',
       'failed': 'Failed',
       'success': 'Success',
+      'data_already_exists': 'Data already exists',
     },
     'es_ES': {
       'english': 'Inglés',
