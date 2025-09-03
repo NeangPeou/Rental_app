@@ -104,7 +104,7 @@ class _PropertyUnitFormState extends State<PropertyUnitForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Helper.sampleAppBar('Property Unit', context, null),
+      appBar: Helper.sampleAppBar('property_unit'.tr, context, null),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
         child: Form(
@@ -115,7 +115,7 @@ class _PropertyUnitFormState extends State<PropertyUnitForm> {
                 return Helper.sampleDropdownSearch(
                   context: context,
                   items: propertiesController.properties.isEmpty ? [] : propertiesController.properties,
-                  labelText: "Select Property",
+                  labelText: "select_property".tr,
                   controller: propertyController,
                   selectedId: propertyController.text,
                   displayKey: "name",
@@ -134,7 +134,7 @@ class _PropertyUnitFormState extends State<PropertyUnitForm> {
                     child:  Helper.sampleTextField(
                       context: context,
                       controller: unitNumberController,
-                      labelText: "Unit Number",
+                      labelText: "unit_number".tr,
                       prefixIcon: Icon(Icons.confirmation_number_rounded)
                     ),
                   ),
@@ -143,7 +143,7 @@ class _PropertyUnitFormState extends State<PropertyUnitForm> {
                     child: Helper.sampleTextField(
                       context: context,
                       controller: floorController,
-                      labelText: "Floor",
+                      labelText: "floor".tr,
                       keyboardType: TextInputType.number,
                       prefixIcon: Icon(Icons.layers_rounded)
                     ),
@@ -161,7 +161,7 @@ class _PropertyUnitFormState extends State<PropertyUnitForm> {
                     child:  Helper.sampleTextField(
                       context: context,
                       controller: bedroomsController,
-                      labelText: "Bedrooms",
+                      labelText: "bedrooms".tr,
                       keyboardType: TextInputType.number,
                       prefixIcon: Icon(Icons.bed_rounded),
                     ),
@@ -171,7 +171,7 @@ class _PropertyUnitFormState extends State<PropertyUnitForm> {
                     child: Helper.sampleTextField(
                       context: context,
                       controller: bathroomsController,
-                      labelText: "Bathrooms",
+                      labelText: "bathrooms".tr,
                       keyboardType: TextInputType.number,
                       prefixIcon: Icon(Icons.bathtub_rounded),
                     ),
@@ -189,7 +189,7 @@ class _PropertyUnitFormState extends State<PropertyUnitForm> {
                     child:   Helper.sampleTextField(
                       context: context,
                       controller: sizeController,
-                      labelText: "Size (sqm)",
+                      labelText: "size_sqm".tr,
                       keyboardType: TextInputType.number,
                       prefixIcon: Icon(Icons.square_foot_rounded),
                     ),
@@ -199,7 +199,7 @@ class _PropertyUnitFormState extends State<PropertyUnitForm> {
                     child: Helper.sampleTextField(
                       context: context,
                       controller: rentController,
-                      labelText: "Rent Price (\$)",
+                      labelText: "${'rent_price'.tr} (\$)",
                       keyboardType: TextInputType.number,
                       prefixIcon: Icon(Icons.attach_money_rounded),
                     ),
@@ -211,7 +211,7 @@ class _PropertyUnitFormState extends State<PropertyUnitForm> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Available"),
+                  Text("available".tr),
                   Transform.scale(
                     scale: 0.7,
                     child: CupertinoSwitch(

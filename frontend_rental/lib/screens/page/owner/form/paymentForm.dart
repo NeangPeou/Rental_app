@@ -145,7 +145,7 @@ class _PaymentFormState extends State<PaymentForm> {
   Widget build(BuildContext context) {
     return isLoading ? const Center(child: Loading()) : Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: Helper.sampleAppBar('payment'.tr, context, null),
+      appBar: Helper.sampleAppBar('payments'.tr, context, null),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
         child: Form(
@@ -156,7 +156,7 @@ class _PaymentFormState extends State<PaymentForm> {
                 return Helper.sampleDropdownSearch(
                   context: context,
                   items: propertiesController.leases.where((lease) => lease['status'].toString().toLowerCase() == "active").toList(),
-                  labelText: "Leases",
+                  labelText: "leases".tr,
                   controller: _leaseIdController,
                   selectedId: _leaseIdController.text,
                   displayKey: "unit_number",
@@ -175,10 +175,10 @@ class _PaymentFormState extends State<PaymentForm> {
                   child: Helper.sampleTextField(
                     context: context,
                     controller: _paymentDateController,
-                    labelText: "Payment Date",
+                    labelText: "payment_date".tr,
                     isRequired: true,
                     prefixIcon: const Icon(Icons.calendar_today),
-                    validator: (val) => val == null || val.isEmpty ? 'Select payment date' : null,
+                    validator: (val) => val == null || val.isEmpty ? 'select_payment_date'.tr : null,
                   ),
                 ),
               ),
@@ -187,18 +187,18 @@ class _PaymentFormState extends State<PaymentForm> {
               Helper.sampleTextField(
                 context: context,
                 controller: _amountPaidController,
-                labelText: "Amount Paid",
+                labelText: "amount_paid".tr,
                 prefixIcon: const Icon(Icons.attach_money),
                 keyboardType: TextInputType.number,
                 isRequired: true,
-                validator: (val) => val == null || val.isEmpty ? 'Amount is required' : null,
+                validator: (val) => val == null || val.isEmpty ? 'amount_is_required'.tr : null,
               ),
               const SizedBox(height: 16),
 
               Helper.sampleDropdownSearch(
                 context: context,
                 items: _paymentMethodOptions,
-                labelText: "Select Payment Method",
+                labelText: "select_payment_method".tr,
                 controller: _paymentMethodController,
                 selectedId: _paymentMethodController.text,
                 displayKey: "name",
@@ -215,10 +215,10 @@ class _PaymentFormState extends State<PaymentForm> {
                   child: Helper.sampleTextField(
                     context: context,
                     controller: _receiptUrlController,
-                    labelText: "Receipt URL",
+                    labelText: "receipt_url".tr,
                     isRequired: true,
                     prefixIcon: const Icon(Icons.link),
-                    validator: (val) => val == null || val.isEmpty ? 'Receipt URL is required' : null,
+                    validator: (val) => val == null || val.isEmpty ? 'receipt_url_is_required'.tr : null,
                   ),
                 ),
               ),

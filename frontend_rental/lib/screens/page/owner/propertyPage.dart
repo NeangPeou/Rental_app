@@ -62,7 +62,7 @@ class _PropertyPageState extends State<PropertyPage> {
     return isLoading ? Loading() :
     Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: Helper.sampleAppBar('Property', context, null),
+      appBar: Helper.sampleAppBar('property'.tr, context, null),
       body: SafeArea(
         bottom: true,
         child: Container(
@@ -164,7 +164,7 @@ class _PropertyPageState extends State<PropertyPage> {
                                         ),
                                         const SizedBox(height: 4),
 
-                                        Text('Property ID: ${property['id'] ?? 'N/A'}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                        Text('${'property_id'.tr}: ${property['id'] ?? 'N/A'}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
 
                                         const SizedBox(height: 4),
                                         Row(

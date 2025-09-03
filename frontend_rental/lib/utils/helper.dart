@@ -198,7 +198,7 @@ class Helper {
         searchFieldProps: TextFieldProps(
           style: Get.textTheme.bodySmall,
           decoration: InputDecoration(
-            hintText: hintText ?? 'Search...',
+            hintText: hintText ?? '${'search'.tr} ...',
             contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             isDense: true,
             prefixIcon: prefixIcon,
@@ -446,7 +446,7 @@ class Helper {
 
    static void successSnackbar(String message) {
      showSnackbar(
-       title: "Success",
+       title: "success".tr,
        message: message,
        backgroundColor: Colors.green,
        icon: Icons.check_circle,
@@ -455,7 +455,7 @@ class Helper {
 
    static void errorSnackbar(String message) {
      showSnackbar(
-       title: "Error",
+       title: "failed".tr,
        message: message,
        backgroundColor: Colors.red,
        icon: Icons.error,

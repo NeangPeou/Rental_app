@@ -144,27 +144,27 @@ class _PropertyFormState extends State<PropertyForm> {
 
   String? validateCoordinate(String? value, {required bool isLatitude}) {
     if (value == null || value.trim().isEmpty) {
-      return 'This field is required';
+      return 'this_field_is_required'.tr;
     }
 
     final trimmed = value.trim();
 
     if (!trimmed.contains('.')) {
-      return 'Must include decimal (e.g., 10.123456)';
+      return 'must_include_decimal_e_g_10_123456'.tr;
     }
 
     final num? parsed = num.tryParse(trimmed);
-    if (parsed == null) return 'Invalid number';
+    if (parsed == null) return 'invalid_number'.tr;
 
     final rangeValid = isLatitude ? (parsed >= -90 && parsed <= 90) : (parsed >= -180 && parsed <= 180);
 
     if (!rangeValid) {
-      return isLatitude ? 'Latitude must be between -90 and 90' : 'Longitude must be between -180 and 180';
+      return isLatitude ? 'latitude_must_be_between_-90_and_90'.tr : 'longitude_must_be_between_-180_and_180'.tr;
     }
 
     final decimalPart = trimmed.split('.')[1];
     if (decimalPart.length > 6) {
-      return 'Max 6 decimal places allowed';
+      return 'max_6_decimal_places_allowed'.tr;
     }
 
     return null;
@@ -175,7 +175,7 @@ class _PropertyFormState extends State<PropertyForm> {
   Widget build(BuildContext context) {
     return isLoading ? const Center(child: Loading()) : Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: Helper.sampleAppBar('Property Form', context, null),
+      appBar: Helper.sampleAppBar('property'.tr, context, null),
       body: SafeArea(
         child: Container(
           margin: const EdgeInsets.only(top: 20),
@@ -186,7 +186,7 @@ class _PropertyFormState extends State<PropertyForm> {
           ),
           child: Column(
             children: [
-              Text('Get Started Managing Your Property', style: Get.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+              Text('get_started_managing_your_property'.tr, style: Get.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               Expanded(
                 child: Container(
@@ -206,18 +206,18 @@ class _PropertyFormState extends State<PropertyForm> {
                           Helper.sampleTextField(
                             context: context,
                             controller: _nameController,
-                            labelText: 'Name',
+                            labelText: 'name'.tr,
                             isRequired: true,
-                            validator: (value) => value == null || value.isEmpty ? 'Please enter name' : null,
+                            validator: (value) => value == null || value.isEmpty ? 'please_enter_name'.tr : null,
                             prefixIcon: const Icon(Icons.house),
                           ),
                           const SizedBox(height: 16),
                           Helper.sampleTextField(
                             context: context,
                             controller: _addressController,
-                            labelText: 'Address',
+                            labelText: 'address'.tr,
                             isRequired: true,
-                            validator: (value) => value == null || value.isEmpty ? 'Please enter address' : null,
+                            validator: (value) => value == null || value.isEmpty ? 'please_enter_address'.tr : null,
                             prefixIcon: const Icon(Icons.location_on),
                           ),
                           const SizedBox(height: 16),
@@ -229,9 +229,9 @@ class _PropertyFormState extends State<PropertyForm> {
                                 child: Helper.sampleTextField(
                                   context: context,
                                   controller: _cityController,
-                                  labelText: 'City',
+                                  labelText: 'city'.tr,
                                   isRequired: true,
-                                  validator: (value) => value == null || value.isEmpty ? 'Please enter city' : null,
+                                  validator: (value) => value == null || value.isEmpty ? 'please_enter_city'.tr : null,
                                   prefixIcon: const Icon(Icons.location_city),
                                 ),
                               ),
@@ -240,7 +240,7 @@ class _PropertyFormState extends State<PropertyForm> {
                                 child: Helper.sampleTextField(
                                   context: context,
                                   controller: _districtController,
-                                  labelText: 'District',
+                                  labelText: 'district'.tr,
                                   prefixIcon: const Icon(Icons.home),
                                 ),
                               ),
@@ -255,7 +255,7 @@ class _PropertyFormState extends State<PropertyForm> {
                                 child: Helper.sampleTextField(
                                   context: context,
                                   controller: _provinceController,
-                                  labelText: 'Province',
+                                  labelText: 'province'.tr,
                                   prefixIcon: const Icon(Icons.approval_rounded),
                                 ),
                               ),
@@ -264,7 +264,7 @@ class _PropertyFormState extends State<PropertyForm> {
                                 child: Helper.sampleTextField(
                                   context: context,
                                   controller: _postalCodeController,
-                                  labelText: 'Postal Code',
+                                  labelText: 'postal_code'.tr,
                                   keyboardType: TextInputType.number,
                                   prefixIcon: const Icon(Icons.local_post_office),
                                 ),
@@ -280,7 +280,7 @@ class _PropertyFormState extends State<PropertyForm> {
                                 child: Helper.sampleTextField(
                                   context: context,
                                   controller: _latitudeController,
-                                  labelText: 'Latitude',
+                                  labelText: 'latitude'.tr,
                                   isRequired: true,
                                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                                   validator: (value) => validateCoordinate(value, isLatitude: true),
@@ -292,7 +292,7 @@ class _PropertyFormState extends State<PropertyForm> {
                                 child: Helper.sampleTextField(
                                   context: context,
                                   controller: _longitudeController,
-                                  labelText: 'Longitude',
+                                  labelText: 'longitude'.tr,
                                   isRequired: true,
                                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                                   validator: (value) => validateCoordinate(value, isLatitude: false),
@@ -305,7 +305,7 @@ class _PropertyFormState extends State<PropertyForm> {
                           Obx(() => Helper.sampleDropdownSearch(
                             context: context,
                             items: Get.find<PropertyController>().types,
-                            labelText: 'Property Type',
+                            labelText: 'property_type'.tr,
                             controller: _typeIdController,
                             displayKey: 'typeCode',
                             idKey: 'id',
@@ -317,13 +317,13 @@ class _PropertyFormState extends State<PropertyForm> {
                           Helper.sampleTextField(
                             context: context,
                             controller: _descriptionController,
-                            labelText: 'Description (Optional)',
+                            labelText: '${'description'.tr}(${'optional'.tr})',
                             keyboardType: TextInputType.multiline,
                             maxLines: 3,
                             prefixIcon: const Icon(Icons.description),
                           ),
                           const SizedBox(height: 16),
-                          Text('Add Image', style: Get.textTheme.bodySmall),
+                          Text('add_image'.tr, style: Get.textTheme.bodySmall),
                           GestureDetector(
                             onTap: _pickImages,
                             child: Container(

@@ -56,7 +56,7 @@ class _PaymentState extends State<Payment> {
   Widget build(BuildContext context) {
     return isLoading ? Loading() : Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: Helper.sampleAppBar('payment'.tr, context, null),
+      appBar: Helper.sampleAppBar('payments'.tr, context, null),
       body: SafeArea(
         bottom: true,
         child: Container(
@@ -160,7 +160,7 @@ class _PaymentState extends State<Payment> {
                                         ),
                                         const SizedBox(height: 4),
 
-                                        Text('Amount Paid: \$${property['amount_paid'] ?? 'N/A'}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                        Text('${'amount_paid'.tr}: \$${property['amount_paid'] ?? 'N/A'}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
 
                                         const SizedBox(height: 4),
                                         Row(

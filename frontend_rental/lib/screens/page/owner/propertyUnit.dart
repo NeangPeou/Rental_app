@@ -159,7 +159,7 @@ class _PropertyUnitState extends State<PropertyUnit> {
                                         ),
                                         const SizedBox(height: 4),
 
-                                        Text('Property ID: ${property['id'] ?? 'N/A'}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                        Text('${'property_id'.tr}: ${property['id'] ?? 'N/A'}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
 
                                         const SizedBox(height: 4),
                                         Row(

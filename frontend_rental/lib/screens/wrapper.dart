@@ -97,7 +97,7 @@ class _WrapperState extends State<Wrapper> {
   }
 
   List<String> getAppBarTitles(bool isOwner) {
-    return isOwner ? ['listings'.tr, 'calendar'.tr, 'inbox'.tr, 'settings'.tr] : ['explore'.tr, 'save'.tr, 'inbox'.tr, 'settings'.tr];
+    return isOwner ? ['listings'.tr, 'calendar'.tr, 'inbox'.tr, 'Setting'.tr] : ['explore'.tr, 'save'.tr, 'inbox'.tr, 'Setting'.tr];
   }
 
   @override
@@ -315,29 +315,27 @@ class _WrapperState extends State<Wrapper> {
                     items: [
                       SidebarXItem(
                           icon: Icons.dashboard,
-                          label: 'Dashboard',
+                          label: 'Dashboard'.tr,
                           onTap: () => Get.to(() => Wrapper())),
                       SidebarXItem(
                           icon: Icons.home,
-                          label: 'Properties',
+                          label: 'property'.tr,
                           onTap: () => Get.to(() => PropertyPage())),
                       SidebarXItem(
                           icon: Icons.home_work,
-                          label: 'Property Units',
+                          label: 'property_unit'.tr,
                           onTap: () => Get.to(() => PropertyUnit())),
-                      SidebarXItem(icon: Icons.people, label: 'Tenants'),
+                      SidebarXItem(icon: Icons.people, label: 'tenants'.tr),
                       SidebarXItem(
                           icon: Icons.assignment,
                           label: 'leases'.tr,
                           onTap: () => Get.to(() => LeasePage())),
                       SidebarXItem(
                           icon: Icons.payment,
-                          label: 'Payments',
+                          label: 'payments'.tr,
                           onTap: () => Get.to(() => Payment())),
-                      SidebarXItem(icon: Icons.assignment_turned_in, label: 'Applications'),
-                      SidebarXItem(icon: Icons.build, label: 'Maintenance Requests'),
-                      SidebarXItem(icon: Icons.settings, label: 'Settings'),
-                      SidebarXItem(icon: Icons.logout, label: 'Logout'),
+                      SidebarXItem(icon: Icons.build, label: 'maintenance_requests'.tr),
+                      SidebarXItem(icon: Icons.logout, label: 'logout'.tr),
                     ],
                   ),
                 ),
