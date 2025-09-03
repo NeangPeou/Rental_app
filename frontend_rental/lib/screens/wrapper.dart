@@ -342,8 +342,10 @@ class _WrapperState extends State<Wrapper> {
                           return Row(
                             children: [
                               Icon(Icons.logout, color: Colors.red.withOpacity(0.8)),
-                              SizedBox(width: 20),
-                              Text('logout'.tr, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                              if (_sidebarController.extended) ...[
+                                SizedBox(width: 20),
+                                Text('logout'.tr, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                              ],
                             ],
                           );
                         },
@@ -357,7 +359,6 @@ class _WrapperState extends State<Wrapper> {
           },
         )
       : null,
-
     );
   }
 

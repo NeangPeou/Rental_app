@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_rental/screens/page/owner/form/propertyUnitForm.dart';
 import 'package:frontend_rental/utils/helper.dart';
 import 'package:get/get.dart';
+import 'package:ribbon_widget/ribbon_widget.dart';
 import '../../../controller/property_controller.dart';
 import '../../../services/property_service.dart';
 import '../../../shared/loading.dart';
@@ -51,6 +52,10 @@ class _PropertyUnitState extends State<PropertyUnit> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  String truncateWithEllipsis(String text, int cutoff) {
+    return (text.length <= cutoff) ? text : '${text.substring(1, cutoff)}...';
   }
 
   @override
@@ -108,124 +113,133 @@ class _PropertyUnitState extends State<PropertyUnit> {
                       itemBuilder: (context, index) {
                         final property = propertyController.units[index];
 
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          padding: EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Get.theme.cardColor,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 8,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: () {
-                              Get.to(PropertyUnitForm(), arguments: property);
-                            },
-                            child: Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.horizontal(left: Radius.circular(12), right: Radius.circular(12)),
-                                  child: Image.asset(
-                                    'assets/app_icon/sw_logo.png',
-                                    height: 90,
-                                    width: 90,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 8),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(property['property_name'] ?? 'Unnamed Property', style: Get.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
-                                        const SizedBox(height: 4),
-
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.location_on, size: 14, color: Colors.grey),
-                                            const SizedBox(width: 4),
-                                            Expanded(
-                                              child: Text(property['unit_number'].toString(), style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 4),
-
-                                        Text('${'property_id'.tr}: ${property['id'] ?? 'N/A'}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
-
-                                        const SizedBox(height: 4),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                              decoration: BoxDecoration(
-                                                color: Colors.blue.shade100,
-                                                borderRadius: BorderRadius.circular(16),
-                                              ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const Icon(Icons.category, size: 12, color: Colors.blue),
-                                                  const SizedBox(width: 4),
-                                                  Flexible(
-                                                    child: ConstrainedBox(
-                                                      constraints: BoxConstraints(
-                                                        maxWidth: Get.width * 0.22,
-                                                      ),
-                                                      child: Text(
-                                                        property['floor'].toString(),
-                                                        style: Get.textTheme.bodySmall?.copyWith(color: Colors.blue[800]),
-                                                        overflow: TextOverflow.ellipsis,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-
-                                            const SizedBox(width: 6),
-
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                              decoration: BoxDecoration(
-                                                color: Colors.green.shade100,
-                                                borderRadius: BorderRadius.circular(16),
-                                              ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const Icon(Icons.person, size: 12, color: Colors.green),
-                                                  const SizedBox(width: 4),
-                                                  Flexible(
-                                                    child: ConstrainedBox(
-                                                      constraints: BoxConstraints(
-                                                        maxWidth: Get.width * 0.22,
-                                                      ),
-                                                      child: Text(
-                                                        property['is_available'].toString(),
-                                                        style: Get.textTheme.bodySmall?.copyWith(color: Colors.green[800]),
-                                                        overflow: TextOverflow.ellipsis,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                        return Ribbon(
+                          nearLength: 30,
+                          farLength: 50,
+                          title: truncateWithEllipsis(property['is_available'] ? 'Available'.tr : 'Rented'.tr, 9),
+                          titleStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                          color: Colors.teal,
+                          location: RibbonLocation.topStart,
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            padding: EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Get.theme.cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Theme.of(context).dividerColor.withAlpha(120)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 8,
+                                  offset: Offset(0, 4),
                                 ),
                               ],
+                            ),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () {
+                                Get.to(PropertyUnitForm(), arguments: property);
+                              },
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.horizontal(left: Radius.circular(12), right: Radius.circular(12)),
+                                    child: Image.asset(
+                                      'assets/app_icon/sw_logo.png',
+                                      height: 90,
+                                      width: 90,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                          
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 8),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(property['property_name'] ?? 'Unnamed Property', style: Get.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                                          const SizedBox(height: 4),
+                          
+                                          Row(
+                                            children: [
+                                              const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                                              const SizedBox(width: 4),
+                                              Expanded(
+                                                child: Text(property['unit_number'].toString(), style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 4),
+                          
+                                          Text('${'property_id'.tr}: ${property['id'] ?? 'N/A'}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                          
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.blue.shade100,
+                                                  borderRadius: BorderRadius.circular(16),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    const Icon(Icons.category, size: 12, color: Colors.blue),
+                                                    const SizedBox(width: 4),
+                                                    Flexible(
+                                                      child: ConstrainedBox(
+                                                        constraints: BoxConstraints(
+                                                          maxWidth: Get.width * 0.22,
+                                                        ),
+                                                        child: Text(
+                                                          property['floor'].toString(),
+                                                          style: Get.textTheme.bodySmall?.copyWith(color: Colors.blue[800]),
+                                                          overflow: TextOverflow.ellipsis,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                          
+                                              const SizedBox(width: 6),
+                          
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.green.shade100,
+                                                  borderRadius: BorderRadius.circular(16),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    const Icon(Icons.person, size: 12, color: Colors.green),
+                                                    const SizedBox(width: 4),
+                                                    Flexible(
+                                                      child: ConstrainedBox(
+                                                        constraints: BoxConstraints(
+                                                          maxWidth: Get.width * 0.22,
+                                                        ),
+                                                        child: Text(
+                                                          property['is_available'].toString(),
+                                                          style: Get.textTheme.bodySmall?.copyWith(color: Colors.green[800]),
+                                                          overflow: TextOverflow.ellipsis,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );
