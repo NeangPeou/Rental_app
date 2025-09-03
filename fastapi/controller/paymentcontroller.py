@@ -7,9 +7,10 @@ from db.models.leases import Lease
 from db.models.units import Unit
 from db.models.user import User
 from db.models.properties import Property
+from db.models.renters import Renter
 
 Owner = aliased(User)
-Renter = aliased(User)
+RenterUser = aliased(User)
 
 def create_payment(db: Session, data: PaymentCreate, current_user):
     try:
@@ -54,12 +55,13 @@ def create_payment(db: Session, data: PaymentCreate, current_user):
 def get_all_payments(db: Session, current_user):
     try:
         payments = (
-            db.query(Payment, Lease, Unit, Renter, Property, Owner)
+            db.query(Payment, Lease, Unit, Renter, Property, Owner, RenterUser)
             .outerjoin(Lease, Payment.lease_id == Lease.id)
             .outerjoin(Unit, Lease.unit_id == Unit.id)
-            .outerjoin(Renter, Lease.renter_id == Renter.id)
+            .outerjoin(Renter, Renter.id == Lease.renter_id)
             .outerjoin(Property, Unit.property_id == Property.id)
             .outerjoin(Owner, Property.owner_id == Owner.id)
+            .outerjoin(RenterUser, Renter.user_id == RenterUser.id)
             .order_by(desc(Payment.id))
             .all()
         )
@@ -73,9 +75,9 @@ def get_all_payments(db: Session, current_user):
             'receipt_url': payment.receipt_url,
             'property_name': property.name,
             'unit_number': unit.unit_number,
-            'renter_name': '' if user is None else user.userName,
-            'owner_name': '' if owner is None else owner.userName
-        } for payment, lease, unit, user, property, owner in payments]
+            'renter_name': renter_user.userName if renter_user else '',
+            'owner_name': owner.userName if owner else ''
+        } for payment, lease, unit, renter, property, owner, renter_user in payments]
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching payments: {str(e)}")
