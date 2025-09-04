@@ -95,7 +95,7 @@ class _SplashScreenState extends State<SplashScreen>
                     duration: const Duration(seconds: 3), // slower zoom
                     curve: Curves.easeOutBack,
                     child: Image.asset(
-                      'assets/app_icon/sw_logo_bg.png',
+                      'assets/app_icon/khawin_admin.png',
                       width: 250,
                       height: 250,
                       fit: BoxFit.contain,
