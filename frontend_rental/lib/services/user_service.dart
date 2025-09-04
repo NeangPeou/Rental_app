@@ -15,15 +15,55 @@ import '../shared/message_dialog.dart';
 import '../utils/helper.dart';
 
 class UserService{
-
-  Future<void> createRenter(BuildContext context, UserModel userModel) async {
+  Future<List<UserModel>> fetchRenters(BuildContext context) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('x-auth-token');
 
       if (accessToken == null || accessToken.isEmpty) {
-        return;
+        return [];
       }
+
+      final apiUrl = dotenv.env['API_URL'];
+      if (apiUrl == null) {
+        MessageDialog.showMessage('information'.tr, 'API URL not configured', context);
+        return [];
+      }
+
+      final response = await http.get(
+        Uri.parse('$apiUrl/api/renters'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((renterJson) => UserModel.fromJson(renterJson)).toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      MessageDialog.showMessage('information'.tr, e.toString(), context);
+      return [];
+    }
+  }
+
+  Future<ErrorModel> createRenter(BuildContext context, UserModel userModel) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString('x-auth-token');
+
+      if (accessToken == null || accessToken.isEmpty) {
+        return ErrorModel(isError: true, message: "Unauthorized");
+      }
+
+      final apiUrl = dotenv.env['API_URL'];
+      if (apiUrl == null) {
+        return ErrorModel(isError: true, message: "API URL not configured");
+      }
+
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       String deviceName = '';
       if (Platform.isAndroid) {
@@ -44,22 +84,136 @@ class UserService{
         'gender': userModel.gender,
         'deviceName': deviceName,
       };
+
       final response = await http.post(
-        Uri.parse('${dotenv.env['API_URL']}/api/create-renter'),
+        Uri.parse('$apiUrl/api/create-renter'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
         },
         body: jsonEncode(payload),
       );
+
       final jsonResponse = jsonDecode(response.body);
+
       if (response.statusCode == 200) {
         Get.find<PropertyController>().addRenter(jsonResponse);
+        return ErrorModel(isError: false, message: "Renter created successfully");
+      } else {
+        return ErrorModel(
+          isError: true,
+          message: jsonResponse is Map<String, dynamic> && jsonResponse.containsKey('message')
+              ? jsonResponse['message']
+              : "Failed to create renter",
+        );
       }
     } catch (e) {
-      MessageDialog.showMessage('information'.tr, e.toString(), context);
+      return ErrorModel(isError: true, message: e.toString());
     }
   }
+
+  Future<ErrorModel> updateRenter(BuildContext context, int id, UserModel userModel) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString('x-auth-token');
+
+      if (accessToken == null || accessToken.isEmpty) {
+        return ErrorModel(isError: true, message: "Unauthorized");
+      }
+
+      final apiUrl = dotenv.env['API_URL'];
+      if (apiUrl == null) {
+        return ErrorModel(isError: true, message: "API URL not configured");
+      }
+
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      String deviceName = '';
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        deviceName = androidInfo.model;
+      } else if (Platform.isIOS) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        deviceName = iosInfo.model;
+      }
+
+      final payload = {
+        'id': userModel.id,
+        'username': userModel.userName,
+        'password': userModel.password,
+        'phoneNumber': userModel.phoneNumber,
+        'passport': userModel.passport,
+        'idCard': userModel.idCard,
+        'address': userModel.address,
+        'gender': userModel.gender,
+        'deviceName': deviceName,
+      };
+
+      final response = await http.put(
+        Uri.parse('$apiUrl/api/update-renter/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(payload),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        Get.find<PropertyController>().updateRenter(jsonResponse);
+        return ErrorModel(isError: false, message: "Renter updated successfully");
+      } else {
+        return ErrorModel(
+          isError: true,
+          message: jsonResponse is Map<String, dynamic> && jsonResponse.containsKey('message')
+              ? jsonResponse['message']
+              : "Failed to update renter",
+        );
+      }
+    } catch (e) {
+      return ErrorModel(isError: true, message: e.toString());
+    }
+  }
+
+  Future<ErrorModel> deleteRenter(BuildContext context, String id) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString('x-auth-token');
+
+      if (accessToken == null || accessToken.isEmpty) {
+        return ErrorModel(isError: true, message: "Unauthorized");
+      }
+
+      final apiUrl = dotenv.env['API_URL'];
+      if (apiUrl == null) {
+        return ErrorModel(isError: true, message: "API URL not configured");
+      }
+
+      final response = await http.delete(
+        Uri.parse('$apiUrl/api/delete-renter/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        Get.find<PropertyController>().removeRenter(id);
+        return ErrorModel(isError: false, message: "Renter deleted successfully");
+      } else {
+        final jsonResponse = jsonDecode(response.body);
+        return ErrorModel(
+          isError: true,
+          message: jsonResponse is Map<String, dynamic> && jsonResponse.containsKey('message')
+              ? jsonResponse['message']
+              : "Failed to delete renter",
+        );
+      }
+    } catch (e) {
+      return ErrorModel(isError: true, message: e.toString());
+    }
+  }
+
   Future<List<UserModel>> fetchOwners(BuildContext context) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();

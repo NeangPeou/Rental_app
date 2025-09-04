@@ -172,6 +172,8 @@ class AppTranslations extends Translations {
       'failed': 'បរាជ័យ',
       'success': 'ជោគជ័យ',
       'data_already_exists': 'ទិន្នន័យមានរួចហើយ',
+      'renter': 'អ្នកជួល',
+      'create': 'បង្កើត',
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -341,6 +343,8 @@ class AppTranslations extends Translations {
       'failed': 'Failed',
       'success': 'Success',
       'data_already_exists': 'Data already exists',
+      'renter': 'Renter',
+      'create': 'Create',
     },
     'es_ES': {
       'english': 'Inglés',

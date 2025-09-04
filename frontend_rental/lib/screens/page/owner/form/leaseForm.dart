@@ -35,13 +35,11 @@ class _LeaseFormState extends State<LeaseForm> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
+    Future.microtask(() async{
       if (propertiesController.units.isEmpty) {
-        propertyService.getAllUnits();
+        await propertyService.getAllUnits();
       }
-      if(propertiesController.renters.isEmpty){
-        leaseService.getAllRenters();
-      }
+       await leaseService.getAllRenters();
     });
     arg = (Get.arguments as Map).cast<String, dynamic>();
     if (arg.isNotEmpty) {
