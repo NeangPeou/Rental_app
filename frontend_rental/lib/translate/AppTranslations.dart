@@ -174,6 +174,9 @@ class AppTranslations extends Translations {
       'data_already_exists': 'ទិន្នន័យមានរួចហើយ',
       'renter': 'អ្នកជួល',
       'create': 'បង្កើត',
+      "basicInfo": 'ព័ត៌មានមូលដ្ឋាន',
+      "contactInfo": 'ព័ត៌មានទំនាក់ទំនង',
+      "identification": 'អត្តសញ្ញាណ',
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -345,6 +348,9 @@ class AppTranslations extends Translations {
       'data_already_exists': 'Data already exists',
       'renter': 'Renter',
       'create': 'Create',
+      "basicInfo": 'Basic Info',
+      "contactInfo": 'Contact Info',
+      "identification": 'Identification',
     },
     'es_ES': {
       'english': 'Inglés',

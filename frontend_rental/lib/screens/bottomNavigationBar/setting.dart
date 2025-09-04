@@ -8,7 +8,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:frontend_rental/controller/setting_controller.dart';
 import 'package:frontend_rental/screens/authenticate/login.dart';
-import 'package:frontend_rental/screens/bottomNavigationBar/renterForm/renter_form.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting_pages/appearance.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting_pages/my_account.dart';
 import 'package:frontend_rental/screens/wrapper.dart';
@@ -157,22 +156,6 @@ class _SettingState extends State<Setting> {
                   Get.to(() => const Login());
                 }
               },
-            ),
-          ),
-          const SizedBox(height: 5,),
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
-            ),
-            child: Column(
-              children: [
-                _buildSettingsTile(Icons.person, "create_renter", onTap: () {
-                  Get.to(() => const RenterForm(), arguments: {'title': 'create_renter'.tr});
-                }),
-              ],
             ),
           ),
 

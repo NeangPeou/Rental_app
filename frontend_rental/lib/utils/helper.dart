@@ -248,7 +248,6 @@ class Helper {
     required BuildContext context,
     required RxString selectedValue,
     required List<String> options,
-    required String labelText,
     String? Function(String?)? validator,
     Icon? prefixIcon,
   }) {
@@ -261,7 +260,6 @@ class Helper {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 5),
         Obx(
           () => Container(
             decoration: BoxDecoration(
@@ -276,17 +274,10 @@ class Helper {
                   children: [
                     if (prefixIcon != null) ...[
                       prefixIcon,
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 5),
                     ],
-                    Text(
-                      labelText.tr,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
                   ],
                 ),
-                const SizedBox(height: 5),
                 ...options.map(
                   (option) => RadioListTile<String>(
                     title: Text(option.tr),

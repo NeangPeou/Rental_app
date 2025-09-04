@@ -206,7 +206,9 @@ class _WrapperState extends State<Wrapper> {
           animation: _sidebarController,
           builder: (context, _) {
             return Drawer(
-              width: _sidebarController.extended ? 280 : 70,
+              // width: _sidebarController.extended ? 280 : 70,
+              width: _sidebarController.extended ? 220 : 60,
+              // width: _sidebarController.extended ? 180 : 55,
               child: SafeArea(
                 child: Container(
                   decoration: BoxDecoration(
@@ -250,15 +252,15 @@ class _WrapperState extends State<Wrapper> {
                       itemTextPadding: const EdgeInsets.only(left: 20),
                       selectedItemTextPadding: const EdgeInsets.only(left: 20),
                       selectedTextStyle: Get.textTheme.bodyMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                       ),
                       selectedItemDecoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: Colors.teal,
+                        border: Border.all(color: Get.theme.dividerColor),
+                        color: Get.theme.cardColor,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.teal.withOpacity(0.3),
+                            color: Get.theme.cardColor.withOpacity(0.3),
                             blurRadius: 5,
                             offset: Offset(0, 2),
                           ),

@@ -178,9 +178,12 @@ class _RenterPageState extends State<RenterPage> {
                                                 const SizedBox(height: 4),
                                                 Row(
                                                   children: [
+                                                    const SizedBox(width: 8),
+                                                    const Icon(Icons.phone, size: 16, color: Colors.grey),
+                                                    const SizedBox(width: 4),
                                                     Expanded(
                                                       child: Text(
-                                                        'Phone: ${renter['phoneNumber'] ?? ''}',
+                                                        renter['phoneNumber'] ?? '',
                                                         style: Get.textTheme.bodySmall,
                                                         overflow: TextOverflow.ellipsis,
                                                       ),
@@ -188,11 +191,39 @@ class _RenterPageState extends State<RenterPage> {
                                                   ],
                                                 ),
                                                 const SizedBox(height: 4),
-                                                Text('Address: ${renter['address'] ?? ''}',
-                                                    style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                                Row(
+                                                  children: [
+                                                    const SizedBox(width: 8),
+                                                    const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                                                    const SizedBox(width: 4),
+                                                    Expanded(
+                                                      child: Text(
+                                                        renter['address'] ?? '',
+                                                        style: Get.textTheme.bodySmall,
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                                 const SizedBox(height: 4),
-                                                Text('Gender: ${renter['gender'] ?? ''}',
-                                                    style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                                Row(
+                                                  children: [
+                                                    const SizedBox(width: 8),
+                                                    const Icon(Icons.person, size: 16, color: Colors.grey),
+                                                    const SizedBox(width: 4),
+                                                    Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.green[200], // light green background
+                                                        borderRadius: BorderRadius.circular(12), // pill shape
+                                                      ),
+                                                      child: Text(
+                                                        renter['gender'] ?? '',
+                                                        style: Get.textTheme.bodySmall?.copyWith(color: Colors.green[800]),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ],
                                             ),
                                           ),
