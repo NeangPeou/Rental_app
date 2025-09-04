@@ -56,7 +56,7 @@ flutter_icons:
   ios: true
   image_path_android: "assets/app_icon/white_bg_khawin.jpg"
   image_path_ios: "assets/app_icon/white_bg_khawin.jpg"
-  adaptive_icon_background: "assets/app_icon/white_bg_khawin.jpg"
+  adaptive_icon_background: "#ffffff"
   adaptive_icon_foreground: "assets/app_icon/white_bg_khawin.jpg"
 
 dev_dependencies:
