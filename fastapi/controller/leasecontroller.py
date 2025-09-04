@@ -52,6 +52,7 @@ def create_lease(db: Session, data: LeaseCreate, current_user):
             status=lease.status,
             username=user.userName if user else None,
             unit_number=unit.unit_number if unit else None,
+            is_available=unit.is_available
         )
     except HTTPException as http_exc:
         db.rollback()
@@ -158,7 +159,8 @@ def update_lease(db: Session, lease_id: int, data: LeaseUpdate, current_user):
             deposit_amount=lease.deposit_amount,
             status=lease.status,
             username=user.userName if user else None,
-            unit_number=unit.unit_number if unit else None
+            unit_number=unit.unit_number if unit else None,
+            is_available=unit.is_available
         )
 
     except HTTPException as http_exc:

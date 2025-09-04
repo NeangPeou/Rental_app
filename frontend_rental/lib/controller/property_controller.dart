@@ -80,6 +80,16 @@ class PropertyController extends GetxController {
   void addLease(Map<String, dynamic> lease) {
     allLeases.insert(0, lease);
     leases.insert(0, lease);
+    if (lease['unit_id'] != null) {
+      final unitIndex = units.indexWhere((u) {
+        return u['id'] == lease['unit_id'].toString();
+      });
+
+      if (unitIndex != -1) {
+        units[unitIndex]['is_available'] = lease['is_available'];
+        allUnits[unitIndex]['is_available'] = lease['is_available'];
+      }
+    }
   }
 
   void updateLease(Map<String, dynamic> updatedLease) {
@@ -87,6 +97,16 @@ class PropertyController extends GetxController {
     if (index != -1) {
       leases[index] = updatedLease;
       allLeases[index] = updatedLease;
+      if (updatedLease['unit_id'] != null) {
+        final unitIndex = units.indexWhere((u) {
+          return u['id'] == updatedLease['unit_id'].toString();
+        });
+
+        if (unitIndex != -1) {
+          units[unitIndex]['is_available'] = updatedLease['is_available'];
+          allUnits[unitIndex]['is_available'] = updatedLease['is_available'];
+        }
+      }
     }
   }
 

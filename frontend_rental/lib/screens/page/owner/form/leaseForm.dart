@@ -19,7 +19,7 @@ class _LeaseFormState extends State<LeaseForm> {
   final propertiesController = Get.find<PropertyController>();
   final PropertyService propertyService = PropertyService();
   final LeaseService leaseService = LeaseService();
-
+  bool isEditMode = false;
   String? id;
   late Map<String, dynamic> arg;
 
@@ -46,6 +46,7 @@ class _LeaseFormState extends State<LeaseForm> {
     arg = (Get.arguments as Map).cast<String, dynamic>();
     if (arg.isNotEmpty) {
       final lease = arg;
+      isEditMode = lease['id'] != null;
       id = lease['id'].toString();
       unitController.text = lease['unit_id'].toString();
       renterController.text = lease['renter_id'].toString();
@@ -106,8 +107,7 @@ class _LeaseFormState extends State<LeaseForm> {
     }
   }
 
-  Future<void> _selectDate(
-      BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -164,7 +164,7 @@ class _LeaseFormState extends State<LeaseForm> {
                         Obx(() {
                           return Helper.sampleDropdownSearch(
                             context: context,
-                            items: propertiesController.units.isEmpty ? [] : propertiesController.units,
+                            items: propertiesController.units.where((unit) => unit['is_available'] == true || (isEditMode && unit['id'] == unitController.text)).toList(),
                             labelText: "Select Unit",
                             controller: unitController,
                             selectedId: unitController.text,

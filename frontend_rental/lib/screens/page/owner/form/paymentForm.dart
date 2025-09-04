@@ -21,6 +21,7 @@ class PaymentForm extends StatefulWidget {
 class _PaymentFormState extends State<PaymentForm> {
   bool isLoading = false;
   String? id;
+  bool isEditMode = false;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _leaseIdController = TextEditingController();
   final TextEditingController _paymentDateController = TextEditingController();
@@ -88,6 +89,7 @@ class _PaymentFormState extends State<PaymentForm> {
     arg = (Get.arguments as Map).cast<String, dynamic>();
     if (arg.isNotEmpty) {
       final data = arg;
+      isEditMode = data['id'] != null;
       id = data['id'].toString();
       _leaseIdController.text = data['lease_id'].toString();
       _paymentDateController.text = data['payment_date'].toString();
@@ -154,7 +156,7 @@ class _PaymentFormState extends State<PaymentForm> {
               Obx(() {
                 return Helper.sampleDropdownSearch(
                   context: context,
-                  items: propertiesController.leases.where((lease) => lease['status'].toString().toLowerCase() == "active").toList(),
+                  items: propertiesController.leases.where((lease) => lease['is_available'] == true || (isEditMode && lease['id'].toString() == _leaseIdController.text)).toList(),
                   labelText: "leases".tr,
                   controller: _leaseIdController,
                   selectedId: _leaseIdController.text,

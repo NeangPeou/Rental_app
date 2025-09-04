@@ -28,6 +28,7 @@ class LeaseOut(LeaseBase):
     id: int
     username: Optional[str] = None
     unit_number: Optional[str] = None
+    is_available: Optional[bool] = True
 
     class Config:
         orm_mode = True
