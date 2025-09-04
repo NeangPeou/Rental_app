@@ -10,6 +10,7 @@ import 'package:frontend_rental/screens/page/owner/paymentPage.dart';
 import 'package:frontend_rental/screens/page/owner/propertyPage.dart';
 import 'package:frontend_rental/screens/page/owner/propertyUnit.dart';
 import 'package:frontend_rental/screens/page/rental/rentalPage.dart';
+import 'package:frontend_rental/screens/page/rental/renterPage.dart';
 import 'package:frontend_rental/shared/loading.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -327,7 +328,7 @@ class _WrapperState extends State<Wrapper> {
                           icon: Icons.home_work,
                           label: 'property_unit'.tr,
                           onTap: () => Get.to(() => PropertyUnit())),
-                      SidebarXItem(icon: Icons.people, label: 'tenants'.tr),
+                      SidebarXItem(icon: Icons.people, label: 'tenants'.tr, onTap: () => Get.to(() => RenterPage()),),
                       SidebarXItem(
                           icon: Icons.assignment,
                           label: 'leases'.tr,

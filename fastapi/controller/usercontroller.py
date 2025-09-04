@@ -35,6 +35,32 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         return user_obj
     except JWTError as e:
         raise credentials_exception
+    
+def get_renters_controller(db: Session, current_user: user.User = Depends(get_current_user)):
+    try:
+        owner_role = db.query(role.Role).filter(role.Role.role == "Owner").first()
+        if not owner_role or current_user.role_id != owner_role.id:
+            raise HTTPException(status_code=403, detail="Only owners can access renter list")
+
+        renter_role = db.query(role.Role).filter(role.Role.role == "Renter").first()
+        if not renter_role:
+            raise HTTPException(status_code=404, detail="Renter role not found")
+
+        renters_list = db.query(user.User).filter(user.User.role_id == renter_role.id).order_by(desc(user.User.id)).all()
+        return [
+            {
+                'id': str(r.id),
+                'userName': r.userName,
+                'userID': re.sub(f"{r.id}$", "", r.userName or ""),
+                'phoneNumber': r.phoneNumber,
+                'passport': r.passport,
+                'idCard': r.idCard,
+                'address': r.address,
+                'gender': r.gender,
+            } for r in renters_list
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch renters: {str(e)}")
 
 def get_owners_controller(db: Session, current_user: user.User = Depends(get_current_user)):
     try:
@@ -294,7 +320,6 @@ def change_password_controller(user_data: ChangePasswordRequest, db: Session, cu
     
 async def create_renter_controller(user_data: UserCreate, db: Session, current_user: user.User = Depends(get_current_user), request_obj: Request = None):
     try:
-        # Verify the current user is an Owner
         owner_role = db.query(role.Role).filter(role.Role.role == "Owner").first()
         if not owner_role or current_user.role_id != owner_role.id:
             raise HTTPException(status_code=403, detail="Only owners can create renters")
@@ -313,9 +338,8 @@ async def create_renter_controller(user_data: UserCreate, db: Session, current_u
         gender = user_data.gender or 'Male'
         if gender not in VALID_GENDERS:
             raise HTTPException(status_code=400, detail=f"Invalid gender. Must be one of: {', '.join(VALID_GENDERS)}")
-        # Hash the password
+
         hashed_password = get_password_hash(user_data.password)
-        # Create renter user
         renter = user.User(
             userName=user_data.username,
             password=hashed_password,
@@ -330,7 +354,6 @@ async def create_renter_controller(user_data: UserCreate, db: Session, current_u
         db.commit()
         db.refresh(renter)
 
-        # Insert into t_renters
         renter_extra = renters.Renter(
             user_id=renter.id,
             id_document=user_data.idCard or user_data.passport
@@ -338,9 +361,9 @@ async def create_renter_controller(user_data: UserCreate, db: Session, current_u
         db.add(renter_extra)
         db.commit()
         db.refresh(renter_extra)
-        # Update username with ID
+
         data = update_username(renter.id, f"{renter.userName}{renter.id}", db)
-        # Log the action
+
         ip_address = request_obj.client.host if request_obj else 'unknown'
         host_name = user_data.deviceName if hasattr(user_data, 'deviceName') else ip_address or 'unknown'
         log_action(
@@ -351,10 +374,102 @@ async def create_renter_controller(user_data: UserCreate, db: Session, current_u
             message=f"Renter {renter.userName} created by owner {current_user.userName}",
             host_name=host_name
         )
-        # Prepare response
+
         user_response = UserResponse.from_orm(data)
         user_response.userID = user_data.username
         return user_response
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to create renter: {str(e)}")
+    
+def update_renter_controller(id: int, user_data: UpdateUser, db: Session, current_user: user.User = Depends(get_current_user), request_obj: Request = None):
+    try:
+        # Verify current user is an Owner
+        owner_role = db.query(role.Role).filter(role.Role.role == "Owner").first()
+        if not owner_role or current_user.role_id != owner_role.id:
+            raise HTTPException(status_code=403, detail="Only owners can update renters")
+
+        # Check if renter exists
+        renter = db.query(user.User).filter(user.User.id == id).first()
+        if not renter:
+            raise HTTPException(status_code=404, detail="Renter not found")
+
+        # Verify user is a Renter
+        renter_role = db.query(role.Role).filter(role.Role.role == "Renter").first()
+        if not renter_role or renter.role_id != renter_role.id:
+            raise HTTPException(status_code=400, detail="User is not a renter")
+
+        if user_data.username:
+            renter.userName = user_data.username + str(id) or None
+        if user_data.password is not None:
+            renter.password = get_password_hash(user_data.password)
+        if user_data.phoneNumber is not None:
+            renter.phoneNumber = user_data.phoneNumber or None
+        if user_data.passport is not None:
+            renter.passport = user_data.passport or None
+        if user_data.idCard is not None:
+            renter.idCard = user_data.idCard or None
+        if user_data.address is not None:
+            renter.address = user_data.address or None
+        if user_data.gender is not None:
+            if user_data.gender not in VALID_GENDERS:
+                raise HTTPException(status_code=400, detail=f"Invalid gender. Must be one of: {', '.join(VALID_GENDERS)}")
+            renter.gender = user_data.gender
+
+        db.commit()
+        db.refresh(renter)
+
+        # Log the action
+        ip_address = request_obj.client.host if request_obj else 'unknown'
+        host_name = user_data.deviceName if hasattr(user_data, 'deviceName') else ip_address or 'unknown'
+        log_action(
+            db=db,
+            user_id=renter.id,
+            action="UPDATE_RENTER",
+            log_type="INFO",
+            message=f"Renter {renter.userName} updated by owner {current_user.userName}",
+            host_name=host_name
+        )
+
+        # Prepare response
+        user_response = UserResponse.from_orm(renter)
+        user_response.userID = user_data.username
+        return user_response
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to update renter: {str(e)}")
+
+def delete_renter_controller(id: str, db: Session, current_user: user.User = Depends(get_current_user), request_obj: Request = None):
+    try:
+        owner_role = db.query(role.Role).filter(role.Role.role == "Owner").first()
+        if not owner_role or current_user.role_id != owner_role.id:
+            raise HTTPException(status_code=403, detail="Only owners can delete renters")
+
+        renter = db.query(user.User).filter(user.User.id == id).first()
+        if not renter:
+            raise HTTPException(status_code=404, detail="Renter not found")
+
+        renter_role = db.query(role.Role).filter(role.Role.role == "Renter").first()
+        if not renter_role or renter.role_id != renter_role.id:
+            raise HTTPException(status_code=400, detail="User is not a renter")
+
+        db.query(renters.Renter).filter(renters.Renter.user_id == id).delete()
+        db.query(system_log.SystemLog).filter(system_log.SystemLog.user_id == renter.id).delete()
+
+        db.delete(renter)
+        db.commit()
+
+        ip_address = request_obj.client.host if request_obj else 'unknown'
+        log_action(
+            db=db,
+            user_id=current_user.id,
+            action="DELETE_RENTER",
+            log_type="INFO",
+            message=f"Renter {renter.userName} and associated logs deleted by {current_user.userName}",
+            host_name=ip_address
+        )
+        user_response = UserResponse.from_orm(renter)
+        return user_response
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to delete renter and logs: {str(e)}")

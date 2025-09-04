@@ -1,16 +1,14 @@
 from pydantic import BaseModel
 from typing import Optional
 
-class RenterBase(BaseModel):
+class RenterOut(BaseModel):
+    id: int
     user_id: int
     id_document: Optional[str] = None
-
-class RenterCreate(RenterBase):
-    pass
-
-class RenterOut(RenterBase):
-    id: int
     username: Optional[str] = None
+    phoneNumber: Optional[str] = None
+    address: Optional[str] = None
+    gender: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True

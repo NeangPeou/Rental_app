@@ -130,18 +130,23 @@ class PropertyController extends GetxController {
   }
 
   void updateRenter(Map<String, dynamic> updatedRenter) {
-    final index = renters.indexWhere((r) => r['id'] == updatedRenter['id']);
+    final id = int.tryParse(updatedRenter['id'].toString());
+    if (id == null) return;
+    final index = renters.indexWhere((r) => r['id'] == id);
     if (index != -1) {
       renters[index] = updatedRenter;
-      allRenters[index] = updatedRenter;
+    }
+    final allIndex = allRenters.indexWhere((r) => r['id'] == id);
+    if (allIndex != -1) {
+      allRenters[allIndex] = updatedRenter;
     }
   }
 
   void removeRenter(String id) {
     final parsedId = int.tryParse(id);
-    if (parsedId != null) {
-      renters.removeWhere((r) => r['id'] == parsedId);
-      allRenters.removeWhere((r) => r['id'] == parsedId);
-    }
+    if (parsedId == null) return;
+
+    renters.removeWhere((r) => r['id'].toString() == id || r['id'] == parsedId);
+    allRenters.removeWhere((r) => r['id'].toString() == id || r['id'] == parsedId);
   }
 }
