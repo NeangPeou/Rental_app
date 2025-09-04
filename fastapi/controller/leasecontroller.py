@@ -5,6 +5,7 @@ from db.models.leases import Lease
 from db.models.units import Unit
 from db.models.renters import Renter
 from db.models.user import User
+from db.models.properties import Property
 
 def create_lease(db: Session, data: LeaseCreate, current_user):
     try:
@@ -31,9 +32,10 @@ def create_lease(db: Session, data: LeaseCreate, current_user):
             status=data.status,
         )
 
-        unit.is_available = False
+        unit.is_available = data.status not in ["active", "pending"]
 
         db.add(lease)
+        db.add(unit)
         db.commit()
         db.refresh(lease)
 
@@ -64,7 +66,8 @@ def get_all_leases(db: Session, current_user):
         leases = db.query(Lease, User.userName, Unit.unit_number).\
             join(Renter, Renter.id == Lease.renter_id).\
             join(User, User.id == Renter.user_id).\
-            join(Unit, Unit.id == Lease.unit_id).filter(User.id == current_user.id).all()
+            join(Unit, Unit.id == Lease.unit_id).\
+            join(Property, Property.id == Unit.property_id).filter(Property.owner_id == current_user.id).all()
         
         return [
             LeaseOut(
@@ -107,8 +110,16 @@ def update_lease(db: Session, lease_id: int, data: LeaseUpdate, current_user):
                 db.add(old_unit)
                 
             lease.unit_id = data.unit_id
-            new_unit.is_available = False
+            new_unit.is_available = data.status not in ['active', 'pending']
             db.add(new_unit)
+
+        if data.status is not None:
+            lease.status = data.status 
+
+            current_unit = db.query(Unit).filter(Unit.id == lease.unit_id).first()
+            if current_unit:
+                current_unit.is_available = data.status not in ["active", "pending"]
+                db.add(current_unit)
 
         # Handle renter update
         if data.renter_id is not None:
