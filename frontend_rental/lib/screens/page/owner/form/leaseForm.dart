@@ -22,7 +22,8 @@ class _LeaseFormState extends State<LeaseForm> {
   bool isEditMode = false;
   String? id;
   late Map<String, dynamic> arg;
-
+  late String? originalUnitId;
+  late String? originalUnitPrice;
   final TextEditingController unitController = TextEditingController();
   final TextEditingController renterController = TextEditingController();
   final TextEditingController startDateController = TextEditingController();
@@ -46,6 +47,8 @@ class _LeaseFormState extends State<LeaseForm> {
       final lease = arg;
       isEditMode = lease['id'] != null;
       id = lease['id'].toString();
+      originalUnitId = lease['unit_id'].toString();
+      originalUnitPrice = lease['rent_amount'].toString();
       unitController.text = lease['unit_id'].toString();
       renterController.text = lease['renter_id'].toString();
       startDateController.text = lease['start_date']?.toString() ?? '';
@@ -155,9 +158,7 @@ class _LeaseFormState extends State<LeaseForm> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Unit & Renter",
-                            style: theme.textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold)),
+                        Text("Unit & Renter", style: theme.textTheme.titleMedium ?.copyWith(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 8),
                         Obx(() {
                           return Helper.sampleDropdownSearch(
@@ -170,6 +171,23 @@ class _LeaseFormState extends State<LeaseForm> {
                             idKey: "id",
                             isRequired: true,
                             dropDownPrefixIcon: const Icon(Icons.apartment_rounded),
+                            onChanged: (value) {
+                              if (value == null) return;
+
+                              final selectedUnitId = value['id'].toString();
+                              final unitRent = value['rent'] ?? 0;
+
+                              if (isEditMode) {
+                                final currentUnitId = originalUnitId;
+                                if (selectedUnitId != currentUnitId) {
+                                  rentAmountController.text = unitRent.toString();
+                                } else{
+                                  rentAmountController.text = originalUnitPrice.toString();
+                                }
+                              } else {
+                                rentAmountController.text = unitRent.toString();
+                              }
+                            }
                           );
                         }),
                         const SizedBox(height: 8),

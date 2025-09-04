@@ -1,6 +1,9 @@
 from fastapi import HTTPException
 from sqlalchemy import desc, func
 from sqlalchemy.orm import Session
+from db.models.leases import Lease
+from db.models.renters import Renter
+from db.models.user import User
 from schemas.units import PropertyUnitCreate, PropertyUnitUpdate
 from db.models.units import Unit
 from db.models.properties import Property
@@ -55,10 +58,14 @@ def create_property_unit(db: Session, data: PropertyUnitCreate, current_user):
 def get_all_units(db: Session, current_user):
     try:
         units = (
-            db.query(Property, Unit)
-            .outerjoin(Property, Property.id == Unit.property_id)
+            db.query(Unit, Property, Lease, Renter, User)
+            .join(Property, Property.id == Unit.property_id)
+            .outerjoin(Lease, (Lease.unit_id == Unit.id) & (Lease.status == 'active'))
+            .outerjoin(Renter, Renter.id == Lease.renter_id)
+            .outerjoin(User, User.id == Renter.user_id)
             .filter(Property.owner_id == current_user.id)
-            .order_by(desc(Unit.id)).all()
+            .order_by(Unit.id.desc())
+            .all()
         )
 
         return [{
@@ -68,11 +75,13 @@ def get_all_units(db: Session, current_user):
             'bedrooms': u.bedrooms,
             'bathrooms': u.bathrooms,
             'size': u.size_sqm,
-            'rent': u.rent_price,
+            'rent': u.rent_price if u.rent_price is not None else (lease.rent_amount if lease else None),
             'is_available': u.is_available,
             'property_id': u.property_id,
-            'property_name': p.name
-        } for p, u in units]
+            'property_name': p.name,
+            'renter_name': user.userName if user else None,
+            'lease_status': lease.status if lease else None,
+        } for u, p, lease, renter, user in units]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching units: {str(e)}")
 
@@ -121,6 +130,18 @@ def update_property_unit(db: Session, unit_id: int, data: PropertyUnitUpdate, cu
         db.commit()
         db.refresh(unit)
 
+        active_lease = (
+            db.query(Lease, Renter, User)
+            .join(Renter, Renter.id == Lease.renter_id)
+            .join(User, User.id == Renter.user_id)
+            .filter(Lease.unit_id == unit.id, Lease.status == 'active')
+            .order_by(desc(Lease.id))
+            .first()
+        )
+
+        renter_name = active_lease[2].userName if active_lease else None
+        lease_status = active_lease[0].status if active_lease else None
+
         return {
             'id': str(unit.id),
             'unit_number': unit.unit_number,
@@ -128,10 +149,12 @@ def update_property_unit(db: Session, unit_id: int, data: PropertyUnitUpdate, cu
             'bedrooms': unit.bedrooms,
             'bathrooms': unit.bathrooms,
             'size': unit.size_sqm,
-            'rent': unit.rent_price,
+            'rent': unit.rent_price if unit.rent_price is not None else (active_lease[0].rent_amount if active_lease else None),
             'is_available': unit.is_available,
             'property_id': unit.property_id,
-            'property_name': property.name
+            'property_name': property.name,
+            'renter_name': renter_name,
+            'lease_status': lease_status,
         }
     except HTTPException as http_exc:
         raise http_exc

@@ -21,6 +21,8 @@ class PaymentForm extends StatefulWidget {
 class _PaymentFormState extends State<PaymentForm> {
   bool isLoading = false;
   String? id;
+  late String? originalLeaseId;
+  late String? originalRentAmount;
   bool isEditMode = false;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _leaseIdController = TextEditingController();
@@ -91,6 +93,8 @@ class _PaymentFormState extends State<PaymentForm> {
       final data = arg;
       isEditMode = data['id'] != null;
       id = data['id'].toString();
+      originalLeaseId = data['lease_id'].toString();
+      originalRentAmount = data['amount_paid'].toString();
       _leaseIdController.text = data['lease_id'].toString();
       _paymentDateController.text = data['payment_date'].toString();
       _amountPaidController.text = data['amount_paid'].toString();
@@ -156,7 +160,23 @@ class _PaymentFormState extends State<PaymentForm> {
               Obx(() {
                 return Helper.sampleDropdownSearch(
                   context: context,
-                  items: propertiesController.leases.where((lease) => lease['is_available'] == true || (isEditMode && lease['id'].toString() == _leaseIdController.text)).toList(),
+                  items: (() {
+                    final Map<String, Map<String, dynamic>> uniqueLeases = {};
+
+                    for (var lease in propertiesController.leases) {
+                      final unitNumber = lease['unit_number'].toString();
+                      final status = lease['status'].toString().toLowerCase();
+
+                      if (status == 'active' && !uniqueLeases.containsKey(unitNumber)) {
+                        uniqueLeases[unitNumber] = lease;
+                      }
+
+                      if (lease['id'].toString() == _leaseIdController.text && status != 'active') {
+                        uniqueLeases[unitNumber] = lease;
+                      }
+                    }
+                    return uniqueLeases.values.toList();
+                  })(),
                   labelText: "leases".tr,
                   controller: _leaseIdController,
                   selectedId: _leaseIdController.text,
@@ -164,6 +184,22 @@ class _PaymentFormState extends State<PaymentForm> {
                   idKey: "id",
                   isRequired: true,
                   dropDownPrefixIcon: Icon(Icons.apartment_rounded),
+                  onChanged: (value) {
+                    if (value == null) return;
+
+                    final selectedLeaseId = value['id'].toString();
+                    final rentAmount = value['rent_amount'] ?? 0;
+
+                    if (isEditMode) {
+                      if (selectedLeaseId != originalLeaseId) {
+                        _amountPaidController.text = rentAmount.toString();
+                      } else{
+                        _amountPaidController.text = originalRentAmount.toString();
+                      }
+                    } else {
+                      _amountPaidController.text = rentAmount.toString();
+                    }
+                  }
                 );
               }),
               const SizedBox(height: 16),

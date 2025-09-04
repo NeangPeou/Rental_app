@@ -186,7 +186,7 @@ class _PropertyUnitState extends State<PropertyUnit> {
                                                 child: Row(
                                                   mainAxisSize: MainAxisSize.min,
                                                   children: [
-                                                    const Icon(Icons.category, size: 12, color: Colors.blue),
+                                                    const Icon(Icons.monetization_on, size: 12, color: Colors.blue),
                                                     const SizedBox(width: 4),
                                                     Flexible(
                                                       child: ConstrainedBox(
@@ -194,7 +194,7 @@ class _PropertyUnitState extends State<PropertyUnit> {
                                                           maxWidth: Get.width * 0.22,
                                                         ),
                                                         child: Text(
-                                                          property['floor'].toString(),
+                                                          property['rent'].toString(),
                                                           style: Get.textTheme.bodySmall?.copyWith(color: Colors.blue[800]),
                                                           overflow: TextOverflow.ellipsis,
                                                         ),
@@ -205,8 +205,8 @@ class _PropertyUnitState extends State<PropertyUnit> {
                                               ),
                           
                                               const SizedBox(width: 6),
-                          
-                                              Container(
+
+                                              if (property['renter_name'] != null && property['renter_name'].toString().isNotEmpty) Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                                 decoration: BoxDecoration(
                                                   color: Colors.green.shade100,
@@ -223,7 +223,7 @@ class _PropertyUnitState extends State<PropertyUnit> {
                                                           maxWidth: Get.width * 0.22,
                                                         ),
                                                         child: Text(
-                                                          property['is_available'].toString(),
+                                                          property['renter_name'].toString(),
                                                           style: Get.textTheme.bodySmall?.copyWith(color: Colors.green[800]),
                                                           overflow: TextOverflow.ellipsis,
                                                         ),
