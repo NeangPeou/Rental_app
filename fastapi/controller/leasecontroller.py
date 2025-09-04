@@ -64,7 +64,7 @@ def get_all_leases(db: Session, current_user):
         leases = db.query(Lease, User.userName, Unit.unit_number).\
             join(Renter, Renter.id == Lease.renter_id).\
             join(User, User.id == Renter.user_id).\
-            join(Unit, Unit.id == Lease.unit_id).all()
+            join(Unit, Unit.id == Lease.unit_id).filter(User.id == current_user.id).all()
         
         return [
             LeaseOut(
@@ -104,9 +104,11 @@ def update_lease(db: Session, lease_id: int, data: LeaseUpdate, current_user):
             
             if old_unit:
                 old_unit.is_available = True
+                db.add(old_unit)
                 
             lease.unit_id = data.unit_id
             new_unit.is_available = False
+            db.add(new_unit)
 
         # Handle renter update
         if data.renter_id is not None:
