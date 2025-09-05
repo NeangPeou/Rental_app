@@ -177,6 +177,7 @@ class AppTranslations extends Translations {
       "basicInfo": 'ព័ត៌មានមូលដ្ឋាន',
       "contactInfo": 'ព័ត៌មានទំនាក់ទំនង',
       "identification": 'អត្តសញ្ញាណ',
+      'loading': 'កំពុងផ្ទុក...',
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -351,6 +352,7 @@ class AppTranslations extends Translations {
       "basicInfo": 'Basic Info',
       "contactInfo": 'Contact Info',
       "identification": 'Identification',
+      'loading': 'Loading...',
     },
     'es_ES': {
       'english': 'Inglés',

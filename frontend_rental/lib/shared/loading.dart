@@ -10,9 +10,43 @@ class Loading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(color: Get.theme.scaffoldBackgroundColor),
-      child: const Center(
-        child: SpinKitFadingCircle(color: firstMainThemeColor, size: 50.0),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    firstMainThemeColor.withOpacity(0.1),
+                    firstMainThemeColor.withOpacity(0.1),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Get.theme.cardColor,
+                    blurRadius: 12,
+                    spreadRadius: 2,
+                  )
+                ],
+              ),
+              child: const SpinKitCircle(
+                color: Colors.amber,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              "loading".tr,
+              style: Get.textTheme.bodyMedium
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+

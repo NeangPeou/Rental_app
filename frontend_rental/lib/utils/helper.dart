@@ -333,14 +333,52 @@ class Helper {
       ),
     );
   }
+  static Widget customLoading({String? message}) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  firstMainThemeColor.withOpacity(0.1),
+                  firstMainThemeColor.withOpacity(0.1),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Get.theme.cardColor.withAlpha(100),
+                  spreadRadius: 1
+                )
+              ],
+            ),
+            child: const SpinKitCircle(
+              color: Colors.white,
+              size: 50,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            message ?? "loading".tr,
+            style: Get.textTheme.bodyMedium?.copyWith(color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
 
   static void showLoadingDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        return const Center(
-          child: SpinKitFadingCircle(color: firstMainThemeColor, size: 50.0),
+        return Center(
+          child: customLoading(),
         );
       },
     );
