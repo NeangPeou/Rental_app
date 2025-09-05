@@ -147,8 +147,7 @@ class _LeaseFormState extends State<LeaseForm> {
         width: 1, // Border width
       ),
       ),
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Padding(padding: const EdgeInsets.all(16), child: child),
+      child: Padding(padding: const EdgeInsets.all(12), child: child),
     );
   }
 
@@ -156,175 +155,178 @@ class _LeaseFormState extends State<LeaseForm> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: Helper.sampleAppBar('Lease', context, null),
-      body: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            border: Border.all(color: Theme.of(context).dividerColor.withAlpha(120)),
-            borderRadius: BorderRadius.circular(10)
-          ),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(2),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  _buildSection(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Unit & Renter", style: theme.textTheme.titleMedium ?.copyWith(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
-                        Obx(() {
-                          return Helper.sampleDropdownSearch(
-                            context: context,
-                            items: propertiesController.units.where((unit) => unit['is_available'] == true || (isEditMode && unit['id'] == unitController.text)).toList(),
-                            labelText: "Select Unit",
-                            controller: unitController,
-                            selectedId: unitController.text,
-                            displayKey: "unit_number",
-                            idKey: "id",
-                            isRequired: true,
-                            dropDownPrefixIcon: const Icon(Icons.apartment_rounded),
-                            onChanged: (value) {
-                              if (value == null) return;
-
-                              final selectedUnitId = value['id'].toString();
-                              final unitRent = value['rent'] ?? 0;
-
-                              if (isEditMode) {
-                                final currentUnitId = originalUnitId;
-                                if (selectedUnitId != currentUnitId) {
+      appBar: Helper.sampleAppBar('tenants'.tr, context, null),
+      body: SafeArea(
+        bottom: true,
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              border: Border.all(color: Theme.of(context).dividerColor.withAlpha(120)),
+              borderRadius: BorderRadius.circular(10)
+            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(2),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    _buildSection(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("unit&renter".tr, style: theme.textTheme.titleMedium ?.copyWith(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          Obx(() {
+                            return Helper.sampleDropdownSearch(
+                              context: context,
+                              items: propertiesController.units.where((unit) => unit['is_available'] == true || (isEditMode && unit['id'] == unitController.text)).toList(),
+                              labelText: "selectUnit".tr,
+                              controller: unitController,
+                              selectedId: unitController.text,
+                              displayKey: "unit_number",
+                              idKey: "id",
+                              isRequired: true,
+                              dropDownPrefixIcon: const Icon(Icons.apartment_rounded),
+                              onChanged: (value) {
+                                if (value == null) return;
+        
+                                final selectedUnitId = value['id'].toString();
+                                final unitRent = value['rent'] ?? 0;
+        
+                                if (isEditMode) {
+                                  final currentUnitId = originalUnitId;
+                                  if (selectedUnitId != currentUnitId) {
+                                    rentAmountController.text = unitRent.toString();
+                                  } else{
+                                    rentAmountController.text = originalUnitPrice.toString();
+                                  }
+                                } else {
                                   rentAmountController.text = unitRent.toString();
-                                } else{
-                                  rentAmountController.text = originalUnitPrice.toString();
                                 }
-                              } else {
-                                rentAmountController.text = unitRent.toString();
                               }
-                            }
-                          );
-                        }),
-                        const SizedBox(height: 8),
-                        Obx(() {
-                          return Helper.sampleDropdownSearch(
+                            );
+                          }),
+                          const SizedBox(height: 8),
+                          Obx(() {
+                            return Helper.sampleDropdownSearch(
+                              context: context,
+                              items: propertiesController.renters,
+                              labelText: "selectRenter".tr,
+                              controller: renterController,
+                              selectedId: renterController.text,
+                              displayKey: "username",
+                              idKey: "id",
+                              isRequired: true,
+                              dropDownPrefixIcon: const Icon(Icons.person),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+                    _buildSection(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("leaseDates".tr,
+                              style: theme.textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          Helper.sampleTextField(
                             context: context,
-                            items: propertiesController.renters,
-                            labelText: "Select Renter",
-                            controller: renterController,
-                            selectedId: renterController.text,
-                            displayKey: "username",
-                            idKey: "id",
+                            controller: startDateController,
+                            labelText: "startDate".tr,
+                            readOnly: true,
+                            onTap: () => _selectDate(context, startDateController),
                             isRequired: true,
-                            dropDownPrefixIcon: const Icon(Icons.person),
-                          );
-                        }),
-                      ],
-                    ),
-                  ),
-                  _buildSection(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Lease Dates",
-                            style: theme.textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
-                        Helper.sampleTextField(
-                          context: context,
-                          controller: startDateController,
-                          labelText: "Start Date",
-                          readOnly: true,
-                          onTap: () => _selectDate(context, startDateController),
-                          isRequired: true,
-                          prefixIcon: const Icon(Icons.calendar_today),
-                          validator: (value) =>
-                              value!.isEmpty ? 'Please select a start date' : null,
-                        ),
-                        const SizedBox(height: 8),
-                        Helper.sampleTextField(
-                          context: context,
-                          controller: endDateController,
-                          labelText: "End Date",
-                          readOnly: true,
-                          onTap: () => _selectDate(context, endDateController),
-                          isRequired: true,
-                          prefixIcon: const Icon(Icons.calendar_today),
-                          validator: (value) =>
-                              value!.isEmpty ? 'Please select an end date' : null,
-                        ),
-                      ],
-                    ),
-                  ),
-                  _buildSection(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Payment Info",
-                            style: theme.textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
-                        Helper.sampleTextField(
-                          context: context,
-                          controller: rentAmountController,
-                          labelText: "Rent Amount (\$)",
-                          keyboardType: TextInputType.number,
-                          isRequired: true,
-                          prefixIcon: const Icon(Icons.attach_money_rounded),
-                          validator: (value) =>
-                              value!.isEmpty ? 'Please enter rent amount' : null,
-                        ),
-                        const SizedBox(height: 8),
-                        Helper.sampleTextField(
-                          context: context,
-                          controller: depositAmountController,
-                          labelText: "Deposit Amount (\$)",
-                          keyboardType: TextInputType.number,
-                          prefixIcon: const Icon(Icons.savings),
-                        ),
-                      ],
-                    ),
-                  ),
-                  _buildSection(
-                    child: Helper.sampleDropdownSearch(
-                      context: context,
-                      items: [
-                        {'id': 'active', 'status': 'Active'},
-                        {'id': 'terminated', 'status': 'Terminated'},
-                        {'id': 'expired', 'status': 'Expired'},
-                      ],
-                      labelText: "Status",
-                      controller: TextEditingController(text: status),
-                      selectedId: status,
-                      displayKey: "status",
-                      idKey: "id",
-                      isRequired: true,
-                      onChanged: (selected) {
-                        if (selected != null) {
-                          status = selected['id'];
-                        }
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    width: Get.width, // smaller width
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12), // smaller padding
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8), // smaller radius
-                        ),
-                      ),
-                      onPressed: _saveLease,
-                      child: Text(
-                        id == null ? 'save'.tr : 'update'.tr,
-                        style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white), // smaller font
+                            prefixIcon: const Icon(Icons.calendar_today),
+                            validator: (value) =>
+                                value!.isEmpty ? 'Please select a start date' : null,
+                          ),
+                          const SizedBox(height: 8),
+                          Helper.sampleTextField(
+                            context: context,
+                            controller: endDateController,
+                            labelText: "endDate".tr,
+                            readOnly: true,
+                            onTap: () => _selectDate(context, endDateController),
+                            isRequired: true,
+                            prefixIcon: const Icon(Icons.calendar_today),
+                            validator: (value) =>
+                                value!.isEmpty ? 'Please select an end date' : null,
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                    _buildSection(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("paymentInfo".tr,
+                              style: theme.textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          Helper.sampleTextField(
+                            context: context,
+                            controller: rentAmountController,
+                            labelText: "${"rentAmount".tr} (\$)",
+                            keyboardType: TextInputType.number,
+                            isRequired: true,
+                            prefixIcon: const Icon(Icons.attach_money_rounded),
+                            validator: (value) =>
+                                value!.isEmpty ? 'Please enter rent amount' : null,
+                          ),
+                          const SizedBox(height: 8),
+                          Helper.sampleTextField(
+                            context: context,
+                            controller: depositAmountController,
+                            labelText: "${"depositAmount".tr} (\$)",
+                            keyboardType: TextInputType.number,
+                            prefixIcon: const Icon(Icons.savings),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _buildSection(
+                      child: Helper.sampleDropdownSearch(
+                        context: context,
+                        items: [
+                          {'id': 'active', 'status': 'Active'},
+                          {'id': 'terminated', 'status': 'Terminated'},
+                          {'id': 'expired', 'status': 'Expired'},
+                        ],
+                        labelText: "status".tr,
+                        controller: TextEditingController(text: status),
+                        selectedId: status,
+                        displayKey: "status",
+                        idKey: "id",
+                        isRequired: true,
+                        onChanged: (selected) {
+                          if (selected != null) {
+                            status = selected['id'];
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: Get.width, // smaller width
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12), // smaller padding
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8), // smaller radius
+                          ),
+                        ),
+                        onPressed: _saveLease,
+                        child: Text(
+                          id == null ? 'save'.tr : 'update'.tr,
+                          style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white), // smaller font
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

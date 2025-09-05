@@ -19,6 +19,10 @@ class _RenterPageState extends State<RenterPage> {
   final PropertyController propertyController = Get.find<PropertyController>();
   bool isLoading = true;
 
+  // Selection mode
+  bool isSelectionMode = false;
+  RxSet<String> selectedRenters = <String>{}.obs;
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +34,8 @@ class _RenterPageState extends State<RenterPage> {
     propertyController.setRenters(renters.map((renter) => renter.toJson()).toList());
     setState(() {
       isLoading = false;
+      selectedRenters.clear();
+      isSelectionMode = false;
     });
   }
 
@@ -67,79 +73,119 @@ class _RenterPageState extends State<RenterPage> {
             appBar: Helper.sampleAppBar('tenants'.tr, context, null),
             body: SafeArea(
               bottom: true,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                margin: EdgeInsets.only(top: 10, left: 10, right: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
-                ),
-                child: Column(
-                  children: [
-                    Helper.smallSearchField(
-                      context: context,
-                      controller: searchController,
-                      onChanged: (value) => filter(value),
-                      hintText: 'search'.tr,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Get.theme.dividerColor.withAlpha(120),
                     ),
-                    SizedBox(height: 10),
-                    Expanded(
-                      child: Obx(() {
-                        if (propertyController.renters.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  'assets/images/empty.gif',
-                                  width: 200,
-                                  height: 200,
-                                  fit: BoxFit.contain,
-                                ),
-                                const SizedBox(height: 24),
-                                Text('No Renters Found', style: Get.textTheme.titleLarge),
-                                const SizedBox(height: 8),
-                                Text('Start by adding a new renter.', style: Get.textTheme.bodySmall),
-                              ],
-                            ),
-                          );
-                        }
-
-                        return RefreshIndicator(
-                          onRefresh: _refreshData,
-                          child: ListView.builder(
-                            itemCount: propertyController.renters.length,
-                            itemBuilder: (context, index) {
-                              final renter = propertyController.renters[index];
-
-                              return Dismissible(
-                                key: Key(renter['id']?.toString() ?? UniqueKey().toString()),
-                                direction: DismissDirection.endToStart,
-                                confirmDismiss: (direction) async {
-                                  final renterId = renter['id']?.toString();
-                                  if (renterId == null) return false;
-                                  return await Helper.showDeleteConfirmationDialog(context, renterId);
-                                },
-                                onDismissed: (direction) {
-                                  final renterId = renter['id']?.toString();
-                                  if (renterId != null) {
-                                    _deleteRenter(renterId);
-                                  }
-                                },
-                                background: Container(
-                                  color: Colors.red,
-                                  alignment: Alignment.centerRight,
-                                  padding: EdgeInsets.only(right: 20),
-                                  child: Icon(Icons.delete, color: Colors.white, size: 30),
-                                ),
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 10),
-                                  padding: EdgeInsets.all(6),
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+                  child: Column(
+                    children: [
+                      // Search field
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                        child: Helper.smallSearchField(
+                          context: context,
+                          controller: searchController,
+                          onChanged: (value) => filter(value),
+                          hintText: 'search'.tr,
+                        ),
+                      ),
+                      // Selection mode actions
+                      if (isSelectionMode)
+                        Obx(() => Container(
+                          margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Get.theme.dividerColor.withAlpha(120)),
+                            borderRadius: BorderRadius.circular(10)
+                          ),
+                          child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Helper.selectAllCheckbox(
+                                        selectedItems: selectedRenters,
+                                        items: propertyController.renters,
+                                        label: 'selectall'.tr,
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.delete, color: Colors.red),
+                                        onPressed: selectedRenters.isEmpty
+                                          ? null
+                                          : () async {
+                                            final confirm = await Helper.showDeleteConfirmationDialog(
+                                              context, 'selected renters');
+                                            if (confirm == true) {
+                                            for (var renterId in selectedRenters) {
+                                              _deleteRenter(renterId);
+                                            }
+                                            selectedRenters.clear();
+                                            setState(() {
+                                              isSelectionMode = false;
+                                            });
+                                            }
+                                          },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.close),
+                                        onPressed: () {
+                                          setState(() {
+                                            isSelectionMode = false;
+                                            selectedRenters.clear();
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                        )),
+                      Expanded(
+                        child: Obx(() {
+                          if (propertyController.renters.isEmpty) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    'assets/images/empty.gif',
+                                    width: 200,
+                                    height: 200,
+                                    fit: BoxFit.contain,
+                                  ),
+                                  const SizedBox(height: 24),
+                                  Text('No Renters Found', style: Get.textTheme.titleLarge),
+                                  const SizedBox(height: 8),
+                                  Text('Start by adding a new renter.', style: Get.textTheme.bodySmall),
+                                ],
+                              ),
+                            );
+                          }
+                  
+                          return RefreshIndicator(
+                            onRefresh: _refreshData,
+                            child: ListView.builder(
+                              itemCount: propertyController.renters.length,
+                              itemBuilder: (context, index) {
+                                final renter = propertyController.renters[index];
+                                final renterId = renter['id']?.toString() ?? '';
+                  
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                                  padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
                                     color: Get.theme.cardColor,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(color: Theme.of(context).dividerColor.withAlpha(120)),
-                                    boxShadow: [
+                                    boxShadow: const [
                                       BoxShadow(
                                         color: Colors.black12,
                                         blurRadius: 8,
@@ -147,110 +193,134 @@ class _RenterPageState extends State<RenterPage> {
                                       ),
                                     ],
                                   ),
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(12),
-                                    onTap: () async {
-                                      // Navigate to RenterForm and await result
-                                      await Get.to(() => RenterForm(), arguments: renter);
-                                      await _refreshData(); // Refresh after returning
-                                    },
-                                    child: Row(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: const BorderRadius.horizontal(
-                                              left: Radius.circular(12), right: Radius.circular(12)),
-                                          child: Image.asset(
-                                            'assets/app_icon/sw_logo.png',
-                                            height: 90,
-                                            width: 90,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(left: 8),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(renter['userName'] ?? 'Unknown Renter',
-                                                    style: Get.textTheme.titleSmall
-                                                        ?.copyWith(fontWeight: FontWeight.bold)),
-                                                const SizedBox(height: 4),
-                                                Row(
-                                                  children: [
-                                                    const SizedBox(width: 8),
-                                                    const Icon(Icons.phone, size: 16, color: Colors.grey),
-                                                    const SizedBox(width: 4),
-                                                    Expanded(
-                                                      child: Text(
-                                                        renter['phoneNumber'] ?? '',
-                                                        style: Get.textTheme.bodySmall,
-                                                        overflow: TextOverflow.ellipsis,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Row(
-                                                  children: [
-                                                    const SizedBox(width: 8),
-                                                    const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                                                    const SizedBox(width: 4),
-                                                    Expanded(
-                                                      child: Text(
-                                                        renter['address'] ?? '',
-                                                        style: Get.textTheme.bodySmall,
-                                                        overflow: TextOverflow.ellipsis,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Row(
-                                                  children: [
-                                                    const SizedBox(width: 8),
-                                                    const Icon(Icons.person, size: 16, color: Colors.grey),
-                                                    const SizedBox(width: 4),
-                                                    Container(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.green[200], // light green background
-                                                        borderRadius: BorderRadius.circular(12), // pill shape
-                                                      ),
-                                                      child: Text(
-                                                        renter['gender'] ?? '',
-                                                        style: Get.textTheme.bodySmall?.copyWith(color: Colors.green[800]),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        IconButton(
-                                          icon: Icon(Icons.delete, color: Colors.red, size: 24),
-                                          onPressed: () async {
-                                            final renterId = renter['id']?.toString();
-                                            if (renterId == null) return;
-                                            final confirm =
-                                                await Helper.showDeleteConfirmationDialog(context, renterId);
-                                            if (confirm == true) {
-                                              await _deleteRenter(renterId);
+                                  child: Row(
+                                    children: [
+                                      // Show checkbox only in selection mode
+                                      if (isSelectionMode)
+                                        Obx(() => Checkbox(
+                                              value: selectedRenters.contains(renterId),
+                                              onChanged: (val) {
+                                                if (val == true) {
+                                                  selectedRenters.add(renterId);
+                                                } else {
+                                                  selectedRenters.remove(renterId);
+                                                }
+                                              },
+                                            )),
+                                      Expanded(
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(12),
+                                          onTap: () async {
+                                            if (isSelectionMode) {
+                                              if (selectedRenters.contains(renterId)) {
+                                                selectedRenters.remove(renterId);
+                                              } else {
+                                                selectedRenters.add(renterId);
+                                              }
+                                            } else {
+                                              await Get.to(() => RenterForm(), arguments: renter);
+                                              await _refreshData();
                                             }
                                           },
+                                          onLongPress: () {
+                                            setState(() {
+                                              isSelectionMode = true;
+                                              selectedRenters.add(renterId);
+                                            });
+                                          },
+                                          child: Row(
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius: const BorderRadius.horizontal(
+                                                  left: Radius.circular(12),
+                                                  right: Radius.circular(12),
+                                                ),
+                                                child: Image.asset(
+                                                  'assets/app_icon/sw_logo.png',
+                                                  height: 90,
+                                                  width: 90,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left: 8),
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        renter['userName'] ?? 'Unknown Renter',
+                                                        style: Get.textTheme.titleSmall
+                                                            ?.copyWith(fontWeight: FontWeight.bold),
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Row(
+                                                        children: [
+                                                          const SizedBox(width: 8),
+                                                          const Icon(Icons.phone, size: 16, color: Colors.grey),
+                                                          const SizedBox(width: 4),
+                                                          Expanded(
+                                                            child: Text(
+                                                              renter['phoneNumber'] ?? '',
+                                                              style: Get.textTheme.bodySmall,
+                                                              overflow: TextOverflow.ellipsis,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Row(
+                                                        children: [
+                                                          const SizedBox(width: 8),
+                                                          const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                                                          const SizedBox(width: 4),
+                                                          Expanded(
+                                                            child: Text(
+                                                              renter['address'] ?? '',
+                                                              style: Get.textTheme.bodySmall,
+                                                              overflow: TextOverflow.ellipsis,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Row(
+                                                        children: [
+                                                          const SizedBox(width: 8),
+                                                          const Icon(Icons.person, size: 16, color: Colors.grey),
+                                                          const SizedBox(width: 4),
+                                                          Container(
+                                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                                            decoration: BoxDecoration(
+                                                              color: Colors.green[200],
+                                                              borderRadius: BorderRadius.circular(12),
+                                                            ),
+                                                            child: Text(
+                                                              renter['gender'] ?? '',
+                                                              style: Get.textTheme.bodySmall
+                                                                  ?.copyWith(color: Colors.green[800]),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      }),
-                    ),
-                  ],
+                                );
+                              },
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -258,7 +328,7 @@ class _RenterPageState extends State<RenterPage> {
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(17), bottom: Radius.circular(17)),
                 border: Border.all(color: Theme.of(context).primaryColorDark.withAlpha(100)),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
                     blurRadius: 8,

@@ -232,7 +232,7 @@ class _WrapperState extends State<Wrapper> {
                   ),
                   child: SidebarX(
                     controller: _sidebarController,
-                    animationDuration: Duration(milliseconds: 400),
+                    animationDuration: Duration(milliseconds: 200),
                     showToggleButton: true,
                     theme: SidebarXTheme(
                       decoration: BoxDecoration(
@@ -317,29 +317,42 @@ class _WrapperState extends State<Wrapper> {
                         ],
                       );
                     },
+                    footerDivider: const Divider(),
                     items: [
                       SidebarXItem(
-                          icon: Icons.dashboard,
-                          label: 'Dashboard'.tr,
-                          onTap: () => Get.to(() => Wrapper())),
+                        icon: Icons.dashboard,
+                        label: 'Dashboard'.tr,
+                        onTap: () => Get.to(() => Wrapper()),
+                      ),
                       SidebarXItem(
-                          icon: Icons.home,
-                          label: 'property'.tr,
-                          onTap: () => Get.to(() => PropertyPage())),
+                        icon: Icons.home,
+                        label: 'property'.tr,
+                        onTap: () => Get.to(() => PropertyPage()),
+                      ),
                       SidebarXItem(
-                          icon: Icons.home_work,
-                          label: 'property_unit'.tr,
-                          onTap: () => Get.to(() => PropertyUnit())),
-                      SidebarXItem(icon: Icons.people, label: 'tenants'.tr, onTap: () => Get.to(() => RenterPage()),),
+                        icon: Icons.home_work,
+                        label: 'property_unit'.tr,
+                        onTap: () => Get.to(() => PropertyUnit()),
+                      ),
                       SidebarXItem(
-                          icon: Icons.assignment,
-                          label: 'leases'.tr,
-                          onTap: () => Get.to(() => LeasePage())),
+                        icon: Icons.people, 
+                        label: 'tenants'.tr, 
+                        onTap: () => Get.to(() => RenterPage()),
+                      ),
                       SidebarXItem(
-                          icon: Icons.payment,
-                          label: 'payments'.tr,
-                          onTap: () => Get.to(() => Payment())),
-                      SidebarXItem(icon: Icons.build, label: 'maintenance_requests'.tr),
+                        icon: Icons.assignment,
+                        label: 'leases'.tr,
+                        onTap: () => Get.to(() => LeasePage()),
+                      ),
+                      SidebarXItem(
+                        icon: Icons.payment,
+                        label: 'payments'.tr,
+                        onTap: () => Get.to(() => Payment()),
+                      ),
+                      SidebarXItem(
+                        icon: Icons.build, 
+                        label: 'maintenance_requests'.tr,
+                      ),
                       SidebarXItem(
                         iconBuilder: (selected, hovered) {
                           return Row(

@@ -20,7 +20,12 @@ class Helper {
     final formatter = DateFormat(format ?? defaultDateFormat);
     return formatter.parse(dateString);
   }
-  static AppBar sampleAppBar(String title,BuildContext context, String? logoImg, {VoidCallback? onLogoTap}) {
+  static AppBar sampleAppBar(
+    String title,
+    BuildContext context, 
+    String? logoImg, 
+    {VoidCallback? onLogoTap}
+  ) {
     return AppBar(
       title: Text(title, style: Theme.of(context).textTheme.titleMedium),
       actions: [
@@ -490,4 +495,27 @@ class Helper {
        icon: Icons.error,
      );
    }
+
+  static Widget selectAllCheckbox({
+    required RxSet<String> selectedItems,
+    required List items,
+    required String label,
+  }) {
+    return Obx(() => Row(
+      children: [
+        Checkbox(
+          value: selectedItems.length == items.length && items.isNotEmpty,
+          onChanged: (val) {
+            selectedItems.clear();
+            if (val == true) {
+              selectedItems.addAll(
+                items.map((e) => e['id'].toString()),
+              );
+            }
+          },
+        ),
+        Text(label.tr),
+      ],
+    ));
+  }
 }
