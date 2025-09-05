@@ -112,6 +112,7 @@ class _PaymentState extends State<Payment> {
                           decoration: BoxDecoration(
                             color: Get.theme.cardColor,
                             borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Theme.of(context).dividerColor.withAlpha(100)),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black12,

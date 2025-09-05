@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from api.v1.routes import auth, user, systemlog, type, property, units, leases, renters, payment
-from db.models import (user as users, role, user_session, system_log, property_types, properties, units as unittb, renters as renterstb, leases as leasestb, payments, maintenance_requests, documents, messages)
+from db.models import (user as users, role, user_session, system_log, property_types, properties, units as unittb, renters as renterstb, leases as leasestb, payments, maintenance_requests, documents, messages, utility_types, unit_utility, meter_readings, invoices, inventory)
 from db.session import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 # from middleware.convert_snake_to_camel import ConvertSnakeToCamelMiddleware
