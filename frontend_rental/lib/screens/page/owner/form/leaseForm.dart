@@ -85,6 +85,16 @@ class _LeaseFormState extends State<LeaseForm> {
             : double.parse(depositAmountController.text),
         status: status,
       );
+      if (leaseModel.endDate.isNotEmpty && leaseModel.startDate.isNotEmpty) {
+        final start = DateTime.tryParse(leaseModel.startDate);
+        final end = DateTime.tryParse(leaseModel.endDate);
+
+        if (start != null && end != null && end.isBefore(start)) {
+          Helper.closeLoadingDialog(context);
+          Helper.errorSnackbar("end_date_cannot_be_earlier_than_start_date".tr);
+          return;
+        }
+      }
 
       if (id == null) {
         errorModel = await leaseService.createLease(leaseModel);
@@ -101,6 +111,8 @@ class _LeaseFormState extends State<LeaseForm> {
 
         if (errorMessage.contains('already exists')) {
           Helper.errorSnackbar('data_already_exists'.tr);
+        } else if (errorMessage.contains('end date cannot')) {
+          Helper.errorSnackbar('End date cannot be earlier than start date');
         } else {
           Helper.errorSnackbar(id == null ? 'create_failed'.tr : 'update_failed'.tr);
         }
@@ -109,12 +121,17 @@ class _LeaseFormState extends State<LeaseForm> {
   }
 
   Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+    final DateTime? initialDate = controller.text.isNotEmpty
+        ? DateTime.tryParse(controller.text)
+        : DateTime.now();
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: initialDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
+
     if (picked != null) {
       controller.text = Helper.formatDate(picked);
     }

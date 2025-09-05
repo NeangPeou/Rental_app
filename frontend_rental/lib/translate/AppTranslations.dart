@@ -178,6 +178,7 @@ class AppTranslations extends Translations {
       "contactInfo": 'ព័ត៌មានទំនាក់ទំនង',
       "identification": 'អត្តសញ្ញាណ',
       'loading': 'កំពុងផ្ទុក...',
+      'end_date_cannot_be_earlier_than_start_date': 'ថ្ងៃបញ្ចប់មិនអាចតូចជាងថ្ងៃចាប់ផ្តើមបានទេ',
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -353,6 +354,7 @@ class AppTranslations extends Translations {
       "contactInfo": 'Contact Info',
       "identification": 'Identification',
       'loading': 'Loading...',
+      'end_date_cannot_be_earlier_than_start_date': 'End date cannot be earlier than start date',
     },
     'es_ES': {
       'english': 'Inglés',
