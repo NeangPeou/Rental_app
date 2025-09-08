@@ -1,5 +1,5 @@
 # រក្សាទុកអចលនវត្ថុដែលម្ចាស់ផ្ទះកាន់កាប់។
-from sqlalchemy import DECIMAL, Column, ForeignKey, Integer, String, Text
+from sqlalchemy import DECIMAL, TIMESTAMP, Column, ForeignKey, Integer, String, Text, func
 from db.session import Base
 
 class Property(Base):
@@ -16,3 +16,5 @@ class Property(Base):
     description = Column(Text, nullable=True)
     type_id = Column(Integer, ForeignKey("t_property_types.id"), nullable=False) #លេខសម្គាល់ប្រភេទ (ភ្ជាប់ទៅ property_types)
     owner_id = Column(Integer, ForeignKey("t_users.id"), nullable=False) #លេខសម្គាល់ម្ចាស់ផ្ទះ (ភ្ជាប់ទៅ users)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

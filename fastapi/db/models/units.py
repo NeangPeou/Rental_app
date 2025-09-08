@@ -1,5 +1,5 @@
 # ជាឯកតាជួលមួយៗនៅក្នុងអចលនវត្ថុ។
-from sqlalchemy import DECIMAL, Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import DECIMAL, TIMESTAMP, Boolean, Column, ForeignKey, Integer, String, func
 from db.session import Base
 
 class Unit(Base):
@@ -13,4 +13,6 @@ class Unit(Base):
     size_sqm = Column(DECIMAL(10, 2), nullable=True)
     rent_price = Column(DECIMAL(12, 2), nullable=True) #តម្លៃជួលប្រចាំខែ
     is_available = Column(Boolean, default=True) #មានស្ថានភាពអាចជួលបាន (true/false)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
     

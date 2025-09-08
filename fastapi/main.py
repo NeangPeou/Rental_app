@@ -22,16 +22,16 @@ def add_columns():
         BEGIN
             IF NOT EXISTS (
                 SELECT 1 FROM information_schema.columns
-                WHERE table_name = 't_users' AND column_name = 'address'
+                WHERE table_name = 't_units' AND column_name = 'created_at'
             ) THEN
-                ALTER TABLE t_users ADD COLUMN address TEXT NOT NULL DEFAULT '';
+                ALTER TABLE t_units ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT NOW();
             END IF;
-                          
+
             IF NOT EXISTS (
                 SELECT 1 FROM information_schema.columns
-                WHERE table_name = 't_users' AND column_name = 'gender'
+                WHERE table_name = 't_units' AND column_name = 'updated_at'
             ) THEN
-                ALTER TABLE t_users ADD COLUMN gender VARCHAR(10) NOT NULL DEFAULT 'Male';
+                ALTER TABLE t_units ADD COLUMN updated_at TIMESTAMP NOT NULL DEFAULT NOW();
             END IF;
         END
         $$;
@@ -57,6 +57,16 @@ def drop_columns():
         """))
         conn.commit()
 
+def drop_table(table_name: str):
+    DATABASE_URL = os.getenv("DATABASE_URL")
+    engine = create_engine(DATABASE_URL)
+
+    drop_sql = f'DROP TABLE IF EXISTS {table_name} CASCADE;'
+
+    with engine.begin() as conn:
+        conn.execute(text(drop_sql))
+
+# drop_table("t_utility_types")
 # add_columns()
 # drop_columns()
 

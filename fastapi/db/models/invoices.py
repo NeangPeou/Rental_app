@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, String, Date, ForeignKey
+from sqlalchemy import TIMESTAMP, Column, Integer, Float, String, Date, ForeignKey, func
 from db.session import Base
 
 class Invoice(Base):
@@ -10,3 +10,5 @@ class Invoice(Base):
     utility = Column(Float, nullable=False)
     total = Column(Float, nullable=False)
     status = Column(String(50), nullable=False)  # e.g. 'paid', 'unpaid', 'partial'
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

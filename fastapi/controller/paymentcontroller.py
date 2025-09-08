@@ -64,6 +64,7 @@ def get_all_payments(db: Session, current_user):
             .outerjoin(Property, Unit.property_id == Property.id)
             .outerjoin(Owner, Property.owner_id == Owner.id)
             .outerjoin(RenterUser, Renter.user_id == RenterUser.id)
+            .filter(Property.owner_id == current_user.id)
             .order_by(desc(Payment.id))
             .all()
         )

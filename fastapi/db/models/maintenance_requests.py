@@ -1,5 +1,5 @@
 # អនុញ្ញាតឱ្យអ្នកជួលរាយការណ៍បញ្ហា និងតាមដានការជួសជុល។
-from sqlalchemy import Column, Date, ForeignKey, Integer, String, Text
+from sqlalchemy import TIMESTAMP, Column, Date, ForeignKey, Integer, String, Text, func
 from db.session import Base
 
 class MaintenanceRequest(Base):
@@ -12,3 +12,5 @@ class MaintenanceRequest(Base):
     request_date = Column(Date, nullable=False)
     status = Column(String(20), nullable=False) #ស្ថានភាពសំណើ (pending, in_progress, resolved)
     resolved_date = Column(Date, nullable=True) #ថ្ងៃដែលបានជួសជុលរួច
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

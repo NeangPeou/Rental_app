@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, Date, ForeignKey
+from sqlalchemy import TIMESTAMP, Column, Integer, Float, Date, ForeignKey, func
 from db.session import Base
 
 class MeterReading(Base):
@@ -10,3 +10,5 @@ class MeterReading(Base):
     current_reading = Column(Float, nullable=False)
     usage = Column(Float, nullable=False)
     reading_date = Column(Date, nullable=False)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

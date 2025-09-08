@@ -124,7 +124,7 @@ class AppTranslations extends Translations {
       'search':'ស្វែងរក',
       'created_successfully': 'ការបង្កើតបានជោគជ័យ',
       'calendar': 'ប្រតិទិន',
-      'inbox': 'ប្រអប់ទទួលសារ',
+      'inbox': 'ប្រអប់សារ',
       'explore': 'ស្វែងរក',
       'property': 'ទ្រព្យសម្បត្តិ',
       'property_unit': 'ឯកតាទ្រព្យសម្បត្តិ',

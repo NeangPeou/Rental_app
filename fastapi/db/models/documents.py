@@ -9,3 +9,5 @@ class Document(Base):
     file_name = Column(String(255), nullable=False)
     file_url = Column(Text, nullable=False)
     uploaded_at = Column(TIMESTAMP, server_default=func.now())
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

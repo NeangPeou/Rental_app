@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, String, ForeignKey
+from sqlalchemy import TIMESTAMP, Column, Integer, Float, String, ForeignKey, func
 from db.session import Base
 
 class UnitUtility(Base):
@@ -9,3 +9,5 @@ class UnitUtility(Base):
     billing_type = Column(String(50), nullable=False)  # fixed or per_unit
     fixed_rate = Column(Float, nullable=True)
     unit_rate = Column(Float, nullable=True)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

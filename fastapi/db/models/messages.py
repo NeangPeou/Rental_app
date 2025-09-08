@@ -10,3 +10,5 @@ class Message(Base):
     content = Column(Text, nullable=False)
     sent_at = Column(TIMESTAMP, server_default=func.now())
     is_read = Column(Boolean, default=False) #ស្ថានភាពអាន (true=បានអាន, false=មិនបានអាន)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
