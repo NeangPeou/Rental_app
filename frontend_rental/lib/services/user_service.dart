@@ -197,19 +197,18 @@ class UserService{
         },
       );
 
+      final jsonResponse = response.body.isNotEmpty ? jsonDecode(response.body) : null;
+
       if (response.statusCode == 200) {
         Get.find<PropertyController>().removeRenter(id);
         return ErrorModel(isError: false, message: "Renter deleted successfully");
       } else {
-        final jsonResponse = jsonDecode(response.body);
-        return ErrorModel(
-          isError: true,
-          message: jsonResponse is Map<String, dynamic> && jsonResponse.containsKey('message')
-              ? jsonResponse['message']
-              : "Failed to delete renter",
-        );
+        String errorMessage = jsonResponse != null && jsonResponse['message'] != null ? jsonResponse['message']: "renter_cannot_delete_being_used_in_lease".tr;
+        Helper.errorSnackbar(errorMessage); 
+        return ErrorModel(isError: true, message: errorMessage);
       }
     } catch (e) {
+      Helper.errorSnackbar(e.toString());
       return ErrorModel(isError: true, message: e.toString());
     }
   }
