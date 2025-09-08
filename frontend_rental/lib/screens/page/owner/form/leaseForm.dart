@@ -85,16 +85,6 @@ class _LeaseFormState extends State<LeaseForm> {
             : double.parse(depositAmountController.text),
         status: status,
       );
-      if (leaseModel.endDate.isNotEmpty && leaseModel.startDate.isNotEmpty) {
-        final start = DateTime.tryParse(leaseModel.startDate);
-        final end = DateTime.tryParse(leaseModel.endDate);
-
-        if (start != null && end != null && end.isBefore(start)) {
-          Helper.closeLoadingDialog(context);
-          Helper.errorSnackbar("end_date_cannot_be_earlier_than_start_date".tr);
-          return;
-        }
-      }
 
       if (id == null) {
         errorModel = await leaseService.createLease(leaseModel);
@@ -111,8 +101,6 @@ class _LeaseFormState extends State<LeaseForm> {
 
         if (errorMessage.contains('already exists')) {
           Helper.errorSnackbar('data_already_exists'.tr);
-        } else if (errorMessage.contains('end date cannot')) {
-          Helper.errorSnackbar('End date cannot be earlier than start date');
         } else {
           Helper.errorSnackbar(id == null ? 'create_failed'.tr : 'update_failed'.tr);
         }
@@ -133,7 +121,23 @@ class _LeaseFormState extends State<LeaseForm> {
     );
 
     if (picked != null) {
-      controller.text = Helper.formatDate(picked);
+      final selectedDate = Helper.formatDate(picked);
+
+      if(controller == endDateController && startDateController.text.isNotEmpty){
+        final start = DateTime.tryParse(startDateController.text);
+        if (start != null && picked.isBefore(start)){
+          Helper.errorSnackbar("end_date_cannot_be_earlier_than_start_date".tr);
+          return;
+        }
+      }
+      if(controller == startDateController && endDateController.text.isNotEmpty){
+        final end = DateTime.tryParse(endDateController.text);
+        if(end != null && picked.isAfter(end)){
+          Helper.errorSnackbar("start_date_cannot_be_later_than_end_date".tr);
+          return;
+        }
+      }
+      controller.text = selectedDate;
     }
   }
 

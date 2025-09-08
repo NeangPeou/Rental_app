@@ -188,7 +188,9 @@ class AppTranslations extends Translations {
       "endDate": "កាលបរិច្ឆេទបញ្ចប់",
       "paymentInfo": "ព័ត៌មានការទូទាត់",
       "rentAmount": "ចំនួនថ្លៃជួល",
-      "depositAmount": "ចំនួនប្រាក់កក់"
+      "depositAmount": "ចំនួនប្រាក់កក់",
+      "start_date_cannot_be_later_than_end_date": "ថ្ងៃចាប់ផ្តើមមិនអាចធំជាងថ្ងៃបញ្ចប់បានទេ",
+      "renter_cannot_delete_being_used_in_lease": "អ្នកជួលមិនអាចលុបបាន ព្រោះកំពុងត្រូវបានប្រើនៅក្នុងកិច្ចសន្យា"
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -364,7 +366,7 @@ class AppTranslations extends Translations {
       "contactInfo": 'Contact Info',
       "identification": 'Identification',
       'loading': 'Loading...',
-      'end_date_cannot_be_earlier_than_start_date': 'End date cannot be earlier than start date',
+      'end_date_cannot_be_earlier_than_start_date': 'End date cannot be earlier than start date.',
       'selectall': 'Select All',
       "unit&renter": "Unit & Renter",
       "selectUnit": "Select Unit",
@@ -375,6 +377,8 @@ class AppTranslations extends Translations {
       "paymentInfo": "Payment Info",
       "rentAmount": "Rent Amount",
       "depositAmount": "Deposit Amount",
+      "start_date_cannot_be_later_than_end_date": "Start date must be before end date.",
+      "renter_cannot_delete_being_used_in_lease": "Renter cannot be deleted because being used in lease"
     },
     'es_ES': {
       'english': 'Inglés',
