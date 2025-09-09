@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_rental/models/property_model.dart';
+import 'package:frontend_rental/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -293,14 +294,18 @@ class PropertyService {
         },
       );
 
+      final json = response.body.isNotEmpty? jsonDecode(response.body) : null;
+
       if (response.statusCode == 200) {
         Get.find<PropertyController>().removeUnit(id);
         return ErrorModel(isError: false, code: 'Success', message: 'Unit deleted');
       } else {
-        final json = jsonDecode(response.body);
-        throw Exception(json['detail'] ?? 'Failed to delete unit');
+        String errorMessage = json != null && json['message'] != null ? json['message']: "unit_cannot_delete_being_used_in_lease".tr;
+        Helper.errorSnackbar(errorMessage);
+        return ErrorModel(isError: true, message: errorMessage);
       }
     } catch (e) {
+      Helper.errorSnackbar(e.toString());
       return ErrorModel(isError: true, code: 'exception', message: e.toString());
     }
   }

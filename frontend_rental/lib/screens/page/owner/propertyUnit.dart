@@ -20,6 +20,9 @@ class _PropertyUnitState extends State<PropertyUnit> {
   final PropertyController propertyController = Get.put(PropertyController());
   bool isLoading = true;
 
+  bool isSelectionMode = false;
+  RxSet<String> selectedUnits = <String>{}.obs;
+  
   @override
   void initState() {
     super.initState();
@@ -51,11 +54,17 @@ class _PropertyUnitState extends State<PropertyUnit> {
     await _propertyService.getAllUnits();
     setState(() {
       isLoading = false;
+      selectedUnits.clear();
+      isSelectionMode = false;
     });
   }
 
   String truncateWithEllipsis(String text, int cutoff) {
     return (text.length <= cutoff) ? text : '${text.substring(1, cutoff)}...';
+  }
+
+  Future<void> _deleteUnit(String unitId) async{
+    await _propertyService.deletePropertyUnit(unitId);
   }
 
   @override
@@ -84,6 +93,58 @@ class _PropertyUnitState extends State<PropertyUnit> {
                 prefixIcon: Icon(Icons.search),
               ),
               SizedBox(height: 10),
+              
+              if(isSelectionMode)
+                Obx(() => Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Get.theme.dividerColor.withAlpha(120)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Helper.selectAllCheckbox(
+                            selectedItems: selectedUnits, 
+                            items: propertyController.units, 
+                            label: 'selectall'.tr,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red,),
+                            onPressed: selectedUnits.isEmpty ? null : () async{
+                              final confirm = await Helper.showDeleteConfirmationDialog(context, 'selected units');
+                              if(confirm == true){
+                                for (var unitId in selectedUnits){
+                                  await _deleteUnit(unitId);
+                                }
+                                selectedUnits.clear();
+                                setState(() {
+                                  isSelectionMode = false;
+                                });
+                                _refreshData();
+                              }
+                            },
+                          ),
+                          IconButton(
+                            onPressed: (){
+                              setState(() {
+                                isSelectionMode = false;
+                                selectedUnits.clear();
+                              });
+                            }, 
+                            icon: Icon(Icons.close),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                )),
               Expanded(
                 child: Obx(() {
                   if (propertyController.units.isEmpty) {
@@ -112,6 +173,7 @@ class _PropertyUnitState extends State<PropertyUnit> {
                       itemCount: propertyController.units.length,
                       itemBuilder: (context, index) {
                         final property = propertyController.units[index];
+                        final unitId = property['id'].toString();
 
                         return Ribbon(
                           nearLength: 30,
@@ -135,111 +197,142 @@ class _PropertyUnitState extends State<PropertyUnit> {
                                 ),
                               ],
                             ),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(12),
-                              onTap: () {
-                                Get.to(PropertyUnitForm(), arguments: property);
-                              },
-                              child: Row(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.horizontal(left: Radius.circular(12), right: Radius.circular(12)),
-                                    child: Image.asset(
-                                      'assets/app_icon/sw_logo.png',
-                                      height: 90,
-                                      width: 90,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                          
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 8),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(property['property_name'] ?? 'Unnamed Property', style: Get.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
-                                          const SizedBox(height: 4),
-                          
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.location_on, size: 14, color: Colors.grey),
-                                              const SizedBox(width: 4),
-                                              Expanded(
-                                                child: Text(property['unit_number'].toString(), style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
-                                              ),
-                                            ],
+                            child: Row(
+                              children: [
+                                if(isSelectionMode)
+                                  Obx(() => Checkbox(
+                                    value: selectedUnits.contains(unitId),
+                                    onChanged:  (val){
+                                      if(val == true){
+                                        selectedUnits.add(unitId);
+                                      }else{
+                                        selectedUnits.remove(unitId);
+                                      }
+                                    },
+                                  )),
+                                Expanded(
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(12),
+                                    onTap: () {
+                                      if(isSelectionMode){
+                                        if(selectedUnits.contains(unitId)){
+                                          selectedUnits.remove(unitId);
+                                        }else{
+                                          selectedUnits.add(unitId);
+                                        }
+                                      }else{
+                                        Get.to(PropertyUnitForm(), arguments: property);
+                                      }
+                                    },
+                                    onLongPress: (){
+                                      setState(() {
+                                        isSelectionMode = true;
+                                        selectedUnits.add(unitId);
+                                      });
+                                    },
+                                    child: Row(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: const BorderRadius.horizontal(left: Radius.circular(12), right: Radius.circular(12)),
+                                          child: Image.asset(
+                                            'assets/app_icon/sw_logo.png',
+                                            height: 90,
+                                            width: 90,
+                                            fit: BoxFit.cover,
                                           ),
-                                          const SizedBox(height: 4),
-                          
-                                          Text('${'property_id'.tr}: ${property['id'] ?? 'N/A'}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
-                          
-                                          const SizedBox(height: 4),
-                                          Row(
-                                            children: [
-                                              Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.blue.shade100,
-                                                  borderRadius: BorderRadius.circular(16),
-                                                ),
-                                                child: Row(
-                                                  mainAxisSize: MainAxisSize.min,
+                                        ),
+                                
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(left: 8),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(property['property_name'] ?? 'Unnamed Property', style: Get.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                                                const SizedBox(height: 4),
+                                
+                                                Row(
                                                   children: [
-                                                    const Icon(Icons.monetization_on, size: 12, color: Colors.blue),
+                                                    const Icon(Icons.location_on, size: 14, color: Colors.grey),
                                                     const SizedBox(width: 4),
-                                                    Flexible(
-                                                      child: ConstrainedBox(
-                                                        constraints: BoxConstraints(
-                                                          maxWidth: Get.width * 0.22,
-                                                        ),
-                                                        child: Text(
-                                                          property['rent'].toString(),
-                                                          style: Get.textTheme.bodySmall?.copyWith(color: Colors.blue[800]),
-                                                          overflow: TextOverflow.ellipsis,
-                                                        ),
-                                                      ),
+                                                    Expanded(
+                                                      child: Text(property['unit_number'].toString(), style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
-                          
-                                              const SizedBox(width: 6),
+                                                const SizedBox(height: 4),
+                                
+                                                Text('${'property_id'.tr}: ${property['id'] ?? 'N/A'}', style: Get.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                
+                                                const SizedBox(height: 4),
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.blue.shade100,
+                                                        borderRadius: BorderRadius.circular(16),
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          const Icon(Icons.monetization_on, size: 12, color: Colors.blue),
+                                                          const SizedBox(width: 4),
+                                                          Flexible(
+                                                            child: ConstrainedBox(
+                                                              constraints: BoxConstraints(
+                                                                maxWidth: Get.width * 0.22,
+                                                              ),
+                                                              child: Text(
+                                                                property['rent'].toString(),
+                                                                style: Get.textTheme.bodySmall?.copyWith(color: Colors.blue[800]),
+                                                                overflow: TextOverflow.ellipsis,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                
+                                                    const SizedBox(width: 6),
 
-                                              if (property['renter_name'] != null && property['renter_name'].toString().isNotEmpty) Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.green.shade100,
-                                                  borderRadius: BorderRadius.circular(16),
-                                                ),
-                                                child: Row(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    const Icon(Icons.person, size: 12, color: Colors.green),
-                                                    const SizedBox(width: 4),
-                                                    Flexible(
-                                                      child: ConstrainedBox(
-                                                        constraints: BoxConstraints(
-                                                          maxWidth: Get.width * 0.22,
-                                                        ),
-                                                        child: Text(
-                                                          property['renter_name'].toString(),
-                                                          style: Get.textTheme.bodySmall?.copyWith(color: Colors.green[800]),
-                                                          overflow: TextOverflow.ellipsis,
-                                                        ),
+                                                    if (property['renter_name'] != null && property['renter_name'].toString().isNotEmpty) Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.green.shade100,
+                                                        borderRadius: BorderRadius.circular(16),
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          const Icon(Icons.person, size: 12, color: Colors.green),
+                                                          const SizedBox(width: 4),
+                                                          Flexible(
+                                                            child: ConstrainedBox(
+                                                              constraints: BoxConstraints(
+                                                                maxWidth: Get.width * 0.22,
+                                                              ),
+                                                              child: Text(
+                                                                property['renter_name'].toString(),
+                                                                style: Get.textTheme.bodySmall?.copyWith(color: Colors.green[800]),
+                                                                overflow: TextOverflow.ellipsis,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         );

@@ -418,7 +418,7 @@ class Helper {
             ],
           ),
           content: Text(
-            'are_you_sure_delete_lease'.tr,
+            'are_you_sure_delete'.tr,
             style: theme.textTheme.bodyMedium?.copyWith(
               height: 1.4,
             ),
