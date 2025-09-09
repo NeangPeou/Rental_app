@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from db.models.unit_utility import UnitUtility
 from schemas.leases import LeaseCreate, LeaseUpdate, LeaseOut
 from db.models.leases import Lease
 from db.models.units import Unit
@@ -81,7 +82,17 @@ def get_all_leases(db: Session, current_user):
                 deposit_amount=lease.deposit_amount,
                 status=lease.status,
                 username=username,
-                unit_number=unit_number  # Include unit_number
+                unit_number=unit_number,  # Include unit_number
+                utilities=[
+                {
+                    'id': str(utility.id),
+                    'utility_type_id': utility.utility_type_id,
+                    'billing_type': utility.billing_type,
+                    'fixed_rate': utility.fixed_rate,
+                    'unit_rate': utility.unit_rate
+                }
+                for utility in db.query(UnitUtility).filter(UnitUtility.unit_id == lease.unit_id).all()
+            ]
             ) for lease, username, unit_number in leases
         ]
     except Exception as e:

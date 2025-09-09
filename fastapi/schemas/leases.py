@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
 from datetime import date
 
 class LeaseBase(BaseModel):
@@ -29,6 +29,7 @@ class LeaseOut(LeaseBase):
     username: Optional[str] = None
     unit_number: Optional[str] = None
     is_available: Optional[bool] = True
+    utilities: Optional[List] = []
 
     class Config:
         orm_mode = True

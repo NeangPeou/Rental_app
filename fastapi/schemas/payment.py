@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 class PaymentCreate(BaseModel):
@@ -6,6 +7,8 @@ class PaymentCreate(BaseModel):
     amount_paid: float
     payment_method_id: str
     receipt_url: str
+    electricity: Optional[str] = None
+    water: Optional[str] = None
 
 class PaymentUpdate(PaymentCreate):
     pass

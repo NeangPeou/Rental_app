@@ -194,6 +194,13 @@ class AppTranslations extends Translations {
       "are_you_sure_delete": "តើអ្នកប្រាកដទេថាចង់លុប?",
       "no_data_found": "គ្មានទិន្នន័យ",
       "try_adding_a_new_item": "សូមបន្ថែមទិន្នន័យថ្មី",
+      "bathrooms": "បង្គន់",
+      "electricity": "អគ្គិសនី",
+      "water": "ទឹក",
+      "select_billing_type": "ជ្រើសរើសប្រភេទវិក័យប័ត្រ",
+      "internet": "អ៊ីនធឺណិត",
+      "rate": "អត្រា",
+      'create_failed': 'ការបង្កើតបរាជ័យ',
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -386,7 +393,13 @@ class AppTranslations extends Translations {
       "unit_cannot_delete_being_used_in_lease": "Unit cannot be deleted because being used in lease",
       "no_data_found": "No Data Found",
       "try_adding_a_new_item": "Try adding a new item",
-
+      "bathrooms": "Bathrooms",
+      "electricity": "Electricity",
+      "water": "Water",
+      "select_billing_type": "Select Billing Type",
+      "internet": "Internet",
+      "rate": "Rate",
+      'create_failed': 'Create failed',
     },
     'es_ES': {
       'english': 'Inglés',
