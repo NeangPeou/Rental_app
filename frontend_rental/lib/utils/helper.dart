@@ -568,5 +568,58 @@ class Helper {
     );
   }
 
+  static Widget statusChip(String status, {double maxWidth = 120}) {
+    final statusLower = status.toLowerCase();
 
+    Color bgColor;
+    Color textColor;
+    IconData icon;
+
+    switch (statusLower) {
+      case 'active':
+        bgColor = Colors.green.shade100;
+        textColor = Colors.green;
+        icon = Icons.check_circle;
+        break;
+      case 'terminated':
+        bgColor = Colors.orange.shade100;
+        textColor = Colors.orange;
+        icon = Icons.hourglass_top_rounded;
+        break;
+      case 'expired':
+        bgColor = Colors.red.shade100;
+        textColor = Colors.red;
+        icon = Icons.cancel;
+        break;
+      default:
+        bgColor = Colors.grey.shade200;
+        textColor = Colors.grey;
+        icon = Icons.info;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: textColor),
+          const SizedBox(width: 4),
+          Flexible(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxWidth),
+              child: Text(
+                status,
+                style: Get.textTheme.bodySmall?.copyWith(color: textColor),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

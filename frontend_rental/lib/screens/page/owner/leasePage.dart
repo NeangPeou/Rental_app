@@ -235,48 +235,52 @@ class _LeasePageState extends State<LeasePage> {
                                                     const SizedBox(width: 4),
                                                     Expanded(
                                                       child: Text(
-                                                        'Unit: ${lease['unit_number'] ?? ''}',
+                                                        'unit: ${lease['unit_number'] ?? ''}',
                                                         style: Get.textTheme.bodySmall,
                                                         overflow: TextOverflow.ellipsis,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                                const SizedBox(height: 4),
-                                                Text('Status: ${lease['status']}',
-                                                    style: Get.textTheme.bodySmall,
-                                                    overflow: TextOverflow.ellipsis),
-                                                const SizedBox(height: 4),
+                                                const SizedBox(height: 4,),
                                                 Row(
                                                   children: [
-                                                    Container(
-                                                      padding: const EdgeInsets.symmetric(
-                                                          horizontal: 8, vertical: 4),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.blue.shade100,
-                                                        borderRadius: BorderRadius.circular(16),
-                                                      ),
-                                                      child: Row(
-                                                        mainAxisSize: MainAxisSize.min,
-                                                        children: [
-                                                          const Icon(Icons.calendar_today,
-                                                              size: 12, color: Colors.blue),
-                                                          const SizedBox(width: 4),
-                                                          Flexible(
-                                                            child: ConstrainedBox(
-                                                              constraints: BoxConstraints(
-                                                                maxWidth: Get.width * 0.22,
-                                                              ),
-                                                              child: Text(
-                                                                lease['start_date'].toString(),
-                                                                style: Get.textTheme.bodySmall
-                                                                    ?.copyWith(color: Colors.blue[800]),
-                                                                overflow: TextOverflow.ellipsis,
-                                                              ),
-                                                            ),
+                                                    Column(
+                                                      children: [
+                                                        Helper.statusChip(lease['status']),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(width: 4,),
+                                                    Column(
+                                                      children: [
+                                                        Container(
+                                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.blue.shade100,
+                                                            borderRadius: BorderRadius.circular(16),
                                                           ),
-                                                        ],
-                                                      ),
+                                                          child: Row(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            children: [
+                                                              const Icon(Icons.calendar_today, size: 12, color: Colors.blue),
+                                                              const SizedBox(width: 4),
+                                                              Flexible(
+                                                                child: ConstrainedBox(
+                                                                  constraints: BoxConstraints(
+                                                                    maxWidth: Get.width * 0.22,
+                                                                  ),
+                                                                  child: Text(
+                                                                    lease['start_date'].toString(),
+                                                                    style: Get.textTheme.bodySmall
+                                                                        ?.copyWith(color: Colors.blue[800]),
+                                                                    overflow: TextOverflow.ellipsis,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ],
                                                 ),

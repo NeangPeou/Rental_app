@@ -194,6 +194,7 @@ class AppTranslations extends Translations {
       "are_you_sure_delete": "តើអ្នកប្រាកដទេថាចង់លុប?",
       "no_data_found": "គ្មានទិន្នន័យ",
       "try_adding_a_new_item": "សូមបន្ថែមទិន្នន័យថ្មី",
+      "renterDetail": "ព័ត៌មានលម្អិតអំពីអ្នកជួល",
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -386,6 +387,7 @@ class AppTranslations extends Translations {
       "unit_cannot_delete_being_used_in_lease": "Unit cannot be deleted because being used in lease",
       "no_data_found": "No Data Found",
       "try_adding_a_new_item": "Try adding a new item",
+      "renterDetail": "Renter Details",
 
     },
     'es_ES': {

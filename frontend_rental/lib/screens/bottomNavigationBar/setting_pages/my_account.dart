@@ -122,13 +122,18 @@ class _MyAccountState extends State<MyAccount> {
                     ),
                   ),
                 ),
-                Text('account_information'.tr, style: Get.textTheme.bodyMedium),
+                Text('account_information'.tr, style: Get.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                )),
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   margin: EdgeInsets.only(top: 5),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Get.theme.dividerColor.withAlpha(100)
+                    )
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,12 +267,17 @@ class _MyAccountState extends State<MyAccount> {
                 ),
 
                 SizedBox(height: 20),
-                Text('change_password'.tr, style: Get.textTheme.bodyMedium),
+                Text('change_password'.tr, style: Get.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                )),
                 Container(
                   margin: EdgeInsets.only(top: 5),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(12),
+                    border: BoxBorder.all(
+                      color: Get.theme.dividerColor.withAlpha(100)
+                    )
                   ),
                   child: ListTile(
                     title: Text('Password'.tr, style: Get.textTheme.bodyMedium),
