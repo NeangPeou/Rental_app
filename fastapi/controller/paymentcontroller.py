@@ -1,6 +1,8 @@
+from datetime import datetime
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, aliased
-from sqlalchemy import desc
+from sqlalchemy import desc, extract
+from db.models.meter_readings import MeterReading
 from schemas.payment import PaymentCreate, PaymentUpdate
 from db.models.payments import Payment
 from db.models.leases import Lease
@@ -12,11 +14,57 @@ from db.models.renters import Renter
 Owner = aliased(User)
 RenterUser = aliased(User)
 
+def upsert_meter_reading(db: Session, unit_id: int, utility_type_id: int, current: float, reading_date):
+    try:
+        previous_record = db.query(MeterReading).filter(
+            MeterReading.unit_id == unit_id,
+            MeterReading.utility_type_id == utility_type_id,
+            MeterReading.reading_date < reading_date
+        ).order_by(MeterReading.reading_date.desc()).first()
+
+        previous_reading = previous_record.current_reading if previous_record else 0.0
+        usage = current - previous_reading
+
+        # Check if a reading for this date already exists
+        existing = db.query(MeterReading).filter_by(
+            unit_id=unit_id,
+            utility_type_id=utility_type_id,
+            reading_date=reading_date
+        ).first()
+
+        if existing:
+            existing.previous_reading = previous_reading
+            existing.current_reading = current
+            existing.usage = usage
+        else:
+            db.add(MeterReading(
+                unit_id=unit_id,
+                utility_type_id=utility_type_id,
+                previous_reading=previous_reading,
+                current_reading=current,
+                usage=usage,
+                reading_date=reading_date
+            ))
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error saving meter reading (unit_id={unit_id}, utility_type_id={utility_type_id}): {str(e)}")
+
 def create_payment(db: Session, data: PaymentCreate, current_user):
     try:
         lease = db.query(Lease).filter(Lease.id == data.lease_id).first()
         if not lease:
             raise HTTPException(status_code=400, detail="Invalid lease ID")
+        
+        date_obj = datetime.strptime(data.payment_date, "%Y-%m-%d").date()
+        existing_payment = db.query(Payment).filter(
+            Payment.lease_id == data.lease_id,
+            extract('year', Payment.payment_date) == date_obj.year,
+            extract('month', Payment.payment_date) == date_obj.month
+        ).first()
+
+        if existing_payment:
+            raise HTTPException(status_code=400, detail="Payment with this lease and date already exists")
+
 
         payment = Payment(
             lease_id=data.lease_id,
@@ -33,6 +81,24 @@ def create_payment(db: Session, data: PaymentCreate, current_user):
             renter = db.query(User).filter(User.id == renter.user_id).first()
         owner = db.query(User).filter(User.id == property.owner_id).first() if property else None
 
+        if data.electricity is not None:
+            upsert_meter_reading(
+                db=db,
+                unit_id=lease.unit_id,
+                utility_type_id=1,  # 1 = electricity
+                current=float(data.electricity),
+                reading_date=data.payment_date
+            )
+
+        if data.water is not None:
+            upsert_meter_reading(
+                db=db,
+                unit_id=lease.unit_id,
+                utility_type_id=2,  # 2 = water
+                current=float(data.water),
+                reading_date=data.payment_date
+            )
+
         db.add(payment)
         db.commit()
         db.refresh(payment)
@@ -48,6 +114,19 @@ def create_payment(db: Session, data: PaymentCreate, current_user):
             'unit_number': unit.unit_number if unit else '',
             'renter_name': renter.userName if renter else '',
             'owner_name': owner.userName if owner else '',
+            'meter_readings': [
+                {
+                    "utility_type_id": r.utility_type_id,
+                    "previous_reading": r.previous_reading,
+                    "current_reading": r.current_reading,
+                    "usage": r.usage,
+                    "reading_date": r.reading_date,
+                    "billing_type": "per_unit"
+                } for r in db.query(MeterReading).filter(
+                    MeterReading.unit_id == lease.unit_id,
+                    MeterReading.reading_date == data.payment_date
+                ).all()
+            ]
         }
     except HTTPException as http_exc:
         raise http_exc
@@ -79,7 +158,20 @@ def get_all_payments(db: Session, current_user):
             'property_name': property.name,
             'unit_number': unit.unit_number,
             'renter_name': renter_user.userName if renter_user else '',
-            'owner_name': owner.userName if owner else ''
+            'owner_name': owner.userName if owner else '',
+            'meter_readings': [
+                {
+                    "utility_type_id": r.utility_type_id,
+                    "previous_reading": r.previous_reading,
+                    "current_reading": r.current_reading,
+                    "usage": r.usage,
+                    "reading_date": r.reading_date,
+                    "billing_type": "per_unit"
+                } for r in db.query(MeterReading).filter(
+                    MeterReading.unit_id == lease.unit_id,
+                    MeterReading.reading_date == payment.payment_date
+                ).all()
+            ]
         } for payment, lease, unit, renter, property, owner, renter_user in payments]
 
     except Exception as e:
@@ -90,6 +182,17 @@ def update_payment(db: Session, payment_id: int, data: PaymentUpdate, current_us
         payment = db.get(Payment, payment_id)
         if not payment:
             raise HTTPException(status_code=404, detail="Payment not found")
+        
+        date_obj = datetime.strptime(data.payment_date, "%Y-%m-%d").date()
+        existing_payment = db.query(Payment).filter(
+            Payment.lease_id == data.lease_id,
+            extract('year', Payment.payment_date) == date_obj.year,
+            extract('month', Payment.payment_date) == date_obj.month,
+            Payment.id != payment_id
+        ).first()
+
+        if existing_payment:
+            raise HTTPException(status_code=400, detail="Payment with this lease and date already exists")
 
         if data.lease_id is not None:
             lease = db.query(Lease).filter(Lease.id == data.lease_id).first()
@@ -117,6 +220,24 @@ def update_payment(db: Session, payment_id: int, data: PaymentUpdate, current_us
             renter = db.query(User).filter(User.id == renter.user_id).first()
         owner = db.query(User).filter(User.id == property.owner_id).first() if property else None
 
+        if data.electricity is not None:
+            upsert_meter_reading(
+                db=db,
+                unit_id=lease.unit_id,
+                utility_type_id=1,  # 1 = electricity
+                current=float(data.electricity),
+                reading_date=data.payment_date
+            )
+
+        if data.water is not None:
+            upsert_meter_reading(
+                db=db,
+                unit_id=lease.unit_id,
+                utility_type_id=2,  # 2 = water
+                current=float(data.water),
+                reading_date=data.payment_date
+            )
+
         db.commit()
         db.refresh(payment)
 
@@ -131,6 +252,19 @@ def update_payment(db: Session, payment_id: int, data: PaymentUpdate, current_us
             'unit_number': unit.unit_number if unit else '',
             'renter_name': renter.userName if renter else '',
             'owner_name': owner.userName if owner else '',
+            'meter_readings': [
+                {
+                    "utility_type_id": r.utility_type_id,
+                    "previous_reading": r.previous_reading,
+                    "current_reading": r.current_reading,
+                    "usage": r.usage,
+                    "reading_date": r.reading_date,
+                    "billing_type": "per_unit"
+                } for r in db.query(MeterReading).filter(
+                    MeterReading.unit_id == lease.unit_id,
+                    MeterReading.reading_date == data.payment_date
+                ).all()
+            ]
         }
 
     except HTTPException as http_exc:

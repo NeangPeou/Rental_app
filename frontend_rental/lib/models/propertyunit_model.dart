@@ -1,3 +1,5 @@
+import 'package:frontend_rental/models/utility_model.dart';
+
 class PropertyUnitModel {
   final int? id;
   final String unitNumber;
@@ -8,6 +10,7 @@ class PropertyUnitModel {
   final String? rent;
   final bool isAvailable;
   final String propertyId;
+  final List<UtilityModel>? utilities;
 
   PropertyUnitModel({
     this.id,
@@ -19,6 +22,7 @@ class PropertyUnitModel {
     this.rent,
     required this.isAvailable,
     required this.propertyId,
+    this.utilities
   });
 
   factory PropertyUnitModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +36,7 @@ class PropertyUnitModel {
       rent: json['rent']?.toString(),
       isAvailable: json['is_available'] ?? false,
       propertyId: json['property_id']?.toString() ?? '',
+      utilities: json['utilities'] != null ? List<UtilityModel>.from(json['utilities'].map((x) => UtilityModel.fromJson(x))) : null,
     );
   }
 
@@ -45,6 +50,7 @@ class PropertyUnitModel {
       "rent": rent,
       "is_available": isAvailable,
       "property_id": propertyId,
+      "utilities": utilities?.map((x) => x.toJson()).toList(),
     };
   }
 }

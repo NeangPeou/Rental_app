@@ -7,6 +7,50 @@ from db.models.user import User
 from schemas.units import PropertyUnitCreate, PropertyUnitUpdate
 from db.models.units import Unit
 from db.models.properties import Property
+from db.models.unit_utility import UnitUtility
+
+def upsert_unit_utilities(db: Session, unit_id: int, utilities: list):
+    existing_utilities = {
+        u.utility_type_id: u for u in db.query(UnitUtility).filter(UnitUtility.unit_id == unit_id).all()
+    }
+
+    incoming_utility_ids = []
+
+    for utility in utilities:
+        try:
+            amount_value = float(utility.amount)
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"Invalid amount for utility type {utility.utility_type}")
+
+        fixed_rate = amount_value if utility.billing_type == "fixed" else None
+        unit_rate = amount_value if utility.billing_type == "per_unit" else None
+        incoming_utility_ids.append(utility.utility_type)
+
+        if int(utility.utility_type) in existing_utilities:
+            existing = existing_utilities[int(utility.utility_type)]
+            existing.billing_type = utility.billing_type
+            existing.fixed_rate = fixed_rate
+            existing.unit_rate = unit_rate
+        else:
+            db.add(UnitUtility(
+                unit_id=unit_id,
+                utility_type_id=utility.utility_type,
+                billing_type=utility.billing_type,
+                fixed_rate=fixed_rate,
+                unit_rate=unit_rate
+            ))
+
+    incoming_utility_ids = [int(x) for x in incoming_utility_ids]
+
+    try:
+        db.query(UnitUtility).filter(
+            UnitUtility.unit_id == unit_id,
+            ~UnitUtility.utility_type_id.in_(incoming_utility_ids)
+        ).delete(synchronize_session=False)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error deleting old utilities: {str(e)}")
 
 def create_property_unit(db: Session, data: PropertyUnitCreate, current_user):
     try:
@@ -38,6 +82,11 @@ def create_property_unit(db: Session, data: PropertyUnitCreate, current_user):
         db.commit()
         db.refresh(unit)
 
+        if data.utilities:
+            upsert_unit_utilities(db, unit.id, data.utilities)
+
+        db.commit()
+
         return {
             'id': str(unit.id),
             'unit_number': unit.unit_number,
@@ -48,7 +97,17 @@ def create_property_unit(db: Session, data: PropertyUnitCreate, current_user):
             'rent': unit.rent_price,
             'is_available': unit.is_available,
             'property_id': unit.property_id,
-            'property_name': property.name
+            'property_name': property.name,
+            'utilities': [
+                {
+                    'id': str(utility.id),
+                    'utility_type_id': utility.utility_type_id,
+                    'billing_type': utility.billing_type,
+                    'fixed_rate': utility.fixed_rate,
+                    'unit_rate': utility.unit_rate
+                }
+                for utility in db.query(UnitUtility).filter(UnitUtility.unit_id == unit.id).all()
+            ]
         }
     except HTTPException as http_exc:
         raise http_exc
@@ -81,6 +140,16 @@ def get_all_units(db: Session, current_user):
             'property_name': p.name,
             'renter_name': user.userName if user else None,
             'lease_status': lease.status if lease else None,
+            'utilities': [
+                {
+                    'id': str(utility.id),
+                    'utility_type_id': utility.utility_type_id,
+                    'billing_type': utility.billing_type,
+                    'fixed_rate': utility.fixed_rate,
+                    'unit_rate': utility.unit_rate
+                }
+                for utility in db.query(UnitUtility).filter(UnitUtility.unit_id == u.id).all()
+            ]
         } for u, p, lease, renter, user in units]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching units: {str(e)}")
@@ -126,6 +195,9 @@ def update_property_unit(db: Session, unit_id: int, data: PropertyUnitUpdate, cu
             property = db.query(Property).filter(Property.id == unit.property_id).first()
             if not property:
                 raise HTTPException(status_code=404, detail="Property not found")
+            
+        if data.utilities:
+            upsert_unit_utilities(db, unit.id, data.utilities)
 
         db.commit()
         db.refresh(unit)
@@ -155,6 +227,16 @@ def update_property_unit(db: Session, unit_id: int, data: PropertyUnitUpdate, cu
             'property_name': property.name,
             'renter_name': renter_name,
             'lease_status': lease_status,
+            'utilities': [
+                {
+                    'id': str(utility.id),
+                    'utility_type_id': utility.utility_type_id,
+                    'billing_type': utility.billing_type,
+                    'fixed_rate': utility.fixed_rate,
+                    'unit_rate': utility.unit_rate
+                }
+                for utility in db.query(UnitUtility).filter(UnitUtility.unit_id == unit.id).all()
+            ]
         }
     except HTTPException as http_exc:
         raise http_exc
@@ -179,6 +261,7 @@ def delete_property_unit(db: Session, unit_id: int, current_user):
             'property_id': unit.property_id,
         }
 
+        db.query(UnitUtility).filter(UnitUtility.unit_id == unit.id).delete()
         db.delete(unit)
         db.commit()
 

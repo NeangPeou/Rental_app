@@ -30,11 +30,14 @@ class _PaymentFormState extends State<PaymentForm> {
   final TextEditingController _amountPaidController = TextEditingController();
   final TextEditingController _receiptUrlController = TextEditingController();
   final TextEditingController _paymentMethodController = TextEditingController();
+  final TextEditingController _electricityController = TextEditingController();
+  final TextEditingController _waterController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   final LeaseService leaseService = LeaseService();
   final propertiesController = Get.find<PropertyController>();
   final PaymentService paymentService = PaymentService();
   late Map<String, dynamic> arg;
+  List utilities = [];
   final List<Map<String, dynamic>> _paymentMethodOptions = [
     {'id': 1, 'name': 'Bank Transfer'},
     {'id': 2, 'name': 'Cash'},
@@ -100,6 +103,17 @@ class _PaymentFormState extends State<PaymentForm> {
       _amountPaidController.text = data['amount_paid'].toString();
       _receiptUrlController.text = data['receipt_url'].toString();
       _paymentMethodController.text = data['payment_method_id'].toString();
+      if(data['meter_readings'] != null){
+        utilities = data['meter_readings'];
+        for(var u in utilities){
+          var utilityType = u['utility_type_id'];
+          if(utilityType == 1){
+            _electricityController.text = u['current_reading'].toString();
+          }else if(utilityType == 2){
+            _waterController.text = u['current_reading'].toString();
+          }
+        }
+      }
     }
   }
 
@@ -110,6 +124,8 @@ class _PaymentFormState extends State<PaymentForm> {
     _amountPaidController.dispose();
     _receiptUrlController.dispose();
     _paymentMethodController.dispose();
+    _electricityController.dispose();
+    _waterController.dispose();
     super.dispose();
   }
 
@@ -123,6 +139,8 @@ class _PaymentFormState extends State<PaymentForm> {
         amountPaid: double.parse(_amountPaidController.text),
         receiptUrl: _receiptUrlController.text,
         paymentMethodId: _paymentMethodController.text,
+        electricity: _electricityController.text,
+        water: _waterController.text
       );
 
       if(id == null){
@@ -199,6 +217,17 @@ class _PaymentFormState extends State<PaymentForm> {
                     } else {
                       _amountPaidController.text = rentAmount.toString();
                     }
+
+                    if (value['utilities'] != null) {
+                      utilities.clear();
+
+                      for (var utility in value['utilities']) {
+                        if (utility['billing_type'] == 'per_unit') {
+                          utilities.add(utility);
+                        }
+                      }
+                      setState(() {});
+                    }
                   }
                 );
               }),
@@ -260,8 +289,26 @@ class _PaymentFormState extends State<PaymentForm> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              Column(
+                children: [
+                  for (var utility in utilities)
+                    if (utility['billing_type'] == 'per_unit')
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Helper.sampleTextField(
+                          context: context,
+                          controller: utility['utility_type_id'] == 1 ? _electricityController : _waterController,
+                          labelText: utility['utility_type_id'] == 1 ? "${"electricity".tr} (kWh)" : "${"water".tr} (m³)",
+                          keyboardType: TextInputType.number,
+                          isRequired: true,
+                          validator: (val) => val == null || val.isEmpty ? 'this_field_is_required'.tr : null,
+                          prefixIcon: Icon(utility['utility_type_id'] == 1 ? Icons.electric_bolt : Icons.water_drop),
+                        ),
+                      ),
+                ],
+              ),
 
+              const SizedBox(height: 16),
               // Submit Button
               SizedBox(
                 width: double.infinity,
