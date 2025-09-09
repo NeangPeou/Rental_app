@@ -148,23 +148,7 @@ class _PropertyUnitState extends State<PropertyUnit> {
               Expanded(
                 child: Obx(() {
                   if (propertyController.units.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/empty.gif',
-                            width: 200,
-                            height: 200,
-                            fit: BoxFit.contain,
-                          ),
-                          const SizedBox(height: 24),
-                          Text('No Properties Found', style: Get.textTheme.titleLarge),
-                          const SizedBox(height: 8),
-                          Text('Start by adding a new property.', style: Get.textTheme.bodySmall),
-                        ],
-                      ),
-                    );
+                    return Helper.emptyData();
                   }
 
                   return RefreshIndicator(

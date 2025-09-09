@@ -191,7 +191,9 @@ class AppTranslations extends Translations {
       "depositAmount": "ចំនួនប្រាក់កក់",
       "start_date_cannot_be_later_than_end_date": "ថ្ងៃចាប់ផ្តើមមិនអាចធំជាងថ្ងៃបញ្ចប់បានទេ",
       "renter_cannot_delete_being_used_in_lease": "អ្នកជួលមិនអាចលុបបាន ព្រោះកំពុងត្រូវបានប្រើនៅក្នុងកិច្ចសន្យា",
-      "are_you_sure_delete": "តើអ្នកប្រាកដទេថាចង់លុប?"
+      "are_you_sure_delete": "តើអ្នកប្រាកដទេថាចង់លុប?",
+      "no_data_found": "គ្មានទិន្នន័យ",
+      "try_adding_a_new_item": "សូមបន្ថែមទិន្នន័យថ្មី",
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -382,6 +384,8 @@ class AppTranslations extends Translations {
       "renter_cannot_delete_being_used_in_lease": "Renter cannot be deleted because being used in lease",
       "are_you_sure_delete": "Are you sure delete?",
       "unit_cannot_delete_being_used_in_lease": "Unit cannot be deleted because being used in lease",
+      "no_data_found": "No Data Found",
+      "try_adding_a_new_item": "Try adding a new item",
 
     },
     'es_ES': {

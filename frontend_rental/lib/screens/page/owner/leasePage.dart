@@ -144,25 +144,8 @@ class _LeasePageState extends State<LeasePage> {
                 Expanded(
                   child: Obx(() {
                     if (propertyController.leases.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/empty.gif',
-                              width: 200,
-                              height: 200,
-                              fit: BoxFit.contain,
-                            ),
-                            const SizedBox(height: 24),
-                            Text('No Leases Found', style: Get.textTheme.titleLarge),
-                            const SizedBox(height: 8),
-                            Text('Start by adding a new lease.', style: Get.textTheme.bodySmall),
-                          ],
-                        ),
-                      );
+                      return Helper.emptyData();
                     }
-
                     return RefreshIndicator(
                       onRefresh: _refreshData,
                       child: ListView.builder(

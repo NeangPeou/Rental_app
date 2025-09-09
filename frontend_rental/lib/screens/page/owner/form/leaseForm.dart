@@ -159,7 +159,7 @@ class _LeaseFormState extends State<LeaseForm> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: Helper.sampleAppBar('tenants'.tr, context, null),
+      appBar: Helper.sampleAppBar('leases'.tr, context, null),
       body: SafeArea(
         bottom: true,
         child: Padding(

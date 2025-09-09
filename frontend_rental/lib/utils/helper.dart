@@ -518,4 +518,55 @@ class Helper {
       ],
     ));
   }
+
+  static Widget emptyData({
+    String? title,
+    String? subtitle,
+    String? imagePath,
+    double imageSize = 150,
+  }) {
+    return Center(
+      child: Card(
+        elevation: 4,
+        color: Get.theme.cardColor,
+        shadowColor: Colors.black12,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: Get.theme.dividerColor.withAlpha(100)
+          )
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                imagePath ?? 'assets/images/empty_data.gif',
+                width: imageSize,
+                height: imageSize,
+                fit: BoxFit.contain,
+              ),
+              Text(
+                title ?? 'no_data_found'.tr,
+                style: Get.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Get.theme.colorScheme.primary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                subtitle ?? 'try_adding_a_new_item'.tr,
+                style: Get.textTheme.titleSmall,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
 }
