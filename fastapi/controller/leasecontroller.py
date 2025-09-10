@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from db.models.unit_utility import UnitUtility
+from db.models.meter_readings import MeterReading
 from schemas.leases import LeaseCreate, LeaseUpdate, LeaseOut
 from db.models.leases import Lease
 from db.models.units import Unit
@@ -89,7 +90,15 @@ def get_all_leases(db: Session, current_user):
                     'utility_type_id': utility.utility_type_id,
                     'billing_type': utility.billing_type,
                     'fixed_rate': utility.fixed_rate,
-                    'unit_rate': utility.unit_rate
+                    'unit_rate': utility.unit_rate,
+                    'previous_reading': (
+                        db.query(MeterReading.previous_reading)
+                        .filter(MeterReading.unit_id == lease.unit_id)
+                        .filter(MeterReading.utility_type_id == utility.utility_type_id)
+                        .order_by(MeterReading.reading_date.desc())
+                        .limit(1)
+                        .scalar()
+                    )
                 }
                 for utility in db.query(UnitUtility).filter(UnitUtility.unit_id == lease.unit_id).all()
             ]

@@ -73,6 +73,13 @@ t_invoices (វិក័យប័ត្រ)
 | invoice\_id | lease\_id | month      | rent  | utility | total | status |
 | ----------- | --------- | ---------- | ----- | ------- | ----- | ------ |
 | 1           | 1         | 2024-09-01 | 25000 | 910     | 25910 | paid   |
+-Create Invoice
+-Review Invoice
+-Approve Invoice
+-Send Invoice to Customer
+-Receive Payment
+-Mark Invoice as Paid
+-Archive Invoice
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 អនុញ្ញាតឱ្យអ្នកជួលរាយការណ៍បញ្ហា និងតាមដានការជួសជុល។
 | request\_id | unit\_id | renter\_id | issue\_title                | description                                        | request\_date | status       | resolved\_date |

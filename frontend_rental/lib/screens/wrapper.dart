@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend_rental/screens/bottomNavigationBar/setting.dart';
 import 'package:frontend_rental/screens/page/owner/dashboard.dart';
 import 'package:frontend_rental/screens/page/owner/inventoryPage.dart';
+import 'package:frontend_rental/screens/page/owner/invoicePage.dart';
 import 'package:frontend_rental/screens/page/owner/leasePage.dart';
 import 'package:frontend_rental/screens/page/owner/paymentPage.dart';
 import 'package:frontend_rental/screens/page/owner/propertyPage.dart';
@@ -354,6 +355,11 @@ class _WrapperState extends State<Wrapper> {
                         icon: Icons.inventory_2_rounded,
                         label: 'inventory'.tr,
                         onTap: () => Get.to(() => InventoryPage()),
+                      ),
+                      SidebarXItem(
+                        icon: Icons.receipt_long,
+                        label: 'invoice'.tr,
+                        onTap: () => Get.to(() => Invoice()),
                       ),
                       SidebarXItem(
                         icon: Icons.build, 

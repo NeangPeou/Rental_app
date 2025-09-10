@@ -32,12 +32,19 @@ class _PaymentFormState extends State<PaymentForm> {
   final TextEditingController _paymentMethodController = TextEditingController();
   final TextEditingController _electricityController = TextEditingController();
   final TextEditingController _waterController = TextEditingController();
+  final TextEditingController _electricityCostController = TextEditingController();
+  final TextEditingController _waterCostController = TextEditingController();
+  final TextEditingController _totalAmountController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   final LeaseService leaseService = LeaseService();
   final propertiesController = Get.find<PropertyController>();
   final PaymentService paymentService = PaymentService();
   late Map<String, dynamic> arg;
   List utilities = [];
+  double? waterRate;
+  double? electricityRate;
+  double? previousWaterReading;
+  double? previousElectricityReading;
   final List<Map<String, dynamic>> _paymentMethodOptions = [
     {'id': 1, 'name': 'Bank Transfer'},
     {'id': 2, 'name': 'Cash'},
@@ -83,6 +90,33 @@ class _PaymentFormState extends State<PaymentForm> {
     }
   }
 
+  void _calculateUtilityCosts() {
+    final rent = double.tryParse(_amountPaidController.text) ?? 0.0;
+
+    // Electricity usage
+    final currentElec = double.tryParse(_electricityController.text) ?? 0.0;
+    final prevElec = previousElectricityReading ?? 0.0;
+    final electricityUsage = (currentElec - prevElec).clamp(0, double.infinity);
+
+    final elecRate = electricityRate ?? 0.0;
+    final electricityCost = electricityUsage * elecRate;
+
+    // Water usage
+    final currentWater = double.tryParse(_waterController.text) ?? 0.0;
+    final prevWater = previousWaterReading ?? 0.0;
+    final waterUsage = (currentWater - prevWater).clamp(0, double.infinity);
+
+    final waterRateVal = waterRate ?? 0.0;
+    final waterCost = waterUsage * waterRateVal;
+
+    // Update calculated fields
+    _electricityCostController.text = electricityCost.toStringAsFixed(2);
+    _waterCostController.text = waterCost.toStringAsFixed(2);
+
+    final totalAmount = rent + electricityCost + waterCost;
+    _totalAmountController.text = totalAmount.toStringAsFixed(2);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -91,6 +125,8 @@ class _PaymentFormState extends State<PaymentForm> {
         leaseService.getAllLeases();
       }
     });
+    _electricityController.addListener(_calculateUtilityCosts);
+    _waterController.addListener(_calculateUtilityCosts);
     arg = (Get.arguments as Map).cast<String, dynamic>();
     if (arg.isNotEmpty) {
       final data = arg;
@@ -103,17 +139,28 @@ class _PaymentFormState extends State<PaymentForm> {
       _amountPaidController.text = data['amount_paid'].toString();
       _receiptUrlController.text = data['receipt_url'].toString();
       _paymentMethodController.text = data['payment_method_id'].toString();
+      _totalAmountController.text = data['amount_paid'].toString();
       if(data['meter_readings'] != null){
         utilities = data['meter_readings'];
         for(var u in utilities){
           var utilityType = u['utility_type_id'];
+          final previous = double.tryParse(u['previous_reading'].toString()) ?? 0.0;
+          final rate = double.tryParse(u['unit_rate'].toString()) ?? 0.0;
           if(utilityType == 1){
             _electricityController.text = u['current_reading'].toString();
+            previousElectricityReading = previous;
+            electricityRate = rate;
           }else if(utilityType == 2){
             _waterController.text = u['current_reading'].toString();
+            previousWaterReading = previous;
+            waterRate = rate;
           }
         }
       }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _calculateUtilityCosts();
+      });
+      setState(() {});
     }
   }
 
@@ -126,6 +173,9 @@ class _PaymentFormState extends State<PaymentForm> {
     _paymentMethodController.dispose();
     _electricityController.dispose();
     _waterController.dispose();
+    _electricityCostController.dispose();
+    _waterCostController.dispose();
+    _totalAmountController.dispose();
     super.dispose();
   }
 
@@ -216,6 +266,7 @@ class _PaymentFormState extends State<PaymentForm> {
                       }
                     } else {
                       _amountPaidController.text = rentAmount.toString();
+                      _totalAmountController.text = rentAmount.toString();
                     }
 
                     if (value['utilities'] != null) {
@@ -224,8 +275,17 @@ class _PaymentFormState extends State<PaymentForm> {
                       for (var utility in value['utilities']) {
                         if (utility['billing_type'] == 'per_unit') {
                           utilities.add(utility);
+
+                          if (utility['utility_type_id'] == 1) {
+                            electricityRate = (utility['unit_rate'] ?? 0.0).toDouble();
+                            previousElectricityReading = (utility['previous_reading'] ?? 0.0).toDouble();
+                          } else if (utility['utility_type_id'] == 2) {
+                            waterRate = (utility['unit_rate'] ?? 0.0).toDouble();
+                            previousWaterReading = (utility['previous_reading'] ?? 0.0).toDouble();
+                          }
                         }
                       }
+                      _calculateUtilityCosts();
                       setState(() {});
                     }
                   }
@@ -258,6 +318,7 @@ class _PaymentFormState extends State<PaymentForm> {
                 keyboardType: TextInputType.number,
                 isRequired: true,
                 validator: (val) => val == null || val.isEmpty ? 'amount_is_required'.tr : null,
+                enabled: false
               ),
               const SizedBox(height: 16),
 
@@ -295,20 +356,46 @@ class _PaymentFormState extends State<PaymentForm> {
                     if (utility['billing_type'] == 'per_unit')
                       Padding(
                         padding: const EdgeInsets.only(top: 16),
-                        child: Helper.sampleTextField(
-                          context: context,
-                          controller: utility['utility_type_id'] == 1 ? _electricityController : _waterController,
-                          labelText: utility['utility_type_id'] == 1 ? "${"electricity".tr} (kWh)" : "${"water".tr} (m³)",
-                          keyboardType: TextInputType.number,
-                          isRequired: true,
-                          validator: (val) => val == null || val.isEmpty ? 'this_field_is_required'.tr : null,
-                          prefixIcon: Icon(utility['utility_type_id'] == 1 ? Icons.electric_bolt : Icons.water_drop),
-                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Helper.sampleTextField(
+                                context: context,
+                                controller: utility['utility_type_id'] == 1 ? _electricityController : _waterController,
+                                labelText: utility['utility_type_id'] == 1 ? "${"electricity".tr} (kWh)" : "${"water".tr} (m³)",
+                                keyboardType: TextInputType.number,
+                                isRequired: true,
+                                validator: (val) => val == null || val.isEmpty ? 'this_field_is_required'.tr : null,
+                                prefixIcon: Icon(utility['utility_type_id'] == 1 ? Icons.electric_bolt : Icons.water_drop),
+                              ),
+                            ),
+                            SizedBox(width: 5),
+                            Expanded(
+                                child: Helper.sampleTextField(
+                                  context: context,
+                                  controller: utility['utility_type_id'] == 1 ? _electricityCostController : _waterCostController,
+                                  labelText: "USD".tr,
+                                  keyboardType: TextInputType.number,
+                                  prefixIcon: Icon(Icons.attach_money_rounded),
+                                  enabled: false
+                                ),
+                            )
+                          ],
+                        )
                       ),
                 ],
               ),
 
               const SizedBox(height: 16),
+
+              Helper.sampleTextField(
+                context: context,
+                controller: _totalAmountController,
+                labelText: "Total Amount".tr,
+                prefixIcon: Icon(Icons.attach_money),
+                enabled: false
+              ),
+              SizedBox(height: 16),
               // Submit Button
               SizedBox(
                 width: double.infinity,

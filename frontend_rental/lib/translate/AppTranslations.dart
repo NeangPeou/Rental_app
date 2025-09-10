@@ -211,6 +211,7 @@ class AppTranslations extends Translations {
       "please_enter_quantity": "សូមបញ្ចូលចំនួន",
       "condition": "ជ្រើសរើសលក្ខខណ្ឌ",
       "units": "ឯកតា"
+      'invoice': 'វិក័យប័ត្រ',
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -420,6 +421,7 @@ class AppTranslations extends Translations {
       "please_enter_quantity": "Please enter quatity",
       "condition": "choose condition",
       "units": "Units"
+      'invoice': 'Invoice',
     },
     'es_ES': {
       'english': 'Inglés',
