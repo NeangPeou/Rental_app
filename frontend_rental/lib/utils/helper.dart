@@ -116,6 +116,10 @@ class Helper {
               borderRadius: const BorderRadius.all(Radius.circular(10)),
               borderSide: BorderSide(color: theme.colorScheme.onSecondaryContainer),
             ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide(color: theme.colorScheme.outline),
+            )
           ),
           validator: validator,
           style: theme.textTheme.bodyLarge,

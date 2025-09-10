@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy import desc, extract
 from db.models.meter_readings import MeterReading
+from db.models.unit_utility import UnitUtility
 from schemas.payment import PaymentCreate, PaymentUpdate
 from db.models.payments import Payment
 from db.models.leases import Lease
@@ -121,11 +122,15 @@ def create_payment(db: Session, data: PaymentCreate, current_user):
                     "current_reading": r.current_reading,
                     "usage": r.usage,
                     "reading_date": r.reading_date,
-                    "billing_type": "per_unit"
-                } for r in db.query(MeterReading).filter(
-                    MeterReading.unit_id == lease.unit_id,
-                    MeterReading.reading_date == data.payment_date
-                ).all()
+                    "unit_rate": uu.unit_rate,
+                    "billing_type": uu.billing_type,
+                }
+                for r, uu in db.query(MeterReading, UnitUtility)
+                    .filter(MeterReading.unit_id == lease.unit_id)
+                    .filter(MeterReading.reading_date == payment.payment_date)
+                    .filter(MeterReading.unit_id == UnitUtility.unit_id)
+                    .filter(MeterReading.utility_type_id == UnitUtility.utility_type_id)
+                    .all()
             ]
         }
     except HTTPException as http_exc:
@@ -166,11 +171,15 @@ def get_all_payments(db: Session, current_user):
                     "current_reading": r.current_reading,
                     "usage": r.usage,
                     "reading_date": r.reading_date,
-                    "billing_type": "per_unit"
-                } for r in db.query(MeterReading).filter(
-                    MeterReading.unit_id == lease.unit_id,
-                    MeterReading.reading_date == payment.payment_date
-                ).all()
+                    "unit_rate": uu.unit_rate,
+                    "billing_type": uu.billing_type,
+                }
+                for r, uu in db.query(MeterReading, UnitUtility)
+                    .filter(MeterReading.unit_id == lease.unit_id)
+                    .filter(MeterReading.reading_date == payment.payment_date)
+                    .filter(MeterReading.unit_id == UnitUtility.unit_id)
+                    .filter(MeterReading.utility_type_id == UnitUtility.utility_type_id)
+                    .all()
             ]
         } for payment, lease, unit, renter, property, owner, renter_user in payments]
 
@@ -259,11 +268,15 @@ def update_payment(db: Session, payment_id: int, data: PaymentUpdate, current_us
                     "current_reading": r.current_reading,
                     "usage": r.usage,
                     "reading_date": r.reading_date,
-                    "billing_type": "per_unit"
-                } for r in db.query(MeterReading).filter(
-                    MeterReading.unit_id == lease.unit_id,
-                    MeterReading.reading_date == data.payment_date
-                ).all()
+                    "unit_rate": uu.unit_rate,
+                    "billing_type": uu.billing_type,
+                }
+                for r, uu in db.query(MeterReading, UnitUtility)
+                    .filter(MeterReading.unit_id == lease.unit_id)
+                    .filter(MeterReading.reading_date == payment.payment_date)
+                    .filter(MeterReading.unit_id == UnitUtility.unit_id)
+                    .filter(MeterReading.utility_type_id == UnitUtility.utility_type_id)
+                    .all()
             ]
         }
 

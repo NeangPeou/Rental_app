@@ -202,6 +202,7 @@ class AppTranslations extends Translations {
       "internet": "អ៊ីនធឺណិត",
       "rate": "អត្រា",
       'create_failed': 'ការបង្កើតបរាជ័យ',
+      'invoice': 'វិក័យប័ត្រ',
     },
     'en_US': {
       'create_renter': 'Create renter',
@@ -402,6 +403,7 @@ class AppTranslations extends Translations {
       "internet": "Internet",
       "rate": "Rate",
       'create_failed': 'Create failed',
+      'invoice': 'Invoice',
     },
     'es_ES': {
       'english': 'Inglés',
