@@ -1,5 +1,14 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:frontend_rental/screens/page/owner/propertyUnit.dart';
+import 'package:frontend_rental/screens/page/rental/renterPage.dart';
+import 'package:frontend_rental/services/property_service.dart';
+import 'package:frontend_rental/services/user_service.dart';
+import 'package:get/get.dart';
+
+import '../../../controller/property_controller.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -9,6 +18,14 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  final PropertyController propertyController = Get.find<PropertyController>();
+
+  @override
+  void initState(){
+    super.initState();
+    UserService().fetchRenters(context);
+    PropertyService().getAllUnits();
+  }
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -27,18 +44,36 @@ class _DashboardState extends State<Dashboard> {
               color: Theme.of(context).cardColor
             ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildTopCard("15", "Buildings", Colors.teal.withAlpha(50)),
-                  _buildTopCard("48", "Apartments", Colors.teal.withAlpha(50)),
-                  _buildTopCard("120", "Tenants", Colors.teal.withAlpha(50)),
+                  Expanded(
+                    child: Obx(() => _buildTopCard(
+                        "", 
+                        "units".tr, 
+                        Colors.teal.withAlpha(50),
+                        onTap: (){
+                          Get.to(() => const PropertyUnit());
+                        },
+                        valueWidget: _blurCircle(propertyController.units.length.toString()),
+                      ),
+                    ), 
+                  ),
+                  const SizedBox(width: 1),
+                  Expanded(
+                    child: Obx(() => _buildTopCard(
+                      "",
+                      "tenants".tr,
+                      Colors.teal.withAlpha(50),
+                      onTap: () {
+                        Get.to(() => const RenterPage());
+                      },
+                      valueWidget: _blurCircle(propertyController.renters.length.toString()),
+                    )),
+                  ),
                 ],
               ),
             ),
           ),
-      
           const SizedBox(height: 10),
-      
           // --- Rent Collection Chart ---
           _buildSectionCard(
             "Total Rent Collection",
@@ -175,7 +210,6 @@ class _DashboardState extends State<Dashboard> {
           InkWell(
             borderRadius: BorderRadius.circular(16),
             onTap: () {
-              // navigate with Get.to(() => AddApplicantPage());
             },
             child: Card(
               elevation: 1,
@@ -202,37 +236,68 @@ class _DashboardState extends State<Dashboard> {
   }
 
   // --- Top Small Cards ---
-  Widget _buildTopCard(String value, String title, Color color) {
-    return Card(
-      elevation: 4,
-      shadowColor: color.withOpacity(0.4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      color: color,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Theme.of(context).dividerColor.withAlpha(120)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-          child: Column(
-            children: [
-              Text(
-                value,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)
-              ),
-              const SizedBox(height: 5),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
-                textAlign: TextAlign.center,
-              ),
-            ],
+  Widget _buildTopCard(String value, String title, Color color,{VoidCallback? onTap, Widget? valueWidget}) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: onTap,
+      child: Card(
+        elevation: 4,
+        shadowColor: color.withOpacity(0.4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        color: color,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Theme.of(context).dividerColor.withAlpha(120)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+            child: Column(
+              children: [
+                valueWidget ?? Text(
+                  value,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+
+  Widget _blurCircle(String text, {double size = 25, Color color = Colors.yellow}) {
+    return ClipOval(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          width: size,
+          height: size,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.3),
+            shape: BoxShape.circle,
+          ),
+          child: Text(
+            text,
+            style: Get.theme.textTheme.bodyLarge
+          ),
+        ),
+      ),
+    );
+  }
+
 
   // --- Section Cards with Charts ---
   Widget _buildSectionCard(String title, String subtitle, Widget child) {

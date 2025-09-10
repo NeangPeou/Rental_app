@@ -382,7 +382,7 @@ class _RenterPageState extends State<RenterPage> {
                                                       Helper.sampleTextField(
                                                         context: context,
                                                         controller: TextEditingController(text: renter['passport'] ?? 'N/A'),
-                                                        labelText: 'passport'.tr,
+                                                        labelText: 'Passport'.tr,
                                                         prefixIcon: const Icon(Icons.phone),
                                                         enabled: false,
                                                       ),

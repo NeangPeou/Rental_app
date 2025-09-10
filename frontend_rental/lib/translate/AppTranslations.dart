@@ -202,6 +202,15 @@ class AppTranslations extends Translations {
       "internet": "អ៊ីនធឺណិត",
       "rate": "អត្រា",
       'create_failed': 'ការបង្កើតបរាជ័យ',
+      "inventory": "បញ្ជីសារពើភ័ណ្ឌ",
+      "unit&item": "ឯកតានិងធាតុ",
+      "itemName": "ឈ្មោះធាតុ",
+      "please_enter_item_name": "សូមបញ្ចូលឈ្មោះធាតុ",
+      "details": "ព័ត៌មានលម្អិត",
+      "quantity": "ចំនួន",
+      "please_enter_quantity": "សូមបញ្ចូលចំនួន",
+      "condition": "ជ្រើសរើសលក្ខខណ្ឌ",
+      "units": "ឯកតា"
       'invoice': 'វិក័យប័ត្រ',
     },
     'en_US': {
@@ -403,6 +412,15 @@ class AppTranslations extends Translations {
       "internet": "Internet",
       "rate": "Rate",
       'create_failed': 'Create failed',
+      "inventory": "Inventory",
+      "unit&item": "Unit & Item",
+      "itemName": "Item name",
+      "please_enter_item_name": "Please enter item name",
+      "details": "Details",
+      "quantity": "Quantity",
+      "please_enter_quantity": "Please enter quatity",
+      "condition": "choose condition",
+      "units": "Units"
       'invoice': 'Invoice',
     },
     'es_ES': {
