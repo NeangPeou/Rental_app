@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.v1.routes import auth, user, systemlog, type, property, units, leases, renters, payment
+from api.v1.routes import auth, user, systemlog, type, property, units, leases, renters, payment, inventory
 from db.models import (
     user as users, 
     role, 
@@ -17,7 +17,8 @@ from db.models import (
     utility_types, 
     unit_utility, 
     meter_readings, 
-    invoices, inventory
+    invoices, 
+    inventory as inventorytb
 )
 from db.session import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
@@ -108,3 +109,4 @@ app.include_router(units.router, prefix="/api", tags=["Units"])
 app.include_router(leases.router, prefix="/api", tags=["Leases"])
 app.include_router(renters.router, prefix="/api", tags=["Renters"])
 app.include_router(payment.router, prefix="/api", tags=["Payment"])
+app.include_router(inventory.router, prefix="/api", tags=["Inventory"])

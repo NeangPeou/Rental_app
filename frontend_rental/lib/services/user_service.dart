@@ -40,6 +40,8 @@ class UserService{
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
+        Get.find<PropertyController>().setRenters(
+            data.map((renterJson) => renterJson as Map<String, dynamic>).toList());
         return data.map((renterJson) => UserModel.fromJson(renterJson)).toList();
       } else {
         return [];
