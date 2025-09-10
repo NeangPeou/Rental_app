@@ -210,7 +210,7 @@ class AppTranslations extends Translations {
       "quantity": "ចំនួន",
       "please_enter_quantity": "សូមបញ្ចូលចំនួន",
       "condition": "ជ្រើសរើសលក្ខខណ្ឌ",
-      "units": "ឯកតា"
+      "units": "ឯកតា",
       'invoice': 'វិក័យប័ត្រ',
     },
     'en_US': {
@@ -420,7 +420,7 @@ class AppTranslations extends Translations {
       "quantity": "Quantity",
       "please_enter_quantity": "Please enter quatity",
       "condition": "choose condition",
-      "units": "Units"
+      "units": "Units",
       'invoice': 'Invoice',
     },
     'es_ES': {
